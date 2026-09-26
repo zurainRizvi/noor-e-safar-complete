@@ -622,7 +622,7 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
         alignItems: 'center',
         justifyContent: 'center',
         pointerEvents: started ? 'none' : 'auto',
-        background: 'transparent',
+        background: 'url(/art/noor-garden.png) center/cover #101410',
       }}
       onClick={begin}
     >
@@ -2514,9 +2514,13 @@ export default function Invitation() {
   const handleBegin = () => {
     if (video.current) {
       video.current.muted = true;
+      video.current.play().catch(() => {});
     }
     setZooming(true);
     startChaapTilak();
+    if (!open) {
+      setOpen(true);
+    }
   };
 
   const handleTimeUpdate = () => {
@@ -2527,8 +2531,8 @@ export default function Invitation() {
       setZooming(true);
     }
 
-    // Trigger Abeeha & Zurain card dropdown on 5th second of video (4.8s - 5.0s)
-    if (video.current.currentTime >= 4.8 && !open) {
+    // Trigger Abeeha & Zurain card dropdown on video playback
+    if ((video.current.currentTime >= 1.5 || video.current.currentTime >= 4.8) && !open) {
       setOpen(true);
     }
 
@@ -2591,6 +2595,8 @@ export default function Invitation() {
         <video
           ref={video}
           src="/intro-video.mp4"
+          poster="/art/noor-garden.png"
+          preload="auto"
           playsInline
           muted
           onTimeUpdate={handleTimeUpdate}
