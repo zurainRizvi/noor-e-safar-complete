@@ -2615,21 +2615,18 @@ export default function Invitation() {
           zIndex: 0,
           pointerEvents: 'none',
           backgroundColor: '#101410',
-          backgroundImage: `
-            radial-gradient(circle at 50% 40%, rgba(212, 175, 87, 0.16), transparent 34%),
-            linear-gradient(90deg, rgba(0,0,0,0.3), transparent 22%, transparent 78%, rgba(0,0,0,0.3)),
-            repeating-linear-gradient(90deg, #260104 0 16px, #5e0813 34px, #2b0105 58px, #790f1e 82px, #3a0208 110px)
-          `,
+          backgroundImage: 'url(/curtain-poster.png)',
+          backgroundPosition: 'center center',
           backgroundSize: 'cover',
         }}
       >
         <video
           ref={video}
           src="/intro-video.mp4"
+          poster="/curtain-poster.png"
           preload="auto"
           playsInline
           muted
-          autoPlay
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleVideoEnd}
           style={{
