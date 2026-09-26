@@ -1,0 +1,348 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
+
+:root {
+  --ivory: #faf7ef;
+  --ink: #30291f;
+  --gold: #b99a56;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  background: #101410;
+  scroll-behavior: smooth;
+  touch-action: pan-y;
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  color: var(--ink);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+button, input, textarea {
+  font: inherit;
+}
+
+main {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: transparent;
+  box-shadow: 0 0 70px #000;
+  overflow-x: hidden;
+  position: relative;
+  touch-action: pan-y;
+}
+
+.card, .cover {
+  position: relative;
+  min-height: 100svh;
+  padding: 70px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cover {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  margin: auto;
+  width: min(100%, 480px);
+  background: transparent;
+  color: white;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+
+.painted {
+  background: rgba(20, 25, 20, 0.85);
+}
+
+.card > * {
+  position: relative;
+  z-index: 2;
+}
+
+h1, h2 {
+  margin: 34px 0;
+  font: 400 clamp(52px, 16vw, 78px)/.8 'Cormorant Garamond', serif;
+}
+
+h1 em, h2 em {
+  display: block;
+  font-weight: 400;
+}
+
+h1 b {
+  display: block;
+  font: 28px 'Cormorant Garamond', serif;
+}
+
+.ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  gap: 12px;
+  color: var(--gold);
+}
+
+.ornament .ornament-line {
+  width: 42px;
+  border-top: 1px solid currentColor;
+}
+
+.ornament .ornament-diamond {
+  border: none;
+  border-top: none;
+  width: auto;
+  font-style: normal;
+  line-height: 1;
+}
+
+.ivory {
+  background: rgba(245, 240, 227, 0.92);
+  color: #2b2319;
+}
+
+.arabic {
+  font: 28px/1.9 'Noto Nastaliq Urdu', serif;
+}
+
+.copy {
+  max-width: 330px;
+  font: 18px/1.7 'Cormorant Garamond', serif;
+}
+
+.ivory blockquote {
+  font: 19px/2 'Noto Nastaliq Urdu', serif;
+}
+
+.ivory small {
+  display: block;
+  font: 9px 'Manrope', sans-serif;
+}
+
+.count-card {
+  background: rgba(22, 28, 22, 0.88);
+  color: #fff;
+}
+
+.count-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  border-block: 1px solid rgba(212, 175, 87, 0.4);
+}
+
+.count-grid span {
+  padding: 22px 3px;
+  border-right: 1px solid rgba(212, 175, 87, 0.4);
+}
+
+.count-grid span:last-child {
+  border-right: none;
+}
+
+.count-grid strong {
+  display: block;
+  font: 38px 'Cormorant Garamond', serif;
+  color: #d4af57;
+}
+
+.count-grid small {
+  font-size: 7px;
+  color: #e2d8b2;
+}
+
+.event {
+  background: rgba(20, 25, 20, 0.88);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+}
+
+.event h2 em {
+  font-size: .45em;
+}
+
+.date {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.date strong {
+  font: 92px 'Cormorant Garamond', serif;
+}
+
+.date span {
+  font: 20px 'Cormorant Garamond', serif;
+  text-align: left;
+}
+
+.date small {
+  display: block;
+}
+
+.venue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 22px 0 16px;
+}
+
+.venue svg, .actions svg {
+  width: 16px;
+  color: var(--gold);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions a, .actions button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 18px;
+  border: 1px solid rgba(212, 175, 87, 0.4);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  text-decoration: none;
+}
+
+.petals {
+  position: absolute !important;
+  inset: 0;
+  z-index: 1 !important;
+}
+
+.petals i {
+  position: absolute;
+  width: 9px;
+  height: 13px;
+  background: white;
+  border-radius: 70% 0;
+}
+
+/* Quran verse page: Red and White petals */
+.petals.quran-verse i {
+  background: #ffffff;
+  box-shadow: 0 2px 7px rgba(185, 28, 28, 0.4);
+}
+.petals.quran-verse i:nth-child(odd) {
+  background: #b91c1c;
+}
+.petals.quran-verse i:nth-child(3n) {
+  background: #dc2626;
+}
+.petals.quran-verse i:nth-child(4n) {
+  background: #ffffff;
+}
+.petals.quran-verse i:nth-child(5n) {
+  background: #991b1b;
+}
+
+/* Scratch to Reveal & Countdown: Golden and White petals */
+.petals.gold-white i {
+  background: #ffffff;
+  box-shadow: 0 2px 7px rgba(212, 175, 87, 0.45);
+}
+.petals.gold-white i:nth-child(odd) {
+  background: #d4af57;
+}
+.petals.gold-white i:nth-child(3n) {
+  background: #f59e0b;
+}
+.petals.gold-white i:nth-child(4n) {
+  background: #fff4d6;
+}
+.petals.gold-white i:nth-child(5n) {
+  background: #ffffff;
+}
+
+.rsvp {
+  background: rgba(22, 28, 22, 0.9);
+  color: white;
+}
+
+.rsvp form {
+  width: 100%;
+  display: grid;
+  gap: 11px;
+}
+
+.rsvp input, .rsvp textarea, .choice button {
+  padding: 14px;
+  border: 1px solid rgba(212, 175, 87, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.choice .selected {
+  background: var(--gold);
+  color: #121612;
+}
+
+.gold {
+  padding: 14px;
+  border: 0;
+  background: var(--gold);
+  color: #121612;
+  font-weight: 600;
+}
+
+.controls {
+  position: fixed;
+  z-index: 20;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  left: 50%;
+  width: min(calc(100% - 28px), 452px);
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.controls button {
+  pointer-events: auto;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #fff6;
+  border-radius: 50%;
+  background: #30362cbb;
+  color: white;
+}
+
+@media(prefers-reduced-motion: reduce) {
+  .petals {
+    display: none;
+  }
+}

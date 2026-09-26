@@ -1,0 +1,128 @@
+/* Real Royal Satin Red Wine Closing Curtains (Clean Stage Drape, Matching Video) */
+
+.closing-curtain {
+  position: absolute !important;
+  top: 0;
+  bottom: 0;
+  width: 55%;
+  z-index: 5 !important;
+  background: 
+    linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%),
+    linear-gradient(90deg, #2b0105 0%, #5e0813 14%, #3a0208 28%, #6e0c18 42%, #3d0309 56%, #790f1e 70%, #46040b 84%, #260104 100%),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.3) 0px, transparent 15px, rgba(255,255,255,0.08) 25px, rgba(0,0,0,0.4) 38px);
+  box-shadow: inset 0 0 70px rgba(0, 0, 0, 0.9);
+}
+
+.closing-curtain.left {
+  left: 0;
+  border-right: 4px solid #d4af57;
+  box-shadow: 20px 0 50px rgba(0, 0, 0, 0.95), inset -6px 0 20px rgba(212, 175, 87, 0.4), inset 0 0 70px rgba(0, 0, 0, 0.85);
+}
+
+.closing-curtain.right {
+  right: 0;
+  border-left: 4px solid #d4af57;
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.95), inset 6px 0 20px rgba(212, 175, 87, 0.4), inset 0 0 70px rgba(0, 0, 0, 0.85);
+}
+
+.closing-curtain.left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 4px;
+  width: 2px;
+  background: rgba(212, 175, 87, 0.6);
+}
+
+.closing-curtain.right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 2px;
+  background: rgba(212, 175, 87, 0.6);
+}
+
+/* Royal Golden Embroidery at top of closing curtains */
+.closing-curtain::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 87, 0.45) 0%, rgba(212, 175, 87, 0.15) 50%, transparent 80%),
+    repeating-linear-gradient(45deg, rgba(212, 175, 87, 0.2) 0px, rgba(212, 175, 87, 0.2) 2px, transparent 2px, transparent 12px),
+    repeating-linear-gradient(-45deg, rgba(212, 175, 87, 0.2) 0px, rgba(212, 175, 87, 0.2) 2px, transparent 2px, transparent 12px);
+  border-bottom: 3px double rgba(212, 175, 87, 0.7);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.bird {
+  border-color: #8f7a49;
+  filter: drop-shadow(0 1px 2px #fff);
+}
+.bird:after {
+  border-color: #8f7a49;
+}
+
+.tap-glow {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Consistent RSVP Styling - Matching Days Counting */
+.rsvp {
+  background: rgba(22, 28, 22, 0.88) !important;
+  color: #fcfbf7 !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(212, 175, 87, 0.3) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.rsvp h2 {
+  color: #ffffff !important;
+}
+
+.rsvp h2 em {
+  color: #d4af57 !important;
+}
+
+.rsvp input, .rsvp .choice button {
+  border-color: rgba(212, 175, 87, 0.4) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+.rsvp input::placeholder {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.rsvp .choice button.selected {
+  background: #d4af57 !important;
+  color: #121612 !important;
+  font-weight: 600;
+}
+
+.rsvp .gold {
+  background: #d4af57 !important;
+  color: #121612 !important;
+  font-weight: 600;
+}
+
+.closing-content .seal {
+  animation: closingSealGlow 1.8s ease-in-out infinite;
+  color: #d4af57 !important;
+  border-color: #d4af57 !important;
+}
+
+@keyframes closingSealGlow {
+  50% {
+    box-shadow: 0 0 0 12px rgba(212, 175, 87, 0.25), 0 0 55px rgba(212, 175, 87, 0.6);
+    filter: brightness(1.3);
+  }
+}
