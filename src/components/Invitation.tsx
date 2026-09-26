@@ -600,14 +600,25 @@ function Birds() {
 }
 
 /* Point 1: Smooth fade out for Tap to illuminate prompt */
-function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoElement | null>; onBegin: () => void }) {
+function Intro({
+  videoRef,
+  videoReady,
+  onBegin,
+}: {
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+  videoReady: boolean;
+  onBegin: () => void;
+}) {
   const [started, setStarted] = useState(false);
+  const beganRef = useRef(false);
 
   const begin = (e?: React.SyntheticEvent) => {
     if (e) {
       e.stopPropagation();
+      e.preventDefault();
     }
-    if (started) return;
+    if (beganRef.current) return;
+    beganRef.current = true;
     setStarted(true);
     if (videoRef.current) {
       videoRef.current.muted = true;
@@ -622,7 +633,12 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
       exit={{ opacity: 0, transition: { duration: 0.6, ease: 'easeInOut' } }}
       style={{
         position: 'fixed',
-        inset: 0,
+        top: 0,
+        bottom: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100%',
+        maxWidth: '480px',
         zIndex: 99,
         cursor: 'pointer',
         display: 'flex',
@@ -637,6 +653,50 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
       onClick={begin}
       onTouchStart={begin}
     >
+      {!videoReady && (
+        <motion.div
+          aria-hidden="true"
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 99,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 'clamp(28px, 8vh, 72px) 28px',
+            textAlign: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            style={{
+              marginTop: '-8vh',
+              font: "400 clamp(96px, 31vw, 148px)/0.86 'Cormorant Garamond', serif",
+              color: '#fff8d8',
+              letterSpacing: '-0.06em',
+              textShadow: '0 0 18px rgba(255, 244, 205, 0.72), 0 0 42px rgba(212, 175, 87, 0.5)',
+            }}
+          >
+            AZ
+          </div>
+          <Ornament color="#d4af57" />
+          <div
+            style={{
+              marginTop: '6px',
+              color: 'rgba(255,255,255,0.74)',
+              fontSize: 'clamp(10px, 2.8vw, 13px)',
+              letterSpacing: '0.38em',
+              textTransform: 'uppercase',
+            }}
+          >
+            You are invited
+          </div>
+        </motion.div>
+      )}
       <AnimatePresence mode="wait">
         {!started && (
           <motion.div
@@ -650,13 +710,12 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
             }}
             style={{
               position: 'absolute',
-              bottom: '22%',
+              bottom: 'max(60px, calc(env(safe-area-inset-bottom, 0px) + 10vh))',
               left: 0,
               right: 0,
               margin: '0 auto',
               zIndex: 100,
-              width: 'min(calc(100% - 40px), 320px)',
-              maxWidth: 'calc(100vw - 40px)',
+              width: 'min(80%, 300px)',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -672,15 +731,12 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
                 width: '100%',
                 background: 'rgba(16, 22, 16, 0.78)',
                 border: '1.5px solid rgba(212, 175, 87, 0.8)',
-                padding: 'clamp(12px, 3.8vw, 16px) clamp(16px, 5vw, 24px)',
+                padding: '14px 24px',
                 borderRadius: '32px',
                 cursor: 'pointer',
-                fontSize: 'clamp(10px, 3.1vw, 13px)',
+                fontSize: '11px',
                 fontWeight: 700,
-                letterSpacing: 'clamp(0.14em, 0.9vw, 0.28em)',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'clip',
+                letterSpacing: '0.28em',
                 backdropFilter: 'blur(10px)',
                 WebkitBackdropFilter: 'blur(10px)',
                 color: '#ffffff',
@@ -690,7 +746,7 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
               animate={{
                 opacity: [0.75, 1, 0.75],
                 textShadow: ['0 0 4px #b99a56', '0 0 16px #fff, 0 0 30px #b99a56', '0 0 4px #b99a56'],
-                scale: [0.98, 1.03, 0.98],
+                scale: [0.99, 1.01, 0.99],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -759,10 +815,11 @@ function Card({
 /* Point 4: Backdrop kept consistently blurred, centered ornament, bottom aligned */
 function Hero({ locale }: { locale: Locale }) {
   return (
-    <motion.section
+          <motion.section
       className="card hero"
-      initial={{ opacity: 1, y: 0 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 52, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
       style={{ background: 'transparent', justifyContent: 'flex-end', paddingBottom: '36px', minHeight: '100svh', position: 'relative', overflow: 'hidden' }}
     >
       {/* Central Sky Zone: Full viewport bounds so percentages match true screen coordinates */}
@@ -2341,6 +2398,7 @@ function Closing({ locale }: { locale: Locale }) {
 export default function Invitation() {
   const [open, setOpen] = useState(false);
   const [zooming, setZooming] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const [locale, setLocale] = useState<Locale>('en');
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
@@ -2529,6 +2587,8 @@ export default function Invitation() {
   const handleBegin = () => {
     if (video.current) {
       video.current.muted = true;
+      video.current.currentTime = 0;
+      video.current.playbackRate = 1;
       video.current.play().catch(() => {});
     }
     setZooming(true);
@@ -2607,6 +2667,12 @@ export default function Invitation() {
           zIndex: 0,
           pointerEvents: 'none',
           backgroundColor: '#101410',
+          backgroundImage: `
+            radial-gradient(circle at 50% 40%, rgba(212, 175, 87, 0.16), transparent 34%),
+            linear-gradient(90deg, rgba(0,0,0,0.3), transparent 22%, transparent 78%, rgba(0,0,0,0.3)),
+            repeating-linear-gradient(90deg, #260104 0 16px, #5e0813 34px, #2b0105 58px, #790f1e 82px, #3a0208 110px)
+          `,
+          backgroundSize: 'cover',
         }}
       >
         <video
@@ -2615,6 +2681,8 @@ export default function Invitation() {
           preload="auto"
           playsInline
           muted
+          onLoadedData={() => setVideoReady(true)}
+          onCanPlay={() => setVideoReady(true)}
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleVideoEnd}
           style={{
@@ -2623,7 +2691,7 @@ export default function Invitation() {
             objectFit: 'cover',
             transform: (zooming || open) ? 'scale(1.18)' : 'scale(1.0)',
             transformOrigin: 'center center',
-            opacity: 0.92,
+            opacity: open ? 0 : 0.92,
             transition: 'transform 1.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 2s ease-in-out',
             backgroundColor: '#101410',
           }}
@@ -2648,7 +2716,7 @@ export default function Invitation() {
 
       {/* Intro Overlay: TAP TO ILLUMINATE below AZ logo */}
       <AnimatePresence>
-        {!open && <Intro videoRef={video} onBegin={handleBegin} />}
+        {!open && <Intro videoRef={video} videoReady={videoReady} onBegin={handleBegin} />}
       </AnimatePresence>
 
       {/* Main Card Content */}
