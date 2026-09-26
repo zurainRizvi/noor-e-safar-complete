@@ -633,12 +633,7 @@ function Intro({
       exit={{ opacity: 0, transition: { duration: 0.6, ease: 'easeInOut' } }}
       style={{
         position: 'fixed',
-        top: 0,
-        bottom: 0,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '100%',
-        maxWidth: '480px',
+        inset: 0,
         zIndex: 99,
         cursor: 'pointer',
         display: 'flex',
