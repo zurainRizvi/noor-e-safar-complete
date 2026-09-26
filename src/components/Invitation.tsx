@@ -598,7 +598,10 @@ function Birds() {
 function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoElement | null>; onBegin: () => void }) {
   const [started, setStarted] = useState(false);
 
-  const begin = () => {
+  const begin = (e?: React.SyntheticEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     if (started) return;
     setStarted(true);
     if (videoRef.current) {
@@ -611,11 +614,11 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
   return (
     <motion.section
       className="cover"
-      exit={{ opacity: 0, transition: { duration: 0.8, ease: 'easeInOut' } }}
+      exit={{ opacity: 0, transition: { duration: 0.6, ease: 'easeInOut' } }}
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 60,
+        zIndex: 99,
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
@@ -623,59 +626,62 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
         justifyContent: 'center',
         pointerEvents: started ? 'none' : 'auto',
         background: 'transparent',
+        touchAction: 'manipulation',
+        WebkitTapHighlightColor: 'transparent',
       }}
       onClick={begin}
+      onTouchStart={begin}
     >
       <AnimatePresence mode="wait">
         {!started && (
           <motion.div
             key="prompt"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{
               opacity: 0,
-              y: -10,
               scale: 0.95,
-              transition: { duration: 0.6, ease: 'easeInOut' },
+              transition: { duration: 0.4, ease: 'easeInOut' },
             }}
             style={{
-              position: 'absolute',
-              bottom: '16%',
-              left: 0,
-              right: 0,
-              margin: '0 auto',
-              width: '100%',
+              position: 'fixed',
+              bottom: '22%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 100,
+              width: '90%',
+              maxWidth: '340px',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               textAlign: 'center',
+              pointerEvents: 'auto',
             }}
           >
             <motion.button
               className="eyebrow tap-glow"
               onClick={begin}
+              onTouchStart={begin}
               style={{
-                background: 'rgba(20, 25, 20, 0.45)',
-                border: '1px solid rgba(212, 175, 87, 0.6)',
-                padding: '14px 34px',
-                borderRadius: '30px',
+                width: '100%',
+                background: 'rgba(16, 22, 16, 0.78)',
+                border: '1.5px solid rgba(212, 175, 87, 0.8)',
+                padding: '16px 28px',
+                borderRadius: '32px',
                 cursor: 'pointer',
                 fontSize: '13px',
-                letterSpacing: '0.35em',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
+                fontWeight: 700,
+                letterSpacing: '0.32em',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
                 color: '#ffffff',
-                margin: '0 auto',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 87, 0.4)',
+                WebkitTapHighlightColor: 'transparent',
               }}
               animate={{
-                opacity: [0.65, 1, 0.65],
-                textShadow: ['0 0 4px #b99a56', '0 0 20px #fff, 0 0 35px #b99a56', '0 0 4px #b99a56'],
+                opacity: [0.75, 1, 0.75],
+                textShadow: ['0 0 4px #b99a56', '0 0 16px #fff, 0 0 30px #b99a56', '0 0 4px #b99a56'],
                 scale: [0.98, 1.03, 0.98],
-                boxShadow: [
-                  '0 0 15px rgba(212, 175, 87, 0.2)',
-                  '0 0 35px rgba(212, 175, 87, 0.6), 0 0 50px rgba(255, 255, 255, 0.3)',
-                  '0 0 15px rgba(212, 175, 87, 0.2)',
-                ],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -2543,9 +2549,9 @@ export default function Invitation() {
       video.current.playbackRate = 0.55;
     }
 
-    // Instagram/Snapchat style Boomerang: At 4.95s, play in reverse back to 4.0s
-    if (video.current.currentTime >= 4.95 && !isReversingRef.current) {
-      startReverseLoop();
+    // Instagram/Snapchat style Boomerang / Loop clamp: At 4.88s, seamlessly loop back to 4.05s
+    if (video.current.currentTime >= 4.88) {
+      video.current.currentTime = 4.05;
     }
   };
 
