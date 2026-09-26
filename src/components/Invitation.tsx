@@ -602,11 +602,9 @@ function Birds() {
 /* Point 1: Smooth fade out for Tap to illuminate prompt */
 function Intro({
   videoRef,
-  videoReady,
   onBegin,
 }: {
   videoRef: React.RefObject<HTMLVideoElement | null>;
-  videoReady: boolean;
   onBegin: () => void;
 }) {
   const [started, setStarted] = useState(false);
@@ -648,50 +646,6 @@ function Intro({
       onClick={begin}
       onTouchStart={begin}
     >
-      {!videoReady && (
-        <motion.div
-          aria-hidden="true"
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 99,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 'clamp(28px, 8vh, 72px) 28px',
-            textAlign: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              marginTop: '-8vh',
-              font: "400 clamp(96px, 31vw, 148px)/0.86 'Cormorant Garamond', serif",
-              color: '#fff8d8',
-              letterSpacing: '-0.06em',
-              textShadow: '0 0 18px rgba(255, 244, 205, 0.72), 0 0 42px rgba(212, 175, 87, 0.5)',
-            }}
-          >
-            AZ
-          </div>
-          <Ornament color="#d4af57" />
-          <div
-            style={{
-              marginTop: '6px',
-              color: 'rgba(255,255,255,0.74)',
-              fontSize: 'clamp(10px, 2.8vw, 13px)',
-              letterSpacing: '0.38em',
-              textTransform: 'uppercase',
-            }}
-          >
-            You are invited
-          </div>
-        </motion.div>
-      )}
       <AnimatePresence mode="wait">
         {!started && (
           <motion.div
@@ -2393,7 +2347,6 @@ function Closing({ locale }: { locale: Locale }) {
 export default function Invitation() {
   const [open, setOpen] = useState(false);
   const [zooming, setZooming] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
   const [locale, setLocale] = useState<Locale>('en');
   const [playing, setPlaying] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
@@ -2676,8 +2629,7 @@ export default function Invitation() {
           preload="auto"
           playsInline
           muted
-          onLoadedData={() => setVideoReady(true)}
-          onCanPlay={() => setVideoReady(true)}
+          autoPlay
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleVideoEnd}
           style={{
@@ -2686,7 +2638,7 @@ export default function Invitation() {
             objectFit: 'cover',
             transform: (zooming || open) ? 'scale(1.18)' : 'scale(1.0)',
             transformOrigin: 'center center',
-            opacity: open ? 0 : 0.92,
+            opacity: 0.92,
             transition: 'transform 1.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 2s ease-in-out',
             backgroundColor: '#101410',
           }}
@@ -2711,7 +2663,7 @@ export default function Invitation() {
 
       {/* Intro Overlay: TAP TO ILLUMINATE below AZ logo */}
       <AnimatePresence>
-        {!open && <Intro videoRef={video} videoReady={videoReady} onBegin={handleBegin} />}
+        {!open && <Intro videoRef={video} onBegin={handleBegin} />}
       </AnimatePresence>
 
       {/* Main Card Content */}
