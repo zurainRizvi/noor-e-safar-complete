@@ -622,7 +622,7 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
         alignItems: 'center',
         justifyContent: 'center',
         pointerEvents: started ? 'none' : 'auto',
-        background: 'url(/art/noor-garden.png) center/cover #101410',
+        background: 'transparent',
       }}
       onClick={begin}
     >
@@ -2518,9 +2518,11 @@ export default function Invitation() {
     }
     setZooming(true);
     startChaapTilak();
-    if (!open) {
+
+    // Fallback timer: ensure open is triggered after 3.8s even if video timeupdate is delayed on low-power mobile
+    setTimeout(() => {
       setOpen(true);
-    }
+    }, 3800);
   };
 
   const handleTimeUpdate = () => {
@@ -2531,8 +2533,8 @@ export default function Invitation() {
       setZooming(true);
     }
 
-    // Trigger Abeeha & Zurain card dropdown on video playback
-    if ((video.current.currentTime >= 1.5 || video.current.currentTime >= 4.8) && !open) {
+    // Trigger Abeeha & Zurain card dropdown when curtains are open (3.6s - 4.5s)
+    if (video.current.currentTime >= 3.6 && !open) {
       setOpen(true);
     }
 
@@ -2595,7 +2597,6 @@ export default function Invitation() {
         <video
           ref={video}
           src="/intro-video.mp4"
-          poster="/art/noor-garden.png"
           preload="auto"
           playsInline
           muted
