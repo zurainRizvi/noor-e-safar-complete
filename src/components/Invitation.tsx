@@ -8,6 +8,11 @@ import { t, type Locale } from '@/config/translations';
 
 const reveal = { hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0, transition: { duration: 0.85, ease: 'easeOut' as const } } };
 
+type VideoFrameElement = HTMLVideoElement & {
+  requestVideoFrameCallback?: (callback: () => void) => number;
+  cancelVideoFrameCallback?: (handle: number) => void;
+};
+
 /* Point 3 & 5: Perfectly centered gold ornament (-◇-) with NO line above diamond */
 function Ornament({ color = '#d4af57' }: { color?: string }) {
   return (
@@ -307,7 +312,7 @@ function BotanicalClimber({ type }: { type: 'mehndi' | 'baraat' | 'waleema' }) {
   }[type];
 
   // A single side's climber SVG (Left-oriented, right side will scaleX(-1))
-  const ClimberSide = () => (
+  const renderClimberSide = () => (
     <svg
       viewBox="0 0 150 680"
       style={{
@@ -466,7 +471,7 @@ function BotanicalClimber({ type }: { type: 'mehndi' | 'baraat' | 'waleema' }) {
           overflow: 'visible',
         }}
       >
-        <ClimberSide />
+        {renderClimberSide()}
       </div>
 
       {/* Right Climber (100% Exact Mirror via scaleX(-1)) */}
@@ -481,7 +486,7 @@ function BotanicalClimber({ type }: { type: 'mehndi' | 'baraat' | 'waleema' }) {
           transform: 'scaleX(-1)',
         }}
       >
-        <ClimberSide />
+        {renderClimberSide()}
       </div>
     </div>
   );
@@ -644,13 +649,14 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
               transition: { duration: 0.4, ease: 'easeInOut' },
             }}
             style={{
-              position: 'fixed',
+              position: 'absolute',
               bottom: '22%',
-              left: '50%',
-              transform: 'translateX(-50%)',
+              left: 0,
+              right: 0,
+              margin: '0 auto',
               zIndex: 100,
-              width: '90%',
-              maxWidth: '340px',
+              width: 'min(calc(100% - 40px), 320px)',
+              maxWidth: 'calc(100vw - 40px)',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -666,12 +672,15 @@ function Intro({ videoRef, onBegin }: { videoRef: React.RefObject<HTMLVideoEleme
                 width: '100%',
                 background: 'rgba(16, 22, 16, 0.78)',
                 border: '1.5px solid rgba(212, 175, 87, 0.8)',
-                padding: '16px 28px',
+                padding: 'clamp(12px, 3.8vw, 16px) clamp(16px, 5vw, 24px)',
                 borderRadius: '32px',
                 cursor: 'pointer',
-                fontSize: '13px',
+                fontSize: 'clamp(10px, 3.1vw, 13px)',
                 fontWeight: 700,
-                letterSpacing: '0.32em',
+                letterSpacing: 'clamp(0.14em, 0.9vw, 0.28em)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'clip',
                 backdropFilter: 'blur(10px)',
                 WebkitBackdropFilter: 'blur(10px)',
                 color: '#ffffff',
@@ -2374,10 +2383,10 @@ export default function Invitation() {
         const onFrame = () => {
           captureCurrentFrame();
           if (video.current && !isReversingRef.current && framesRef.current.length < 36) {
-            rVfcId = (video.current as any).requestVideoFrameCallback(onFrame);
+            rVfcId = (video.current as VideoFrameElement).requestVideoFrameCallback?.(onFrame) ?? null;
           }
         };
-        rVfcId = (video.current as any).requestVideoFrameCallback(onFrame);
+        rVfcId = (video.current as VideoFrameElement).requestVideoFrameCallback?.(onFrame) ?? null;
       } else {
         const onRaf = () => {
           captureCurrentFrame();
@@ -2400,7 +2409,7 @@ export default function Invitation() {
       clearInterval(timer);
       if (animId) cancelAnimationFrame(animId);
       if (rVfcId && video.current && 'cancelVideoFrameCallback' in HTMLVideoElement.prototype) {
-        (video.current as any).cancelVideoFrameCallback(rVfcId);
+        (video.current as VideoFrameElement).cancelVideoFrameCallback?.(rVfcId);
       }
       if (boomerangAnimRef.current) cancelAnimationFrame(boomerangAnimRef.current);
     };
