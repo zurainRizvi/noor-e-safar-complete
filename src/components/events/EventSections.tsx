@@ -86,48 +86,41 @@ export function Countdown({ locale }: { locale: Locale }) {
     Math.floor(left / 60000) % 60,
     Math.floor(left / 1000) % 60,
   ];
+  // Matches the illustration backdrop cream
+  const backdrop = '#EDEBE6';
   const accent = theme.colors.blush;
 
   return (
     <Card
       className="count-card"
       style={{
-        background: 'linear-gradient(180deg, #FBF6F4 0%, #F7F1E8 48%, #F3EADF 100%)',
+        backgroundColor: backdrop,
+        backgroundImage: 'url(/images/countdown-bg.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundRepeat: 'no-repeat',
         color: theme.colors.ink,
         borderTop: `1px solid ${theme.colors.blushLine}`,
         padding: '0',
         overflow: 'hidden',
       }}
     >
-      {/* Pink floral arch — birds/rings clipped away */}
+      {/* Cream patch matching backdrop — covers only the birds/rings band */}
       <div
         aria-hidden
         style={{
           position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 'min(46%, 340px)',
-          overflow: 'hidden',
+          left: '50%',
+          top: '14%',
+          transform: 'translateX(-50%)',
+          width: '78%',
+          height: '22%',
+          borderRadius: 28,
+          background: backdrop,
           zIndex: 1,
           pointerEvents: 'none',
         }}
-      >
-        <img
-          src="/images/floral-frame.png"
-          alt=""
-          style={{
-            width: '112%',
-            maxWidth: 'none',
-            position: 'absolute',
-            left: '50%',
-            top: '-4%',
-            transform: 'translateX(-50%)',
-            clipPath: 'inset(0 0 36% 0)',
-            WebkitClipPath: 'inset(0 0 36% 0)',
-          }}
-        />
-      </div>
+      />
 
       <div
         className="count-overlay"
@@ -140,8 +133,8 @@ export function Countdown({ locale }: { locale: Locale }) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: 'max(96px, 16vh) 22px max(36px, 5vh)',
+          justifyContent: 'flex-start',
+          padding: 'max(72px, 13vh) 22px max(24px, 3vh)',
         }}
       >
         <p
@@ -169,16 +162,16 @@ export function Countdown({ locale }: { locale: Locale }) {
         <div
           className="count-grid count-grid-merged"
           style={{
-            marginTop: 16,
+            marginTop: 14,
             width: '100%',
-            maxWidth: 340,
+            maxWidth: 320,
             borderRadius: 18,
             overflow: 'hidden',
             border: `1px solid ${theme.colors.blushLine}`,
-            background: 'rgba(255, 252, 247, 0.9)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            boxShadow: '0 12px 28px rgba(176, 120, 132, 0.12)',
+            background: 'rgba(237, 235, 230, 0.92)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            boxShadow: '0 10px 24px rgba(61, 52, 41, 0.08)',
           }}
         >
           {v.map((n, i) => (

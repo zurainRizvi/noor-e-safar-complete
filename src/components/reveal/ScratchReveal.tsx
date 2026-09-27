@@ -157,7 +157,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           width: '100%',
           height: '100%',
           objectFit: 'contain',
-          objectPosition: 'center top',
+          objectPosition: 'center center',
           pointerEvents: 'none',
           zIndex: 1,
           opacity: 0.98,
@@ -172,11 +172,15 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           zIndex: 2,
           width: '100%',
           maxWidth: 360,
+          height: '100%',
+          minHeight: '100%',
           margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          paddingTop: 'max(52px, 8vh)',
+          paddingTop: 'max(32px, 4.5vh)',
+          paddingBottom: 'max(18px, 2vh)',
+          boxSizing: 'border-box',
         }}
       >
         <p className="eyebrow" style={{ color: pink.main, letterSpacing: isRtl ? '0.1em' : '0.28em', marginBottom: 6 }}>
@@ -185,10 +189,10 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         <h2
           style={{
             color: theme.colors.ink,
-            margin: '4px 0 8px',
+            margin: '4px 0 6px',
             fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
             lineHeight: isRtl ? 1.65 : 1.15,
-            fontSize: isRtl ? 'clamp(24px, 6.5vw, 30px)' : 'clamp(26px, 7vw, 32px)',
+            fontSize: isRtl ? 'clamp(22px, 6vw, 28px)' : 'clamp(24px, 6.5vw, 30px)',
           }}
         >
           {isRtl ? (
@@ -209,15 +213,19 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         </h2>
         <Ornament color={pink.main} />
 
+        {/* Flexible gap so birds/rings stay clear above the scratch box */}
+        <div aria-hidden style={{ flex: '1 1 auto', minHeight: 'max(88px, 13vh)', width: '100%' }} />
+
         <div
           className={showHint ? 'foil-live-pink' : undefined}
           style={{
             position: 'relative',
             width: '100%',
-            maxWidth: 210,
-            margin: '10px auto 10px',
-            height: 255,
-            borderRadius: '120px 120px 20px 20px',
+            maxWidth: 200,
+            margin: '0 auto 12px',
+            height: 230,
+            flexShrink: 0,
+            borderRadius: '110px 110px 18px 18px',
             overflow: 'hidden',
             boxShadow: `0 14px 32px rgba(176,120,132,0.18), 0 0 0 1.5px ${pink.main}`,
             touchAction: 'none',
@@ -330,15 +338,12 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           )}
         </div>
 
-        {/* Room for birds & rings from the frame beneath the scratch box */}
-        <div aria-hidden style={{ height: 'max(56px, 8vh)', width: '100%' }} />
-
         {!isRevealed && (
           <button
             type="button"
             onClick={() => celebrate()}
             style={{
-              marginTop: 0,
+              marginTop: 4,
               padding: '11px 20px',
               borderRadius: 999,
               border: `1px solid ${pink.line}`,
