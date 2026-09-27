@@ -38,8 +38,8 @@ export const theme = {
       buttonBorder: 'rgba(62, 74, 48, 0.35)',
       buttonText: '#14281C',
       scrim: 'transparent',
-      panelBg: 'rgba(255, 250, 240, 0.18)',
-      panelBorder: 'rgba(198, 161, 91, 0.22)',
+      panelBg: 'rgba(255, 250, 240, 0.28)',
+      panelBorder: 'rgba(198, 161, 91, 0.24)',
     },
     baraat: {
       bg: 'linear-gradient(180deg, #FFF0ED 0%, #F6D5D0 100%)',
@@ -58,8 +58,8 @@ export const theme = {
       buttonBorder: 'rgba(255, 255, 255, 0.55)',
       buttonText: '#FFFFFF',
       scrim: 'transparent',
-      panelBg: 'rgba(18, 6, 10, 0.2)',
-      panelBorder: 'rgba(255, 255, 255, 0.18)',
+      panelBg: 'rgba(18, 6, 10, 0.3)',
+      panelBorder: 'rgba(255, 255, 255, 0.2)',
     },
     waleema: {
       bg: 'linear-gradient(180deg, #E6F1FC 0%, #C9DFF5 100%)',
@@ -78,8 +78,8 @@ export const theme = {
       buttonBorder: 'rgba(240, 215, 138, 0.55)',
       buttonText: '#FFFFFF',
       scrim: 'transparent',
-      panelBg: 'rgba(6, 22, 28, 0.2)',
-      panelBorder: 'rgba(255, 255, 255, 0.16)',
+      panelBg: 'rgba(6, 22, 28, 0.3)',
+      panelBorder: 'rgba(255, 255, 255, 0.18)',
     },
   },
   fonts: {

@@ -464,24 +464,47 @@ label,
 }
 
 .petals.waleema i {
-  background: #7BA86F; /* soft garden green */
-  box-shadow: 0 2px 6px rgba(90, 140, 190, 0.28);
+  /* Event card: garden greens only */
+  background: #7BA86F;
+  box-shadow: 0 2px 6px rgba(70, 110, 70, 0.3);
 }
 
 .petals.waleema i:nth-child(3n) {
-  background: #A8C8E8; /* light schedule blue */
-}
-
-.petals.waleema i:nth-child(3n + 1) {
   background: #5F8A5A;
 }
 
+.petals.waleema i:nth-child(3n + 1) {
+  background: #A3C49A;
+}
+
 .petals.waleema i:nth-child(5n) {
-  background: #C9DFF5;
+  background: #6E9A66;
 }
 
 .petals.waleema i:nth-child(7n) {
+  background: #8BB580;
+}
+
+.petals.waleema-schedule i {
+  /* Schedule: light blues only */
+  background: #C9DFF5;
+  box-shadow: 0 2px 6px rgba(90, 140, 190, 0.28);
+}
+
+.petals.waleema-schedule i:nth-child(3n) {
+  background: #A8C8E8;
+}
+
+.petals.waleema-schedule i:nth-child(3n + 1) {
+  background: #E6F1FC;
+}
+
+.petals.waleema-schedule i:nth-child(5n) {
   background: #5B86B5;
+}
+
+.petals.waleema-schedule i:nth-child(7n) {
+  background: #B5D0EC;
 }
 
 .opening-stage,

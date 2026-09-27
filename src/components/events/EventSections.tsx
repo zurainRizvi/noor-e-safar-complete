@@ -464,8 +464,16 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: isRtl ? '24px 20px' : '24px 22px',
+          // Baraat: sit lower so the panel covers from mid-couple down to belly
+          justifyContent: e.id === 'baraat' ? 'flex-start' : 'center',
+          padding:
+            e.id === 'baraat'
+              ? isRtl
+                ? '42% 20px 24px'
+                : '42% 22px 24px'
+              : isRtl
+                ? '24px 20px'
+                : '24px 22px',
           boxSizing: 'border-box',
           opacity: showText ? 1 : 0,
           transform: showText ? 'translateY(0)' : 'translateY(10px)',
@@ -710,7 +718,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
       }}
     >
       <TopCanopyArch type={eventId} />
-      <Petals amount={14} tone={eventId} />
+      <Petals amount={14} tone={eventId === 'waleema' ? 'waleema-schedule' : eventId} />
       <ScheduleBow id={eventId} isRtl={isRtl} />
 
       <div style={{ width: '100%', textAlign: 'center', marginBottom: isRtl ? 24 : 28, position: 'relative', zIndex: 2 }}>
