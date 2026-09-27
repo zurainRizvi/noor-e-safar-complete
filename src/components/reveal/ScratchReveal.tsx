@@ -2,9 +2,10 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { theme } from '@/config/theme';
+import { wedding } from '@/config/wedding';
 import { Ornament, Card } from '@/components/shared/Ornament';
 import { Petals } from '@/components/shared/Petals';
-import type { Locale } from '@/config/translations';
+import { t, type Locale } from '@/config/translations';
 
 const pink = {
   main: theme.colors.blush,
@@ -15,6 +16,13 @@ const pink = {
 
 // Matches the dove illustration backdrop so the crop has no visible edge.
 const backdrop = '#E4E5E0';
+
+const dayKey = {
+  Tuesday: 'tuesday',
+  Wednesday: 'wednesday',
+  Thursday: 'thursday',
+  Friday: 'friday',
+} as const;
 
 export default function ScratchReveal({ locale }: { locale: Locale }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -84,7 +92,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     ctx.fillRect(0, 0, width, height);
 
     ctx.fillStyle = 'rgba(255,255,255,0.34)';
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 34; i++) {
       const x = (i * 47) % width;
       const y = (i * 73) % height;
       ctx.beginPath();
@@ -96,7 +104,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = isRtl ? 'bold 13px Amiri, serif' : '600 11px "DM Sans", sans-serif';
-    ctx.fillText(isRtl ? 'پردہ ہٹا کر تاریخ جانیے' : 'SCRATCH TO REVEAL', width / 2, height / 2 - 4);
+    ctx.fillText(isRtl ? 'پردہ ہٹا کر تواریخ جانیے' : 'SCRATCH TO REVEAL', width / 2, height / 2 - 4);
     ctx.font = isRtl ? '12px Amiri, serif' : '500 10px "DM Sans", sans-serif';
     ctx.fillStyle = 'rgba(61,52,41,0.72)';
     ctx.fillText(isRtl ? 'یا فوری طور پر ظاہر کریں' : 'or tap Instant Reveal below', width / 2, height / 2 + 16);
@@ -133,7 +141,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     ctx.globalCompositeOperation = 'destination-out';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.lineWidth = Math.max(36, Math.min(canvas.width, canvas.height) * 0.2);
+    ctx.lineWidth = Math.max(40, Math.min(canvas.width, canvas.height) * 0.18);
     const prev = lastPoint.current;
     ctx.beginPath();
     if (prev) {
@@ -153,7 +161,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
       for (let i = 3; i < data.length; i += 16) {
         if (data[i] < 128) clear++;
       }
-      if (sampled > 0 && (clear / sampled) * 100 > 28) celebrate();
+      if (sampled > 0 && (clear / sampled) * 100 > 26) celebrate();
     } catch {
       // ignore
     }
@@ -237,6 +245,8 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     };
   }, [isRevealed, scratchAt]);
 
+  const accentFor = (id: (typeof wedding.events)[number]['id']) => theme.events[id].accent;
+
   return (
     <Card
       className="reveal-date-card"
@@ -260,13 +270,13 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
 
       <svg width="0" height="0" aria-hidden style={{ position: 'absolute' }}>
         <defs>
-          <clipPath id="scratch-heart-clip" clipPathUnits="objectBoundingBox">
-            <path d="M0.5,0.935 C0.5,0.935 0.06,0.62 0.06,0.34 C0.06,0.175 0.185,0.06 0.325,0.06 C0.41,0.06 0.47,0.115 0.5,0.19 C0.53,0.115 0.59,0.06 0.675,0.06 C0.815,0.06 0.94,0.175 0.94,0.34 C0.94,0.62 0.5,0.935 0.5,0.935 Z" />
+          {/* Soft arched invitation tablet — room for a three-event index */}
+          <clipPath id="scratch-card-clip" clipPathUnits="objectBoundingBox">
+            <path d="M0.08,0.26 C0.08,0.08 0.26,0.015 0.5,0.015 C0.74,0.015 0.92,0.08 0.92,0.26 L0.92,0.9 Q0.92,0.975 0.8,0.975 L0.2,0.975 Q0.08,0.975 0.08,0.9 Z" />
           </clipPath>
         </defs>
       </svg>
 
-      {/* Title sits in the open center under the floral arch — same approach as Counting Days. */}
       <div
         style={{
           position: 'relative',
@@ -278,7 +288,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: isRtl ? 'clamp(72px, 13vh, 112px) 22px max(18px, 3vh)' : 'clamp(76px, 12.5vh, 116px) 26px max(18px, 3vh)',
+          padding: isRtl ? 'clamp(64px, 11vh, 100px) 20px max(14px, 2.4vh)' : 'clamp(68px, 11vh, 104px) 24px max(14px, 2.4vh)',
         }}
       >
         <p
@@ -289,7 +299,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             marginBottom: 8,
           }}
         >
-          {isRtl ? 'محبت و مسرت کا خاص دن' : 'SAVE THE AUSPICIOUS DATE'}
+          {isRtl ? 'محبت و مسرت کے خاص دن' : 'SAVE THE AUSPICIOUS DATES'}
         </p>
         <h2
           style={{
@@ -303,29 +313,28 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         >
           {isRtl ? (
             <>
-              تاریخ کی نقاب کشائی
+              تواریخ کی نقاب کشائی
               <em style={{ color: pink.main, display: 'block', fontStyle: 'normal', fontSize: '0.78em', marginTop: 6 }}>
-                ہماری شادی کا متبرک دن
+                تین تقریبات، ایک جشن
               </em>
             </>
           ) : (
             <>
               Scratch to Reveal
               <em style={{ color: pink.main, display: 'block', fontStyle: 'italic', fontSize: '0.76em', marginTop: 4 }}>
-                Our Wedding Date
+                Our Celebration Dates
               </em>
             </>
           )}
         </h2>
         <Ornament color={pink.main} />
 
-        {/* Doves and rings only — crop excludes the surrounding flowers. */}
         <div
           aria-hidden
           style={{
-            width: 'min(190px, 50vw)',
+            width: 'min(170px, 44vw)',
             aspectRatio: '340 / 200',
-            margin: '0 auto 4px',
+            margin: '0 auto 2px',
             flexShrink: 0,
             backgroundColor: 'transparent',
             backgroundImage: 'url(/images/floral-frame.png)',
@@ -335,8 +344,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           }}
         />
 
-        {/* Push heart + CTA into the lower-middle without pinning them to the bottom. */}
-        <div style={{ flex: '1 1 auto', minHeight: 18, maxHeight: 72, width: '100%' }} aria-hidden />
+        <div style={{ flex: '1 1 auto', minHeight: 8, maxHeight: 36, width: '100%' }} aria-hidden />
 
         <div
           style={{
@@ -344,19 +352,18 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             flexDirection: 'column',
             alignItems: 'center',
             flexShrink: 0,
-            marginBottom: 'clamp(12px, 3vh, 28px)',
+            marginBottom: 'clamp(10px, 2.4vh, 22px)',
             width: '100%',
           }}
         >
-          {/* Pink heart foil. Touches land on this box, not the clipped canvas —
-              Android WebViews drop pointer events on clip-path / animated filters. */}
+          {/* Arched foil tablet. Touches land on this box, not the clipped canvas. */}
           <div
             ref={surfaceRef}
             className="scratch-surface"
             style={{
               position: 'relative',
-              width: 'min(210px, 56vw)',
-              height: 'min(200px, 54vw)',
+              width: 'min(268px, 78vw)',
+              height: 'min(292px, 62vh)',
               margin: '0 auto 10px',
               flexShrink: 0,
               zIndex: 3,
@@ -364,16 +371,15 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             }}
           >
             <div
-              className={`scratch-heart-visual${showHint ? ' scratch-heart-live' : ''}`}
+              className={`scratch-card-visual${showHint ? ' scratch-card-live' : ''}`}
               style={{
                 position: 'absolute',
                 inset: 0,
-                clipPath: 'url(#scratch-heart-clip)',
-                WebkitClipPath: 'url(#scratch-heart-clip)',
+                clipPath: 'url(#scratch-card-clip)',
+                WebkitClipPath: 'url(#scratch-card-clip)',
                 overflow: 'hidden',
                 pointerEvents: 'none',
                 userSelect: 'none',
-                // Revealed (scratched) face — near-white blush so foil contrast is obvious
                 background: 'linear-gradient(165deg, #FFFEFE 0%, #FFF8F9 48%, #F7EBEE 100%)',
               }}
             >
@@ -386,23 +392,147 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: '36px 22px 28px',
-                  gap: 2,
+                  padding: isRtl ? '48px 26px 36px' : '52px 28px 34px',
                   pointerEvents: 'none',
                 }}
               >
-                <p style={{ margin: 0, fontSize: 10, letterSpacing: '0.24em', color: pink.main, fontWeight: 600 }}>
-                  {isRtl ? 'منگل' : 'TUESDAY'}
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: isRtl ? 12 : 10,
+                    letterSpacing: isRtl ? '0.06em' : '0.22em',
+                    color: pink.main,
+                    fontWeight: 700,
+                    fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                  }}
+                >
+                  {isRtl ? 'جنوری ۲۰۲۷' : 'JANUARY 2027'}
                 </p>
-                <div style={{ textAlign: 'center', marginTop: 4 }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 5, color: theme.colors.ink }}>
-                    <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 46, lineHeight: 1 }}>12</span>
-                    <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18 }}>·</span>
-                    <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, letterSpacing: '0.08em' }}>JAN</span>
-                  </div>
-                  <p style={{ margin: '4px 0 0', color: theme.colors.inkSoft, letterSpacing: '0.18em', fontSize: 11 }}>2027</p>
+                <div
+                  aria-hidden
+                  style={{
+                    width: 48,
+                    height: 1,
+                    margin: '8px 0 10px',
+                    background: `linear-gradient(90deg, transparent, ${pink.main}, transparent)`,
+                  }}
+                />
+
+                <div
+                  style={{
+                    width: '100%',
+                    maxWidth: 210,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: isRtl ? 8 : 7,
+                  }}
+                >
+                  {wedding.events.map((event, index) => {
+                    const date = new Date(`${event.date}T12:00:00`);
+                    const dayLabel = t(locale, dayKey[event.day as keyof typeof dayKey]);
+                    const name = t(locale, event.id);
+                    const dayNum = date.getDate();
+                    const accent = accentFor(event.id);
+                    return (
+                      <React.Fragment key={event.id}>
+                        {index > 0 ? (
+                          <div
+                            aria-hidden
+                            style={{
+                              height: 1,
+                              margin: '1px 18px',
+                              background: 'rgba(201, 149, 158, 0.28)',
+                            }}
+                          />
+                        ) : null}
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: isRtl ? 'auto 1fr' : '1fr auto',
+                            alignItems: 'baseline',
+                            gap: 10,
+                            textAlign: isRtl ? 'right' : 'left',
+                            direction: isRtl ? 'rtl' : 'ltr',
+                          }}
+                        >
+                          <div style={{ minWidth: 0 }}>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+                                fontSize: isRtl ? 18 : 20,
+                                lineHeight: 1.15,
+                                fontWeight: 600,
+                                color: theme.colors.ink,
+                              }}
+                            >
+                              {name}
+                            </p>
+                            <p
+                              style={{
+                                margin: isRtl ? '2px 0 0' : '1px 0 0',
+                                fontSize: isRtl ? 12 : 10,
+                                letterSpacing: isRtl ? '0.02em' : '0.12em',
+                                color: accent,
+                                fontWeight: 600,
+                                fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                                textTransform: isRtl ? 'none' : 'uppercase',
+                              }}
+                            >
+                              {dayLabel}
+                            </p>
+                          </div>
+                          <p
+                            style={{
+                              margin: 0,
+                              fontFamily: "'Cormorant Garamond', serif",
+                              fontSize: 28,
+                              lineHeight: 1,
+                              fontWeight: 600,
+                              color: theme.colors.ink,
+                              letterSpacing: '0.02em',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {isRtl ? (
+                              <>
+                                <span style={{ fontSize: 15, marginInlineStart: 4, color: theme.colors.inkSoft }}>جنوری</span>
+                                {dayNum}
+                              </>
+                            ) : (
+                              <>
+                                {dayNum}
+                                <span style={{ fontSize: 13, marginLeft: 4, letterSpacing: '0.1em', color: theme.colors.inkSoft }}>
+                                  JAN
+                                </span>
+                              </>
+                            )}
+                          </p>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
-                <p style={{ margin: '6px 0 0', color: theme.colors.muted, fontSize: 10, letterSpacing: '0.14em' }}>
+
+                <div
+                  aria-hidden
+                  style={{
+                    width: 48,
+                    height: 1,
+                    margin: '12px 0 8px',
+                    background: `linear-gradient(90deg, transparent, ${pink.main}, transparent)`,
+                  }}
+                />
+                <p
+                  style={{
+                    margin: 0,
+                    color: theme.colors.muted,
+                    fontSize: isRtl ? 12 : 10,
+                    letterSpacing: isRtl ? '0.04em' : '0.18em',
+                    fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                    fontWeight: 600,
+                  }}
+                >
                   {isRtl ? 'لاہور' : 'LAHORE'}
                 </p>
               </div>
@@ -424,23 +554,21 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
               {showHint && !isRevealed && (
                 <>
                   <div className="foil-shimmer" />
-                <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
-                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                    {/* Gold wand with a small star tip */}
-                    <path d="M16.4 16.4 L48.6 48.6" stroke="#8A6A2E" strokeWidth="3.4" strokeLinecap="round" />
-                    <path d="M16.4 16.4 L48.6 48.6" stroke="#E0C075" strokeWidth="1.55" strokeLinecap="round" />
-                    <path d="M45.2 45.2 L50.4 50.4" stroke="#5C4A28" strokeWidth="3.6" strokeLinecap="round" />
-                    {/* Star on the top tip */}
-                    <path
-                      d="M14 6.2 L15.35 11.1 L20.4 11.1 L16.35 14.15 L17.7 19.1 L14 16.05 L10.3 19.1 L11.65 14.15 L7.6 11.1 L12.65 11.1 Z"
-                      fill="#FFF8EE"
-                      stroke="#C6A15B"
-                      strokeWidth="0.9"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="14" cy="14.2" r="1.1" fill="#C6A15B" />
-                  </svg>
-                </div>
+                  <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                      <path d="M16.4 16.4 L48.6 48.6" stroke="#8A6A2E" strokeWidth="3.4" strokeLinecap="round" />
+                      <path d="M16.4 16.4 L48.6 48.6" stroke="#E0C075" strokeWidth="1.55" strokeLinecap="round" />
+                      <path d="M45.2 45.2 L50.4 50.4" stroke="#5C4A28" strokeWidth="3.6" strokeLinecap="round" />
+                      <path
+                        d="M14 6.2 L15.35 11.1 L20.4 11.1 L16.35 14.15 L17.7 19.1 L14 16.05 L10.3 19.1 L11.65 14.15 L7.6 11.1 L12.65 11.1 Z"
+                        fill="#FFF8EE"
+                        stroke="#C6A15B"
+                        strokeWidth="0.9"
+                        strokeLinejoin="round"
+                      />
+                      <circle cx="14" cy="14.2" r="1.1" fill="#C6A15B" />
+                    </svg>
+                  </div>
                 </>
               )}
             </div>

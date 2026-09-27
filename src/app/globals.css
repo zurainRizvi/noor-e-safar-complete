@@ -756,8 +756,8 @@ label,
   -webkit-touch-callout: none;
 }
 
-.scratch-heart-visual,
-.scratch-heart-visual *,
+.scratch-card-visual,
+.scratch-card-visual *,
 .scratch-hint,
 .scratch-hint *,
 .foil-shimmer,
@@ -798,11 +798,11 @@ label,
   height: 100%;
 }
 
-.scratch-heart-live {
-  animation: heartGlowPink 2.4s ease-in-out infinite;
+.scratch-card-live {
+  animation: cardGlowPink 2.4s ease-in-out infinite;
 }
 
-@keyframes heartGlowPink {
+@keyframes cardGlowPink {
   0%,
   100% {
     filter: drop-shadow(0 12px 18px rgba(176, 120, 132, 0.22)) drop-shadow(0 0 0 rgba(232, 196, 203, 0));
@@ -935,7 +935,7 @@ label,
   .foil-live-pink,
   .foil-shimmer,
   .scratch-hint,
-  .scratch-heart-live,
+  .scratch-card-live,
   .scroll-hint-chevron,
   .scroll-hint::before,
   .petals i {
