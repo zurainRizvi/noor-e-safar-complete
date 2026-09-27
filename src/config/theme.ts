@@ -54,11 +54,12 @@ export const theme = {
   radius: '1.25rem',
   shadow: '0 18px 48px rgba(61, 52, 41, 0.10)',
   videos: {
+    carIntro: '/videos/car-intro.mp4',
     opening: '/videos/opening.mp4',
     openingPoster: '/videos/opening-poster.jpg',
     closing: '/videos/closing.mp4',
     closingPoster: '/videos/closing-poster.jpg',
-    version: '20260927a',
+    version: '20260927b',
   },
 } as const;
 
