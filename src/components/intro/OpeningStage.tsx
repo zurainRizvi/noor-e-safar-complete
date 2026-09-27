@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { theme } from '@/config/theme';
-import { wedding } from '@/config/wedding';
 import { Ornament } from '@/components/shared/Ornament';
 import { Petals } from '@/components/shared/Petals';
 import { Birds } from '@/components/intro/Birds';
@@ -15,92 +14,28 @@ type Props = {
   onBegin: () => void;
 };
 
-type Phase = 'car' | 'awaitingTap' | 'curtain' | 'hero';
+type Phase = 'awaitingTap' | 'curtain' | 'hero';
 
-const INVITE_IN = 0.3;
-const INVITE_OUT = 3;
-const NAMES_IN = 6;
-const DHOL_FADE_MS = 400;
+const INVITE_IN = 4;
+const INVITE_OUT = 6;
+const HERO_IN = 6;
 
 export default function OpeningStage({ locale, onBegin }: Props) {
-  const carRef = useRef<HTMLVideoElement>(null);
   const curtainRef = useRef<HTMLVideoElement>(null);
-  const dholRef = useRef<HTMLAudioElement>(null);
   const beganRef = useRef(false);
-  const dholStartedRef = useRef(false);
   const rafRef = useRef<number | null>(null);
 
-  const [phase, setPhase] = useState<Phase>('car');
+  const [phase, setPhase] = useState<Phase>('awaitingTap');
   const [curtainTime, setCurtainTime] = useState(0);
 
-  const carSrc = `${theme.videos.carIntro}?v=${theme.videos.version}`;
   const curtainSrc = `${theme.videos.opening}?v=${theme.videos.version}`;
   const posterSrc = `${theme.videos.openingPoster}?v=${theme.videos.version}`;
 
   const showInvite = phase === 'curtain' && curtainTime >= INVITE_IN && curtainTime < INVITE_OUT;
-  const showNames = phase === 'curtain' && curtainTime >= NAMES_IN;
-  const showHero = phase === 'hero';
+  const showHero =
+    phase === 'hero' || (phase === 'curtain' && curtainTime >= HERO_IN);
   const showTap = phase === 'awaitingTap';
-  const showCar = phase === 'car';
-  const showCurtain = phase !== 'car';
-
-  const startDhol = () => {
-    const dhol = dholRef.current;
-    if (!dhol || dholStartedRef.current) return;
-    dhol.volume = 1;
-    dhol.currentTime = 0;
-    dhol
-      .play()
-      .then(() => {
-        dholStartedRef.current = true;
-      })
-      .catch(() => {});
-  };
-
-  const fadeOutDhol = () => {
-    const dhol = dholRef.current;
-    if (!dhol) return;
-    const startVol = dhol.volume;
-    const startedAt = performance.now();
-
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - startedAt) / DHOL_FADE_MS);
-      dhol.volume = Math.max(0, startVol * (1 - t));
-      if (t < 1) {
-        requestAnimationFrame(tick);
-        return;
-      }
-      dhol.pause();
-      dhol.currentTime = 0;
-      dhol.volume = 1;
-    };
-
-    requestAnimationFrame(tick);
-  };
-
-  useEffect(() => {
-    const car = carRef.current;
-    if (!car) return;
-
-    car.muted = true;
-    car.playsInline = true;
-    const tryPlay = () => {
-      car.play().catch(() => {});
-      startDhol();
-    };
-
-    if (car.readyState >= 2) tryPlay();
-    else car.addEventListener('loadeddata', tryPlay, { once: true });
-
-    const unlockDhol = () => startDhol();
-    window.addEventListener('pointerdown', unlockDhol, { once: true, passive: true });
-    window.addEventListener('touchstart', unlockDhol, { once: true, passive: true });
-
-    return () => {
-      window.removeEventListener('pointerdown', unlockDhol);
-      window.removeEventListener('touchstart', unlockDhol);
-    };
-  }, []);
+  const playing = phase === 'curtain' || phase === 'hero';
 
   useEffect(() => {
     if (phase !== 'curtain') {
@@ -123,26 +58,12 @@ export default function OpeningStage({ locale, onBegin }: Props) {
     };
   }, [phase]);
 
-  const handleCarEnded = () => {
-    const curtain = curtainRef.current;
-    if (curtain) {
-      try {
-        curtain.pause();
-        if (curtain.readyState >= 1) curtain.currentTime = 0;
-      } catch {
-        // ignore seek until metadata ready
-      }
-    }
-    setPhase('awaitingTap');
-  };
-
   const begin = (e?: React.SyntheticEvent) => {
     e?.preventDefault();
     e?.stopPropagation();
     if (beganRef.current) return;
     beganRef.current = true;
 
-    fadeOutDhol();
     onBegin();
     setPhase('curtain');
     setCurtainTime(0);
@@ -171,28 +92,6 @@ export default function OpeningStage({ locale, onBegin }: Props) {
         background: '#1a0508',
       }}
     >
-      <audio ref={dholRef} src={wedding.dholPath} preload="auto" loop />
-
-      <video
-        ref={carRef}
-        src={carSrc}
-        playsInline
-        muted
-        preload="auto"
-        onEnded={handleCarEnded}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          zIndex: 0,
-          opacity: showCar ? 1 : 0,
-          transition: 'opacity 0.45s ease',
-          pointerEvents: 'none',
-        }}
-      />
-
       <video
         ref={curtainRef}
         src={curtainSrc}
@@ -207,12 +106,26 @@ export default function OpeningStage({ locale, onBegin }: Props) {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          zIndex: 1,
-          opacity: showCurtain ? 1 : 0,
-          transition: 'opacity 0.45s ease',
-          pointerEvents: 'none',
+          zIndex: 0,
         }}
       />
+
+      {!playing && (
+        <img
+          src={posterSrc}
+          alt=""
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 1,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
 
       <AnimatePresence>
         {showInvite && (
@@ -224,30 +137,10 @@ export default function OpeningStage({ locale, onBegin }: Props) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p className="opening-invite-host">Mrs. Hameed</p>
+            <p className="opening-invite-host">Mrs. Hameed Rizvi</p>
             <p className="opening-invite-body">
               Cordially invites you to the Wedding Ceremony of her Son.
             </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showNames && (
-          <motion.div
-            key="names"
-            className="opening-invite-overlay"
-            initial={{ opacity: 0, scale: 0.94, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <p className="opening-names-line">
-              <em>Abeeha</em>
-              <span className="opening-names-amp">&</span>
-              <em>Zurain</em>
-            </p>
-            <p className="opening-names-sub">together with their families</p>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,7 +1,7 @@
 export type EventId='mehndi'|'baraat'|'waleema';
 export type WeddingEvent={id:EventId;name:string;subtitle:string;date:string;day:string;time:string;venue:string;address:string;dressCode:string;message:string;mapUrl:string;calendarDescription:string};
 export const wedding={
- couple:{groom:'Zurain',bride:'Abeeha',initials:'ZA'},families:["Zurain's Family","Abeeha's Family"],monthYear:'January 2027',countdownTarget:'2027-01-12T18:30:00+05:00',
+ couple:{groom:'Zurain',bride:'Abeeha',initials:'ZA'},families:["Zurain's Family","Abeeha's Family"],monthYear:'January 2027',countdownTarget:'2027-01-12T18:00:00+05:00',
  invitation:{
   arabic:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم',
   translation:'In the name of Allah, the Most Gracious, the Most Merciful',
@@ -16,11 +16,11 @@ export const wedding={
   verseReferenceUr:'سورۃ الفرقان · ۲۵:۷۴',
  },
  events:[
-  {id:'mehndi',name:'Mehndi',subtitle:'The Garden of Colour',date:'2027-01-12',day:'Tuesday',time:'7:00 – 10:00 PM',venue:'Supreme Marquee',address:'',dressCode:'Traditional & Colourful',message:'An evening of colour, music, laughter and joyful beginnings.',mapUrl:'https://www.google.com/maps/search/?api=1&query=Supreme+Marquee+Lahore',calendarDescription:'Zurain and Abeeha — Mehndi celebration'},
+  {id:'mehndi',name:'Mehndi',subtitle:'The Garden of Colour',date:'2027-01-12',day:'Tuesday',time:'6:00 – 10:00 PM',venue:'Supreme Marquee',address:'',dressCode:'Traditional & Colourful',message:'An evening of colour, music, laughter and joyful beginnings.',mapUrl:'https://www.google.com/maps/search/?api=1&query=Supreme+Marquee+Lahore',calendarDescription:'Zurain and Abeeha — Mehndi celebration'},
   {id:'baraat',name:'Baraat',subtitle:'The Royal Passage',date:'2027-01-13',day:'Wednesday',time:'7:00 – 10:00 PM',venue:'Seven Star Marquee',address:'',dressCode:'Formal & Traditional',message:'A regal celebration of family, tradition and a new beginning.',mapUrl:'https://www.google.com/maps/search/?api=1&query=Seven+Star+Marquee+Lahore',calendarDescription:'Zurain and Abeeha — Baraat celebration'},
   {id:'waleema',name:'Waleema',subtitle:'The Moonlit Celebration',date:'2027-01-14',day:'Thursday',time:'7:00 – 10:00 PM',venue:'Viceroy',address:'',dressCode:'Elegant & Modest',message:'A graceful evening beneath the moon, shared with those we cherish.',mapUrl:'https://www.google.com/maps/search/?api=1&query=Viceroy+by+Mughaleazam+Lahore',calendarDescription:'Zurain and Abeeha — Waleema celebration'}
  ] satisfies WeddingEvent[],story:[],gallery:[],
  whatsapp:{contactNumber:'923333409401',shareMessage:"You are warmly invited to Zurain and Abeeha's wedding celebrations in Lahore, January 2027."},
- rsvp:{deadline:'2026-12-20',maxGuests:8},musicPath:'/audio/mere-rashke-qamar.m4a',dholPath:'/audio/dhol-celebration.m4a',social:{title:'Noor-e-Safar — Zurain & Abeeha',description:'A journey illuminated by light. Lahore · January 2027.',image:'/social-preview.svg',themeColor:'#F7F1E8'},
+ rsvp:{deadline:'2026-12-20',maxGuests:8},musicPath:'/audio/mere-rashke-qamar.m4a',social:{title:'Noor-e-Safar — Zurain & Abeeha',description:'A journey illuminated by light. Lahore · January 2027.',image:'/social-preview.svg',themeColor:'#F7F1E8'},
  sections:{story:false,gallery:false,rsvp:true}
 } as const;

@@ -18,8 +18,8 @@ export const schedulesData: Record<'mehndi' | 'baraat' | 'waleema', {
     nameUr: 'مہندی',
     items: [
       {
-        timeEn: '06:30 PM',
-        timeUr: 'شام ۶:۳۰',
+        timeEn: '06:00 PM',
+        timeUr: 'شام ۶:۰۰',
         titleEn: 'Guest Arrival',
         titleUr: 'مہمانوں کی آمد',
         descEn: 'Welcome, greetings & refreshments',
@@ -27,8 +27,17 @@ export const schedulesData: Record<'mehndi' | 'baraat' | 'waleema', {
         filled: false,
       },
       {
-        timeEn: '07:00 PM',
-        timeUr: 'شام ۷:۰۰',
+        timeEn: '06:30 PM',
+        timeUr: 'شام ۶:۳۰',
+        titleEn: 'Nikkah',
+        titleUr: 'نکاح',
+        descEn: 'The sacred union begins with blessings',
+        descUr: 'دعائوں کے ساتھ مقدس بندھن کا آغاز',
+        filled: false,
+      },
+      {
+        timeEn: '07:30 PM',
+        timeUr: 'شام ۷:۳۰',
         titleEn: 'Mehndi Ceremony',
         titleUr: 'تقریبِ مہندی',
         descEn: 'An evening of colour, music and joyful beginnings',
