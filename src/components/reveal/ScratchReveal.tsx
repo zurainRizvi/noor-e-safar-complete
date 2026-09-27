@@ -36,7 +36,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         particleCount: isMobile ? 70 : 120,
         spread: 78,
         origin: { y: 0.62 },
-        colors: [pink.main, pink.soft, '#FFFFFF', '#F7E4E7', '#B7D0B0', pink.deep],
+        colors: [pink.main, pink.soft, '#FFFFFF', '#F7E4E7', '#E0C075', pink.deep],
       });
       setTimeout(() => {
         confetti({

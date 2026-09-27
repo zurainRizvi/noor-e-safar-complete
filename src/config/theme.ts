@@ -20,11 +20,11 @@ export const theme = {
   },
   events: {
     mehndi: {
-      bg: 'linear-gradient(180deg, #F4F8F1 0%, #E8F0E4 100%)',
-      border: 'rgba(106, 140, 98, 0.35)',
-      accent: '#6A8C62',
-      soft: '#D8E6D2',
-      flower: { primary: '#7BA874', secondary: '#B7D0B0', dark: '#4F7350' },
+      bg: 'linear-gradient(180deg, #FBF6EB 0%, #F3EAD8 100%)',
+      border: 'rgba(198, 161, 91, 0.35)',
+      accent: '#E0C075',
+      soft: '#F5E6B8',
+      flower: { primary: '#E0C075', secondary: '#FFF2CE', dark: '#C6A15B' },
     },
     baraat: {
       bg: 'linear-gradient(180deg, #FBF3F1 0%, #F4E6E3 100%)',

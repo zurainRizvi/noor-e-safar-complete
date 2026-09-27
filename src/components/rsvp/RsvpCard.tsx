@@ -164,7 +164,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
     setSubmittedData(payload);
     try {
       const confetti = (await import('canvas-confetti')).default;
-      confetti({ particleCount: 100, spread: 75, origin: { y: 0.65 }, colors: [theme.colors.gold, '#FFF2CE', '#7BA874'] });
+      confetti({ particleCount: 100, spread: 75, origin: { y: 0.65 }, colors: [theme.colors.gold, '#FFF2CE', theme.colors.goldSoft] });
     } catch {
       // ignore
     }
