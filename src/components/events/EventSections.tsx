@@ -59,11 +59,53 @@ export function Blessing({ locale }: { locale: Locale }) {
           ? 'اللہ کے نام سے ہم ایک حسین سفر کا آغاز کرتے ہیں اور آپ کو اس لمحے میں شریک ہونے کی دعوت دیتے ہیں۔'
           : 'In the name of Allah, we begin a beautiful journey and invite you to share this precious moment with us.'}
       </p>
-      <blockquote style={{ marginTop: 28, fontFamily: "'Amiri', serif", fontSize: 20, lineHeight: 2, color: theme.colors.ink }}>
+      <blockquote
+        dir="rtl"
+        lang="ar"
+        style={{
+          marginTop: 28,
+          fontFamily: "'Amiri', serif",
+          fontSize: isRtl ? 22 : 20,
+          lineHeight: 2.05,
+          color: theme.colors.ink,
+          maxWidth: 340,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      >
         {wedding.invitation.verseArabic}
       </blockquote>
-      <small style={{ display: 'block', marginTop: 10, color: theme.colors.muted, letterSpacing: '0.12em', fontSize: 10 }}>
-        {wedding.invitation.verseReference}
+      <p
+        dir={isRtl ? 'rtl' : 'ltr'}
+        lang={isRtl ? 'ur' : 'en'}
+        style={{
+          margin: '12px auto 0',
+          maxWidth: 340,
+          color: theme.colors.inkSoft,
+          fontSize: isRtl ? 16 : 15,
+          lineHeight: isRtl ? 1.95 : 1.7,
+          fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+          fontStyle: isRtl ? 'normal' : 'italic',
+          textAlign: 'center',
+          overflowWrap: 'break-word',
+          wordBreak: 'normal',
+        }}
+      >
+        {isRtl ? wedding.invitation.verseMeaningUr : wedding.invitation.verseMeaningEn}
+      </p>
+      <small
+        dir={isRtl ? 'rtl' : 'ltr'}
+        style={{
+          display: 'block',
+          marginTop: 12,
+          color: theme.colors.muted,
+          letterSpacing: isRtl ? '0.04em' : '0.12em',
+          fontSize: isRtl ? 12 : 10,
+          fontFamily: isRtl ? "'Amiri', serif" : undefined,
+          lineHeight: isRtl ? 1.7 : undefined,
+        }}
+      >
+        {isRtl ? wedding.invitation.verseReferenceUr : wedding.invitation.verseReferenceEn}
       </small>
     </Card>
   );

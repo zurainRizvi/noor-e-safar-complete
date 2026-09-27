@@ -2,7 +2,19 @@ export type EventId='mehndi'|'baraat'|'waleema';
 export type WeddingEvent={id:EventId;name:string;subtitle:string;date:string;day:string;time:string;venue:string;address:string;dressCode:string;message:string;mapUrl:string;calendarDescription:string};
 export const wedding={
  couple:{groom:'Zurain',bride:'Abeeha',initials:'ZA'},families:["Zurain's Family","Abeeha's Family"],monthYear:'January 2027',countdownTarget:'2027-01-12T18:30:00+05:00',
- invitation:{arabic:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم',translation:'In the name of Allah, the Most Gracious, the Most Merciful',greeting:'Assalam-o-Alaikum',wording:'Request the pleasure of your company at their wedding celebrations.',dua:'May Allah bless this union with tranquillity, affection, mercy and a lifetime of companionship.',verseArabic:'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',verseMeaning:'Our Lord, bless us with spouses and offspring who will be the joy of our hearts, and make us models for the righteous.',verseReference:'Surah Al-Furqan · 25:74'},
+ invitation:{
+  arabic:'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم',
+  translation:'In the name of Allah, the Most Gracious, the Most Merciful',
+  greeting:'Assalam-o-Alaikum',
+  wording:'Request the pleasure of your company at their wedding celebrations.',
+  dua:'May Allah bless this union with tranquillity, affection, mercy and a lifetime of companionship.',
+  verseArabic:'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
+  // Sahih International-aligned meaning of Al-Furqan 25:74
+  verseMeaningEn:'Our Lord, grant us from among our spouses and offspring comfort to our eyes, and make us an example for the righteous.',
+  verseMeaningUr:'اے ہمارے رب! ہمیں ہماری بیویوں اور اولاد کی طرف سے آنکھوں کی ٹھنڈک عطا فرما، اور ہمیں پرہیزگاروں کا امام بنا دے۔',
+  verseReferenceEn:'Surah Al-Furqan · 25:74',
+  verseReferenceUr:'سورۃ الفرقان · ۲۵:۷۴',
+ },
  events:[
   {id:'mehndi',name:'Mehndi',subtitle:'The Garden of Colour',date:'2027-01-12',day:'Tuesday',time:'7:00 – 10:00 PM',venue:'Supreme Marquee',address:'',dressCode:'Traditional & Colourful',message:'An evening of colour, music, laughter and joyful beginnings.',mapUrl:'https://www.google.com/maps/search/?api=1&query=Supreme+Marquee+Lahore',calendarDescription:'Zurain and Abeeha — Mehndi celebration'},
   {id:'baraat',name:'Baraat',subtitle:'The Royal Passage',date:'2027-01-13',day:'Wednesday',time:'7:00 – 10:00 PM',venue:'Seven Star Marquee',address:'',dressCode:'Formal & Traditional',message:'A regal celebration of family, tradition and a new beginning.',mapUrl:'https://www.google.com/maps/search/?api=1&query=Seven+Star+Marquee+Lahore',calendarDescription:'Zurain and Abeeha — Baraat celebration'},
