@@ -433,78 +433,81 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         />
       )}
 
-      {/* Soft center vignette — illustration stays visible */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          zIndex: 3,
-          background:
-            e.id === 'mehndi'
-              ? 'radial-gradient(ellipse at center, rgba(255,250,240,0.18) 0%, transparent 70%)'
-              : 'radial-gradient(ellipse at center, rgba(0,0,0,0.22) 0%, transparent 72%)',
-          opacity: showText ? 1 : 0,
-          transition: 'opacity 0.55s ease',
-          pointerEvents: 'none',
-        }}
-      />
-
       {showText && (
-        <div style={{ position: 'absolute', inset: 0, zIndex: 4, pointerEvents: 'none' }}>
-          <Petals amount={16} tone={e.id} />
-        </div>
-      )}
+        <>
+          {/* Soft center vignette — illustration stays visible */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 3,
+              background:
+                e.id === 'mehndi'
+                  ? 'radial-gradient(ellipse at center, rgba(255,250,240,0.18) 0%, transparent 70%)'
+                  : 'radial-gradient(ellipse at center, rgba(0,0,0,0.22) 0%, transparent 72%)',
+              pointerEvents: 'none',
+            }}
+          />
 
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          zIndex: 5,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          // Baraat: lower so the panel covers from mid-couple down past the belly
-          justifyContent: e.id === 'baraat' ? 'flex-start' : 'center',
-          padding:
-            e.id === 'baraat'
-              ? isRtl
-                ? '52% 20px 18px'
-                : '52% 22px 18px'
-              : isRtl
-                ? '24px 20px'
-                : '24px 22px',
-          boxSizing: 'border-box',
-          opacity: showText ? 1 : 0,
-          transform: showText ? 'translateY(0)' : 'translateY(10px)',
-          transition: 'opacity 0.65s ease, transform 0.65s ease',
-          pointerEvents: showText ? 'auto' : 'none',
-        }}
-      >
-        <div
-          dir={isRtl ? 'rtl' : 'ltr'}
-          lang={isRtl ? 'ur' : 'en'}
-          style={{
-            width: '100%',
-            maxWidth: isRtl ? 292 : 300,
-            padding: isRtl ? '16px 14px 18px' : '18px 16px 20px',
-            borderRadius: 18,
-            background: ev.panelBg,
-            border: `1px solid ${ev.panelBorder}`,
-            boxShadow:
-              e.id === 'mehndi'
-                ? '0 8px 28px rgba(61, 52, 41, 0.1)'
-                : '0 10px 32px rgba(0, 0, 0, 0.28)',
-            backdropFilter: 'blur(22px) saturate(1.08)',
-            WebkitBackdropFilter: 'blur(22px) saturate(1.08)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center',
-            overflowWrap: 'anywhere',
-            wordBreak: 'normal',
-          }}
-        >
+          <div style={{ position: 'absolute', inset: 0, zIndex: 4, pointerEvents: 'none' }}>
+            <Petals amount={16} tone={e.id} />
+          </div>
+
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 5,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              // Baraat: lower so the panel covers from mid-couple down past the belly
+              justifyContent: e.id === 'baraat' ? 'flex-start' : 'center',
+              padding:
+                e.id === 'baraat'
+                  ? isRtl
+                    ? '52% 20px 18px'
+                    : '52% 22px 18px'
+                  : isRtl
+                    ? '24px 20px'
+                    : '24px 22px',
+              boxSizing: 'border-box',
+              pointerEvents: 'auto',
+            }}
+          >
+            {/*
+              Mount glass at full opacity with no opacity transition.
+              Animating opacity on backdrop-filter causes clear→blur glitches.
+            */}
+            <div
+              dir={isRtl ? 'rtl' : 'ltr'}
+              lang={isRtl ? 'ur' : 'en'}
+              style={{
+                width: '100%',
+                maxWidth: isRtl ? 292 : 300,
+                padding: isRtl ? '16px 14px 18px' : '18px 16px 20px',
+                borderRadius: 18,
+                background: ev.panelBg,
+                border: `1px solid ${ev.panelBorder}`,
+                boxShadow:
+                  e.id === 'mehndi'
+                    ? '0 8px 28px rgba(61, 52, 41, 0.1)'
+                    : '0 10px 32px rgba(0, 0, 0, 0.28)',
+                backdropFilter: 'blur(22px) saturate(1.08)',
+                WebkitBackdropFilter: 'blur(22px) saturate(1.08)',
+                // Stable compositor layer so blur is applied once and stays on
+                transform: 'translateZ(0)',
+                isolation: 'isolate',
+                willChange: 'backdrop-filter',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                overflowWrap: 'anywhere',
+                wordBreak: 'normal',
+              }}
+            >
           <p
             className="eyebrow"
             style={{
@@ -694,6 +697,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
           </div>
         </div>
       </div>
+        </>
+      )}
     </Card>
   );
 }
