@@ -13,6 +13,8 @@ const pink = {
   line: theme.colors.blushLine,
 };
 
+const backdrop = '#EDEBE6';
+
 export default function ScratchReveal({ locale }: { locale: Locale }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
@@ -63,7 +65,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     if (!ctx) return;
 
     const width = canvas.offsetWidth || 220;
-    const height = canvas.offsetHeight || 280;
+    const height = canvas.offsetHeight || 260;
     canvas.width = width;
     canvas.height = height;
 
@@ -135,36 +137,43 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     <Card
       className="reveal-date-card"
       style={{
-        background: 'linear-gradient(180deg, #FBF6F4 0%, #FFFCF7 55%, #F7F1E8 100%)',
+        background: backdrop,
         borderTop: `1px solid ${pink.line}`,
         borderBottom: `1px solid ${pink.line}`,
         color: theme.colors.ink,
         textAlign: 'center',
-        padding: '28px 18px 32px',
+        padding: '0 18px max(20px, 2.5vh)',
         position: 'relative',
         overflow: 'hidden',
         justifyContent: 'flex-start',
       }}
     >
-      {/* Full floral frame with birds & rings */}
-      <img
-        src="/images/floral-frame.png"
-        alt=""
+      {/* Top pink flowers — same arrangement style as counting days */}
+      <div
         aria-hidden
         style={{
-          position: 'absolute',
-          inset: 0,
+          position: 'relative',
           width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          objectPosition: 'center center',
-          pointerEvents: 'none',
+          height: 'min(26vh, 190px)',
+          overflow: 'hidden',
+          flexShrink: 0,
           zIndex: 1,
-          opacity: 0.98,
         }}
-      />
+      >
+        <img
+          src="/images/countdown-bg.jpg"
+          alt=""
+          style={{
+            width: '100%',
+            height: '420%',
+            objectFit: 'cover',
+            objectPosition: 'center top',
+            display: 'block',
+          }}
+        />
+      </div>
 
-      <Petals tone="red-white" amount={22} />
+      <Petals tone="red-white" amount={16} />
 
       <div
         style={{
@@ -172,27 +181,32 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           zIndex: 2,
           width: '100%',
           maxWidth: 360,
-          height: '100%',
-          minHeight: '100%',
           margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          paddingTop: 'max(32px, 4.5vh)',
-          paddingBottom: 'max(18px, 2vh)',
-          boxSizing: 'border-box',
+          flex: 1,
         }}
       >
-        <p className="eyebrow" style={{ color: pink.main, letterSpacing: isRtl ? '0.1em' : '0.28em', marginBottom: 6 }}>
+        {/* Title block below flowers, center aligned */}
+        <p
+          className="eyebrow"
+          style={{
+            color: pink.main,
+            letterSpacing: isRtl ? '0.1em' : '0.28em',
+            margin: '10px 0 6px',
+          }}
+        >
           {isRtl ? 'محبت و مسرت کا خاص دن' : 'SAVE THE AUSPICIOUS DATE'}
         </p>
         <h2
           style={{
             color: theme.colors.ink,
-            margin: '4px 0 6px',
+            margin: '2px 0 4px',
             fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
-            lineHeight: isRtl ? 1.65 : 1.15,
+            lineHeight: isRtl ? 1.65 : 1.12,
             fontSize: isRtl ? 'clamp(22px, 6vw, 28px)' : 'clamp(24px, 6.5vw, 30px)',
+            textAlign: 'center',
           }}
         >
           {isRtl ? (
@@ -213,19 +227,43 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         </h2>
         <Ornament color={pink.main} />
 
-        {/* Flexible gap so birds/rings stay clear above the scratch box */}
-        <div aria-hidden style={{ flex: '1 1 auto', minHeight: 'max(88px, 13vh)', width: '100%' }} />
+        {/* Birds holding rings — visible between title and scratch box */}
+        <div
+          aria-hidden
+          style={{
+            width: 'min(72%, 270px)',
+            height: 86,
+            margin: '4px auto 10px',
+            overflow: 'hidden',
+            position: 'relative',
+            flexShrink: 0,
+          }}
+        >
+          <img
+            src="/images/floral-frame.png"
+            alt=""
+            style={{
+              position: 'absolute',
+              left: '50%',
+              width: '115%',
+              maxWidth: 'none',
+              transform: 'translateX(-50%) translateY(-56%)',
+              display: 'block',
+            }}
+          />
+        </div>
 
+        {/* Scratch box below the birds */}
         <div
           className={showHint ? 'foil-live-pink' : undefined}
           style={{
             position: 'relative',
             width: '100%',
-            maxWidth: 200,
-            margin: '0 auto 12px',
-            height: 230,
+            maxWidth: 196,
+            margin: '0 auto 10px',
+            height: 220,
             flexShrink: 0,
-            borderRadius: '110px 110px 18px 18px',
+            borderRadius: '108px 108px 18px 18px',
             overflow: 'hidden',
             boxShadow: `0 14px 32px rgba(176,120,132,0.18), 0 0 0 1.5px ${pink.main}`,
             touchAction: 'none',
@@ -242,7 +280,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '28px 16px 22px',
+              padding: '24px 14px 18px',
             }}
           >
             <p style={{ margin: 0, fontSize: 10, letterSpacing: '0.24em', color: pink.main, fontWeight: 600 }}>
@@ -250,9 +288,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             </p>
             <div style={{ textAlign: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 5, color: theme.colors.ink }}>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 58, lineHeight: 1 }}>12</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22 }}>·</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, letterSpacing: '0.08em' }}>JAN</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 54, lineHeight: 1 }}>12</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20 }}>·</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, letterSpacing: '0.08em' }}>JAN</span>
               </div>
               <p style={{ margin: '6px 0 0', color: theme.colors.inkSoft, letterSpacing: '0.18em', fontSize: 11 }}>2027</p>
             </div>
@@ -295,7 +333,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             <>
               <div className="foil-shimmer" />
               <div className="scratch-finger" aria-hidden>
-                <svg width="52" height="60" viewBox="0 0 56 64" fill="none">
+                <svg width="48" height="56" viewBox="0 0 56 64" fill="none">
                   <path
                     d="M22.5 28.5V10.8c0-2.7 1.7-4.5 4-4.5s4 1.8 4 4.5v17.2"
                     fill="#FFF5F6"
@@ -343,7 +381,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             type="button"
             onClick={() => celebrate()}
             style={{
-              marginTop: 4,
+              marginTop: 2,
               padding: '11px 20px',
               borderRadius: 999,
               border: `1px solid ${pink.line}`,
@@ -354,6 +392,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
               letterSpacing: '0.16em',
               cursor: 'pointer',
               minHeight: 42,
+              flexShrink: 0,
             }}
           >
             {isRtl ? '✨ فوری طور پر ظاہر کریں' : '✨ Tap to reveal instantly'}

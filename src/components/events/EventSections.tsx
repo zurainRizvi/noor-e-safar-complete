@@ -105,17 +105,31 @@ export function Countdown({ locale }: { locale: Locale }) {
         overflow: 'hidden',
       }}
     >
-      {/* Cream patch matching backdrop — covers only the birds/rings band */}
+      {/* Full-width cream cover — hides birds/rings in EN and UR */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: '10%',
+          height: isRtl ? '32%' : '26%',
+          background: backdrop,
+          zIndex: 1,
+          pointerEvents: 'none',
+        }}
+      />
+      {/* Extra soft edges so nothing peeks around the counter */}
       <div
         aria-hidden
         style={{
           position: 'absolute',
           left: '50%',
-          top: '14%',
+          top: '12%',
           transform: 'translateX(-50%)',
-          width: '78%',
-          height: '22%',
-          borderRadius: 28,
+          width: '94%',
+          height: isRtl ? '30%' : '24%',
+          borderRadius: 24,
           background: backdrop,
           zIndex: 1,
           pointerEvents: 'none',
@@ -134,7 +148,7 @@ export function Countdown({ locale }: { locale: Locale }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: 'max(72px, 13vh) 22px max(24px, 3vh)',
+          padding: isRtl ? 'max(68px, 12vh) 22px max(24px, 3vh)' : 'max(72px, 13vh) 22px max(24px, 3vh)',
         }}
       >
         <p
