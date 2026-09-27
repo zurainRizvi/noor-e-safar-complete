@@ -464,24 +464,24 @@ label,
 }
 
 .petals.waleema i {
-  background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(45, 180, 180, 0.35);
+  background: #7BA86F; /* soft garden green */
+  box-shadow: 0 2px 6px rgba(90, 140, 190, 0.28);
 }
 
 .petals.waleema i:nth-child(3n) {
-  background: #2DD4BF; /* ferozi */
+  background: #A8C8E8; /* light schedule blue */
 }
 
 .petals.waleema i:nth-child(3n + 1) {
-  background: #5EEAD4;
+  background: #5F8A5A;
 }
 
 .petals.waleema i:nth-child(5n) {
-  background: #FFFFFF;
+  background: #C9DFF5;
 }
 
 .petals.waleema i:nth-child(7n) {
-  background: #14B8A6;
+  background: #5B86B5;
 }
 
 .opening-stage,

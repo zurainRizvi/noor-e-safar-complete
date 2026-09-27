@@ -487,8 +487,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               e.id === 'mehndi'
                 ? '0 8px 28px rgba(61, 52, 41, 0.1)'
                 : '0 10px 32px rgba(0, 0, 0, 0.28)',
-            backdropFilter: 'blur(14px) saturate(1.05)',
-            WebkitBackdropFilter: 'blur(14px) saturate(1.05)',
+            backdropFilter: 'blur(22px) saturate(1.08)',
+            WebkitBackdropFilter: 'blur(22px) saturate(1.08)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
