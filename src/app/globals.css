@@ -78,6 +78,32 @@ main {
   justify-content: safe center;
 }
 
+/* RSVP must grow with the form — never clip the submit button */
+.card.page-snap.rsvp {
+  height: auto;
+  min-height: 100dvh;
+  max-height: none;
+  overflow: visible;
+  justify-content: flex-start;
+  scroll-snap-align: none;
+  scroll-snap-stop: normal;
+  overscroll-behavior-y: contain;
+}
+
+main.snap-paused {
+  scroll-snap-type: none;
+}
+
+.rsvp form {
+  overflow-anchor: none;
+}
+
+.rsvp input,
+.rsvp textarea {
+  scroll-margin: 0;
+  scroll-margin-block: 0;
+}
+
 .page-snap > :not(.petals):not(.botanical-climber-container):not(.hero-birds) {
   position: relative;
   z-index: 2;

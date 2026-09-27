@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { theme } from '@/config/theme';
 import { rsvpService } from '@/services/rsvp';
 import { type Locale } from '@/config/translations';
@@ -8,6 +8,8 @@ import { Card, Ornament } from '@/components/shared/Ornament';
 
 export default function RsvpCard({ locale }: { locale: Locale }) {
   const isRtl = locale === 'ur';
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const savedMainScroll = useRef<number | null>(null);
   const [response, setResponse] = useState<'yes' | 'no' | null>(null);
   const [guestCount, setGuestCount] = useState('');
   const [selectedEvents, setSelectedEvents] = useState<string[]>(['mehndi', 'baraat', 'waleema']);
@@ -21,6 +23,40 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     message: string;
     submittedAt: string;
   } | null>(null);
+
+  const getMain = () => document.querySelector('main');
+
+  const preserveMainScroll = () => {
+    const main = getMain();
+    if (!main) return;
+    const top = savedMainScroll.current ?? main.scrollTop;
+    savedMainScroll.current = top;
+    const restore = () => {
+      main.scrollTop = top;
+    };
+    restore();
+    requestAnimationFrame(restore);
+    setTimeout(restore, 0);
+    setTimeout(restore, 50);
+    setTimeout(restore, 120);
+  };
+
+  useEffect(() => {
+    // Autofill can expand fields / shift focus and yank scroll-snap to the next screen.
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const onFocusIn = (e: FocusEvent) => {
+      const target = e.target;
+      if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
+      const main = getMain();
+      if (main) savedMainScroll.current = main.scrollTop;
+      preserveMainScroll();
+    };
+
+    section.addEventListener('focusin', onFocusIn);
+    return () => section.removeEventListener('focusin', onFocusIn);
+  }, []);
 
   const toggleEvent = (id: string) => {
     if (selectedEvents.includes(id)) {
@@ -82,14 +118,25 @@ _Zurain & Abeeha's Wedding Invitation_`;
 
   const fieldStyle: React.CSSProperties = {
     width: '100%',
-    padding: '14px 18px',
-    borderRadius: 16,
+    padding: '12px 16px',
+    borderRadius: 14,
     border: `1px solid ${theme.colors.goldLine}`,
     background: theme.colors.cardSolid,
     color: theme.colors.ink,
     textAlign: 'center',
     fontSize: 16,
     outline: 'none',
+    WebkitAppearance: 'none',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: 11,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: theme.colors.gold,
+    marginBottom: 6,
+    fontWeight: 600,
   };
 
   return (
@@ -100,173 +147,217 @@ _Zurain & Abeeha's Wedding Invitation_`;
         background: theme.colors.card,
         borderTop: `1px solid ${theme.colors.goldLine}`,
         width: '100%',
-        padding: '50px 24px',
+        padding: '36px 22px max(56px, calc(env(safe-area-inset-bottom, 0px) + 28px))',
         position: 'relative',
-        overflow: 'hidden',
+        overflow: 'visible',
         color: theme.colors.ink,
+        justifyContent: 'flex-start',
       }}
     >
-      <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: '0.28em', marginBottom: 8 }}>
-        {isRtl ? 'آپ کی تشریف آوری' : 'R.S.V.P.'}
-      </p>
-      <h2
-        style={{
-          color: theme.colors.ink,
-          margin: '6px 0 14px',
-          lineHeight: isRtl ? 1.7 : 1.15,
-          fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+      <div
+        ref={(node) => {
+          sectionRef.current = node?.closest('section') ?? null;
         }}
+        style={{ width: '100%', maxWidth: 380, margin: '0 auto' }}
       >
-        {submittedData
-          ? isRtl
-            ? <>آپ کا شکریہ!<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'normal', fontSize: '0.8em', marginTop: 6 }}>ہمیں آپ کی آمد کا انتظار رہے گا</em></>
-            : <>Thank You!<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>Your response has been recorded</em></>
-          : isRtl
-            ? <>آپ کی شرکت<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'normal', fontSize: '0.8em', marginTop: 6 }}>ہماری خوشیوں کو دوبالا کرے گی</em></>
-            : <>Will You Attend?<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>Kindly let us know by your response</em></>}
-      </h2>
-      {!submittedData && <Ornament />}
-
-      {!submittedData ? (
-        <form
-          onSubmit={handleSubmit}
-          style={{ width: '100%', maxWidth: 380, margin: '16px auto 0', display: 'flex', flexDirection: 'column', gap: 14, textAlign: isRtl ? 'right' : 'left' }}
+        <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: '0.28em', marginBottom: 8 }}>
+          {isRtl ? 'آپ کی تشریف آوری' : 'R.S.V.P.'}
+        </p>
+        <h2
+          style={{
+            color: theme.colors.ink,
+            margin: '6px 0 10px',
+            lineHeight: isRtl ? 1.7 : 1.15,
+            fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+          }}
         >
-          <div>
-            <label style={{ display: 'block', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: theme.colors.gold, marginBottom: 6, fontWeight: 600 }}>
-              {isRtl ? 'نام یا خاندانی نام' : 'FULL NAME OR FAMILY NAME'} *
-            </label>
-            <input name="name" required value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder={isRtl ? 'اپنا نام...' : 'Enter your name...'} style={fieldStyle} />
-          </div>
+          {submittedData
+            ? isRtl
+              ? <>آپ کا شکریہ!<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'normal', fontSize: '0.8em', marginTop: 6 }}>ہمیں آپ کی آمد کا انتظار رہے گا</em></>
+              : <>Thank You!<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>Your response has been recorded</em></>
+            : isRtl
+              ? <>آپ کی شرکت<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'normal', fontSize: '0.8em', marginTop: 6 }}>ہماری خوشیوں کو دوبالا کرے گی</em></>
+              : <>Will You Attend?<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>Kindly let us know by your response</em></>}
+        </h2>
+        <Ornament />
 
-          <div>
-            <label style={{ display: 'block', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: theme.colors.gold, marginBottom: 6, fontWeight: 600 }}>
-              {isRtl ? 'شرکت کی تصدیق' : 'ATTENDANCE CONFIRMATION'} *
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {(['yes', 'no'] as const).map((val) => (
-                <button
-                  key={val}
-                  type="button"
-                  onClick={() => setResponse(val)}
-                  style={{
-                    padding: '12px 14px',
-                    borderRadius: 16,
-                    border: response === val ? `1.5px solid ${theme.colors.gold}` : `1px solid ${theme.colors.goldLine}`,
-                    background: response === val ? (val === 'yes' ? 'linear-gradient(135deg, #E0C075, #C6A15B)' : 'rgba(184,116,116,0.18)') : theme.colors.cardSolid,
-                    color: response === val && val === 'yes' ? '#fff' : theme.colors.ink,
-                    fontWeight: 600,
-                    fontSize: 13,
-                    cursor: 'pointer',
-                    minHeight: 48,
-                  }}
-                >
-                  {val === 'yes' ? (isRtl ? '✓ خوشی سے شریک' : '✓ Joyfully Attend') : isRtl ? '✕ معذرت' : '✕ Regretfully Decline'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {response === 'yes' && (
-            <>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: theme.colors.gold, marginBottom: 6, fontWeight: 600 }}>
-                  {isRtl ? 'مہمانوں کی تعداد' : 'NUMBER OF GUESTS'}
-                </label>
-                <input type="number" min={1} max={8} value={guestCount} onChange={(e) => setGuestCount(e.target.value)} placeholder="1" style={fieldStyle} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: theme.colors.gold, marginBottom: 8, fontWeight: 600 }}>
-                  {isRtl ? 'تقریبات' : 'EVENTS'}
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {eventsList.map((ev) => {
-                    const on = selectedEvents.includes(ev.id);
-                    return (
-                      <button
-                        key={ev.id}
-                        type="button"
-                        onClick={() => toggleEvent(ev.id)}
-                        style={{
-                          padding: '12px 14px',
-                          borderRadius: 14,
-                          border: on ? `1.5px solid ${ev.color}` : `1px solid ${theme.colors.goldLine}`,
-                          background: on ? `${ev.color}22` : theme.colors.cardSolid,
-                          color: theme.colors.ink,
-                          textAlign: isRtl ? 'right' : 'left',
-                          cursor: 'pointer',
-                          fontSize: 14,
-                          minHeight: 44,
-                        }}
-                      >
-                        {isRtl ? ev.labelUr : ev.labelEn}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-
-          <div>
-            <label style={{ display: 'block', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: theme.colors.gold, marginBottom: 6, fontWeight: 600 }}>
-              {isRtl ? 'پیغام (اختیاری)' : 'OPTIONAL MESSAGE'}
-            </label>
-            <textarea value={guestMessage} onChange={(e) => setGuestMessage(e.target.value)} rows={3} style={{ ...fieldStyle, resize: 'vertical' }} />
-          </div>
-
-          <button
-            type="submit"
-            disabled={!response || !guestName.trim()}
-            style={{
-              marginTop: 4,
-              padding: '14px 20px',
-              borderRadius: 999,
-              border: 'none',
-              background: !response || !guestName.trim() ? theme.colors.sand : `linear-gradient(135deg, ${theme.colors.goldSoft}, ${theme.colors.gold})`,
-              color: !response || !guestName.trim() ? theme.colors.muted : '#fff',
-              fontWeight: 700,
-              letterSpacing: '0.12em',
-              cursor: !response || !guestName.trim() ? 'not-allowed' : 'pointer',
-              minHeight: 48,
-            }}
-          >
-            {isRtl ? 'جواب بھیجیں' : 'Confirm RSVP'}
-          </button>
-        </form>
-      ) : (
-        <div style={{ maxWidth: 380, margin: '18px auto 0', textAlign: 'center' }}>
-          <Ornament />
-          <p style={{ color: theme.colors.inkSoft, fontSize: 14, lineHeight: 1.6, marginTop: 8 }}>
-            {isRtl ? 'واٹس ایپ پر بھی بھیجنا چاہیں گے؟' : 'Would you also like to send via WhatsApp?'}
-          </p>
-          <button
-            type="button"
-            onClick={() => sendToWhatsApp(submittedData)}
+        {!submittedData ? (
+          <form
+            onSubmit={handleSubmit}
+            autoComplete="on"
             style={{
               width: '100%',
-              padding: '14px 20px',
-              borderRadius: 24,
-              border: 'none',
-              background: '#25D366',
-              color: '#fff',
-              fontWeight: 700,
-              marginTop: 10,
-              cursor: 'pointer',
-              minHeight: 48,
+              margin: '12px auto 0',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+              textAlign: isRtl ? 'right' : 'left',
+              overflowAnchor: 'none',
             }}
           >
-            {isRtl ? 'واٹس ایپ پر بھیجیں' : 'Send via WhatsApp'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setSubmittedData(null)}
-            style={{ background: 'transparent', border: 'none', color: theme.colors.gold, fontSize: 11, letterSpacing: '0.12em', textDecoration: 'underline', cursor: 'pointer', marginTop: 12 }}
-          >
-            {isRtl ? 'جواب میں تبدیلی کریں' : 'Change / Update Response'}
-          </button>
-        </div>
-      )}
+            <div>
+              <label style={labelStyle}>{isRtl ? 'نام یا خاندانی نام' : 'FULL NAME OR FAMILY NAME'} *</label>
+              <input
+                name="name"
+                autoComplete="name"
+                required
+                value={guestName}
+                onFocus={() => {
+                  const main = getMain();
+                  if (main) savedMainScroll.current = main.scrollTop;
+                }}
+                onChange={(e) => {
+                  setGuestName(e.target.value);
+                  preserveMainScroll();
+                }}
+                onInput={() => preserveMainScroll()}
+                placeholder={isRtl ? 'اپنا نام...' : 'Enter your name...'}
+                style={fieldStyle}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>{isRtl ? 'شرکت کی تصدیق' : 'ATTENDANCE CONFIRMATION'} *</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                {(['yes', 'no'] as const).map((val) => (
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => setResponse(val)}
+                    style={{
+                      padding: '12px 12px',
+                      borderRadius: 14,
+                      border: response === val ? `1.5px solid ${theme.colors.gold}` : `1px solid ${theme.colors.goldLine}`,
+                      background: response === val ? (val === 'yes' ? 'linear-gradient(135deg, #E0C075, #C6A15B)' : 'rgba(184,116,116,0.18)') : theme.colors.cardSolid,
+                      color: response === val && val === 'yes' ? '#fff' : theme.colors.ink,
+                      fontWeight: 600,
+                      fontSize: 12,
+                      cursor: 'pointer',
+                      minHeight: 46,
+                    }}
+                  >
+                    {val === 'yes' ? (isRtl ? '✓ خوشی سے شریک' : '✓ Joyfully Attend') : isRtl ? '✕ معذرت' : '✕ Regretfully Decline'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {response === 'yes' && (
+              <>
+                <div>
+                  <label style={labelStyle}>{isRtl ? 'مہمانوں کی تعداد' : 'NUMBER OF GUESTS'}</label>
+                  <input
+                    type="number"
+                    name="guests"
+                    inputMode="numeric"
+                    min={1}
+                    max={8}
+                    value={guestCount}
+                    onChange={(e) => setGuestCount(e.target.value)}
+                    placeholder="1"
+                    style={fieldStyle}
+                  />
+                </div>
+                <div>
+                  <label style={{ ...labelStyle, marginBottom: 8 }}>{isRtl ? 'تقریبات' : 'EVENTS'}</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {eventsList.map((ev) => {
+                      const on = selectedEvents.includes(ev.id);
+                      return (
+                        <button
+                          key={ev.id}
+                          type="button"
+                          onClick={() => toggleEvent(ev.id)}
+                          style={{
+                            padding: '11px 14px',
+                            borderRadius: 12,
+                            border: on ? `1.5px solid ${ev.color}` : `1px solid ${theme.colors.goldLine}`,
+                            background: on ? `${ev.color}22` : theme.colors.cardSolid,
+                            color: theme.colors.ink,
+                            textAlign: isRtl ? 'right' : 'left',
+                            cursor: 'pointer',
+                            fontSize: 14,
+                            minHeight: 42,
+                          }}
+                        >
+                          {isRtl ? ev.labelUr : ev.labelEn}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div>
+              <label style={labelStyle}>{isRtl ? 'پیغام (اختیاری)' : 'OPTIONAL MESSAGE'}</label>
+              <textarea
+                name="message"
+                value={guestMessage}
+                onChange={(e) => setGuestMessage(e.target.value)}
+                rows={2}
+                style={{ ...fieldStyle, resize: 'none' }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="rsvp-submit"
+              disabled={!response || !guestName.trim()}
+              style={{
+                marginTop: 4,
+                marginBottom: 8,
+                padding: '14px 20px',
+                borderRadius: 999,
+                border: 'none',
+                background: !response || !guestName.trim() ? theme.colors.sand : `linear-gradient(135deg, ${theme.colors.goldSoft}, ${theme.colors.gold})`,
+                color: !response || !guestName.trim() ? theme.colors.muted : '#fff',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                cursor: !response || !guestName.trim() ? 'not-allowed' : 'pointer',
+                minHeight: 48,
+                position: 'sticky',
+                bottom: 'max(12px, env(safe-area-inset-bottom, 0px))',
+                zIndex: 5,
+                boxShadow: '0 8px 22px rgba(61,52,41,0.14)',
+              }}
+            >
+              {isRtl ? 'جواب بھیجیں' : 'Confirm RSVP'}
+            </button>
+          </form>
+        ) : (
+          <div style={{ margin: '14px auto 0', textAlign: 'center' }}>
+            <p style={{ color: theme.colors.inkSoft, fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>
+              {isRtl ? 'واٹس ایپ پر بھی بھیجنا چاہیں گے؟' : 'Would you also like to send via WhatsApp?'}
+            </p>
+            <button
+              type="button"
+              onClick={() => sendToWhatsApp(submittedData)}
+              style={{
+                width: '100%',
+                padding: '14px 20px',
+                borderRadius: 24,
+                border: 'none',
+                background: '#25D366',
+                color: '#fff',
+                fontWeight: 700,
+                marginTop: 10,
+                cursor: 'pointer',
+                minHeight: 48,
+              }}
+            >
+              {isRtl ? 'واٹس ایپ پر بھیجیں' : 'Send via WhatsApp'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setSubmittedData(null)}
+              style={{ background: 'transparent', border: 'none', color: theme.colors.gold, fontSize: 11, letterSpacing: '0.12em', textDecoration: 'underline', cursor: 'pointer', marginTop: 12 }}
+            >
+              {isRtl ? 'جواب میں تبدیلی کریں' : 'Change / Update Response'}
+            </button>
+          </div>
+        )}
+      </div>
     </Card>
   );
 }
