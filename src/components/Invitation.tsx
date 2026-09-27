@@ -46,15 +46,34 @@ export default function Invitation() {
       }, 450);
     };
 
+    /** Laptop: beige side margins are outside <main>; forward wheel so guests can still scroll. */
+    let wheelLockUntil = 0;
+    const onWheel = (e: WheelEvent) => {
+      const main = document.querySelector('main');
+      if (!main) return;
+      const target = e.target;
+      if (target instanceof Node && main.contains(target)) return;
+      if (e.deltaY === 0) return;
+      e.preventDefault();
+      const now = Date.now();
+      if (now < wheelLockUntil) return;
+      wheelLockUntil = now + 420;
+      // Page-sized steps so mandatory snap doesn't bounce tiny deltas back.
+      const dir = e.deltaY > 0 ? 1 : -1;
+      main.scrollBy({ top: dir * main.clientHeight, behavior: 'smooth' });
+    };
+
     window.addEventListener('resize', apply);
     window.visualViewport?.addEventListener('resize', apply);
     document.addEventListener('focusin', onFocusIn);
     document.addEventListener('focusout', onFocusOut);
+    window.addEventListener('wheel', onWheel, { passive: false });
     return () => {
       window.removeEventListener('resize', apply);
       window.visualViewport?.removeEventListener('resize', apply);
       document.removeEventListener('focusin', onFocusIn);
       document.removeEventListener('focusout', onFocusOut);
+      window.removeEventListener('wheel', onWheel);
     };
   }, []);
 
@@ -140,9 +159,10 @@ export default function Invitation() {
         locale={locale}
         onBegin={() => {
           startMusic();
-          // Mount the rest after the opening overlays so mobile stays smooth for 0–6s.
-          window.setTimeout(() => setContentReady(true), 6000);
+          // Prefetch invitation pages during the curtain so SWIPE DOWN always has somewhere to go.
+          window.setTimeout(() => setContentReady(true), 3500);
         }}
+        onHeroReady={() => setContentReady(true)}
       />
 
       {contentReady && (

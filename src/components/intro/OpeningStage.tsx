@@ -12,17 +12,21 @@ import { t } from '@/config/translations';
 type Props = {
   locale: Locale;
   onBegin: () => void;
+  /** Fired when the hero card is shown so content below can mount before SWIPE DOWN. */
+  onHeroReady?: () => void;
 };
 
 type Phase = 'awaitingTap' | 'curtain' | 'hero';
 
 /** Wall-clock overlay schedule (ms after tap) — independent of video buffering. */
-const INVITE_IN_MS = 4000;
+const INVITE_IN_MS = 300;
+const INVITE_OUT_MS = 4000;
 const HERO_IN_MS = 6000;
 
-export default function OpeningStage({ locale, onBegin }: Props) {
+export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
   const curtainRef = useRef<HTMLVideoElement>(null);
   const beganRef = useRef(false);
+  const heroReadyRef = useRef(false);
   const timersRef = useRef<number[]>([]);
 
   const [phase, setPhase] = useState<Phase>('awaitingTap');
@@ -41,14 +45,22 @@ export default function OpeningStage({ locale, onBegin }: Props) {
     timersRef.current = [];
   };
 
+  const revealHero = () => {
+    setShowInvite(false);
+    setShowHeroCard(true);
+    if (!heroReadyRef.current) {
+      heroReadyRef.current = true;
+      onHeroReady?.();
+    }
+  };
+
   useEffect(() => () => clearTimers(), []);
 
   const playCurtain = async () => {
     const video = curtainRef.current;
     if (!video) {
       setPhase('hero');
-      setShowHeroCard(true);
-      setShowInvite(false);
+      revealHero();
       return;
     }
 
@@ -65,14 +77,22 @@ export default function OpeningStage({ locale, onBegin }: Props) {
             resolve();
           };
           video.addEventListener('loadedmetadata', onMeta);
+          // Don't hang forever on slow mobile networks.
+          window.setTimeout(() => {
+            video.removeEventListener('loadedmetadata', onMeta);
+            resolve();
+          }, 2500);
         });
-        video.currentTime = 0;
+        try {
+          video.currentTime = 0;
+        } catch {
+          // ignore seek failures before data is ready
+        }
       }
       await video.play();
     } catch {
       setPhase('hero');
-      setShowHeroCard(true);
-      setShowInvite(false);
+      revealHero();
     }
   };
 
@@ -90,9 +110,9 @@ export default function OpeningStage({ locale, onBegin }: Props) {
 
     timersRef.current.push(
       window.setTimeout(() => setShowInvite(true), INVITE_IN_MS),
+      window.setTimeout(() => setShowInvite(false), INVITE_OUT_MS),
       window.setTimeout(() => {
-        setShowInvite(false);
-        setShowHeroCard(true);
+        revealHero();
       }, HERO_IN_MS),
     );
 
@@ -100,8 +120,7 @@ export default function OpeningStage({ locale, onBegin }: Props) {
   };
 
   const handleCurtainEnded = () => {
-    setShowInvite(false);
-    setShowHeroCard(true);
+    revealHero();
     setPhase('hero');
   };
 
@@ -112,6 +131,8 @@ export default function OpeningStage({ locale, onBegin }: Props) {
         position: 'relative',
         width: '100%',
         background: '#1a0508',
+        // Let swipe / wheel reach the scrolling <main>; the video must not capture them.
+        touchAction: 'pan-y',
       }}
     >
       <video
@@ -121,6 +142,8 @@ export default function OpeningStage({ locale, onBegin }: Props) {
         playsInline
         muted
         preload="auto"
+        controls={false}
+        disablePictureInPicture
         onEnded={handleCurtainEnded}
         style={{
           position: 'absolute',
@@ -129,6 +152,7 @@ export default function OpeningStage({ locale, onBegin }: Props) {
           height: '100%',
           objectFit: 'cover',
           zIndex: 0,
+          pointerEvents: 'none',
         }}
       />
 

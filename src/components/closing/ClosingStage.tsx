@@ -70,6 +70,8 @@ export default function ClosingStage({ locale }: { locale: Locale }) {
         playsInline
         muted
         preload="metadata"
+        controls={false}
+        disablePictureInPicture
         onEnded={() => setShowCopy(true)}
         style={{
           position: 'absolute',
@@ -77,6 +79,7 @@ export default function ClosingStage({ locale }: { locale: Locale }) {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
+          pointerEvents: 'none',
         }}
       />
 
