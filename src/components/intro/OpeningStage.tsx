@@ -20,8 +20,8 @@ type Phase = 'awaitingTap' | 'curtain' | 'hero';
 
 /** Wall-clock overlay schedule (ms after tap) — independent of video buffering. */
 const INVITE_IN_MS = 2000; // Mrs. Hameed after 2s of video
-const INVITE_OUT_MS = 5000; // holds through the 5th second
-const HERO_IN_MS = 6000; // Zurain & Abeeha on the 6th second
+const INVITE_OUT_MS = 6000; // holds through the 6th second
+const HERO_IN_MS = 7000; // Zurain & Abeeha on the 7th second
 
 export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
   const curtainRef = useRef<HTMLVideoElement>(null);

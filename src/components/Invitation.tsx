@@ -11,10 +11,8 @@ import { Blessing, Countdown, EventCard, EventSchedule } from '@/components/even
 import RsvpCard from '@/components/rsvp/RsvpCard';
 import ClosingStage from '@/components/closing/ClosingStage';
 
-const MUSIC_SEGMENTS = [
-  { start: 115, end: 136 }, // 1:55 – 2:16
-  { start: 186, end: 215 }, // 3:06 – 3:35
-] as const;
+/** Loop 0:27 – 1:45 of the invitation track. */
+const MUSIC_SEGMENTS = [{ start: 27, end: 105 }] as const;
 
 export default function Invitation() {
   const [locale, setLocale] = useState<Locale>('en');
