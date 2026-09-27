@@ -86,23 +86,49 @@ export function Countdown({ locale }: { locale: Locale }) {
     Math.floor(left / 60000) % 60,
     Math.floor(left / 1000) % 60,
   ];
+  const accent = theme.colors.blush;
 
   return (
     <Card
       className="count-card"
       style={{
-        backgroundColor: '#F4EEE6',
-        backgroundImage: 'url(/images/countdown-bg.jpg)',
-        backgroundSize: 'cover',
-        /* Bias to the couple/gazebo so doves stay off-frame */
-        backgroundPosition: 'center 82%',
-        backgroundRepeat: 'no-repeat',
+        background: 'linear-gradient(180deg, #FBF6F4 0%, #F7F1E8 48%, #F3EADF 100%)',
         color: theme.colors.ink,
-        borderTop: `1px solid ${theme.colors.goldLine}`,
+        borderTop: `1px solid ${theme.colors.blushLine}`,
         padding: '0',
         overflow: 'hidden',
       }}
     >
+      {/* Pink floral arch — birds/rings clipped away */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 'min(46%, 340px)',
+          overflow: 'hidden',
+          zIndex: 1,
+          pointerEvents: 'none',
+        }}
+      >
+        <img
+          src="/images/floral-frame.png"
+          alt=""
+          style={{
+            width: '112%',
+            maxWidth: 'none',
+            position: 'absolute',
+            left: '50%',
+            top: '-4%',
+            transform: 'translateX(-50%)',
+            clipPath: 'inset(0 0 36% 0)',
+            WebkitClipPath: 'inset(0 0 36% 0)',
+          }}
+        />
+      </div>
+
       <div
         className="count-overlay"
         style={{
@@ -114,17 +140,14 @@ export function Countdown({ locale }: { locale: Locale }) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'flex-start',
-          padding: 'max(48px, 7.5vh) 22px max(24px, 3vh)',
-          /* Opaque cream veil fully covers any remaining bird area */
-          background:
-            'linear-gradient(180deg, #F7F1E8 0%, #F7F1E8 34%, rgba(247,241,232,0.96) 44%, rgba(247,241,232,0.7) 54%, rgba(247,241,232,0.2) 66%, transparent 78%)',
+          justifyContent: 'center',
+          padding: 'max(96px, 16vh) 22px max(36px, 5vh)',
         }}
       >
         <p
           className="eyebrow"
           style={{
-            color: theme.colors.gold,
+            color: accent,
             letterSpacing: isRtl ? '0.12em' : '0.28em',
             marginBottom: 8,
           }}
@@ -142,7 +165,7 @@ export function Countdown({ locale }: { locale: Locale }) {
         >
           {isRtl ? 'دن گن رہے ہیں۔' : 'Counting the days.'}
         </h2>
-        <Ornament />
+        <Ornament color={accent} />
         <div
           className="count-grid count-grid-merged"
           style={{
@@ -151,16 +174,16 @@ export function Countdown({ locale }: { locale: Locale }) {
             maxWidth: 340,
             borderRadius: 18,
             overflow: 'hidden',
-            border: `1px solid ${theme.colors.goldLine}`,
-            background: 'rgba(255, 252, 247, 0.88)',
+            border: `1px solid ${theme.colors.blushLine}`,
+            background: 'rgba(255, 252, 247, 0.9)',
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
-            boxShadow: '0 12px 28px rgba(61, 52, 41, 0.12)',
+            boxShadow: '0 12px 28px rgba(176, 120, 132, 0.12)',
           }}
         >
           {v.map((n, i) => (
-            <span key={i} style={{ borderColor: 'rgba(198,161,91,0.28)' }}>
-              <strong style={{ color: theme.colors.gold }}>{String(n).padStart(2, '0')}</strong>
+            <span key={i} style={{ borderColor: 'rgba(201,149,158,0.28)' }}>
+              <strong style={{ color: accent }}>{String(n).padStart(2, '0')}</strong>
               <small style={{ color: theme.colors.muted, letterSpacing: isRtl ? '0.04em' : '0.12em' }}>{labels[i]}</small>
             </span>
           ))}
