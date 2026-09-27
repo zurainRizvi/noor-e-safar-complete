@@ -27,6 +27,7 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
   const savedScroll = useRef<number | null>(null);
   const resumeTimer = useRef<number | null>(null);
   const pinUntil = useRef(0);
+  const focusedInRsvp = useRef(false);
   const [pageFloor, setPageFloor] = useState(0);
   const [response, setResponse] = useState<'yes' | 'no' | null>(null);
   const [guestCount, setGuestCount] = useState('');
@@ -50,6 +51,13 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     main.classList.toggle('snap-paused', !enabled);
   };
 
+  const captureScrollAnchor = () => {
+    const main = getMain();
+    if (!main) return;
+    // Prefer anchoring to the RSVP page itself — autofill often jumps after focus.
+    if (savedScroll.current == null) savedScroll.current = main.scrollTop;
+  };
+
   const pauseSnapForTyping = () => {
     const main = getMain();
     if (!main) return;
@@ -57,9 +65,8 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
       window.clearTimeout(resumeTimer.current);
       resumeTimer.current = null;
     }
-    // Keep the position from focus / the last intentional scroll. Overwriting it
-    // after autofill has already jumped makes the correction a no-op.
-    if (savedScroll.current == null) savedScroll.current = main.scrollTop;
+    focusedInRsvp.current = true;
+    captureScrollAnchor();
     setSnapEnabled(false);
   };
 
@@ -75,26 +82,32 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
       ) {
         return;
       }
+      focusedInRsvp.current = false;
       savedScroll.current = null;
+      pinUntil.current = 0;
       setSnapEnabled(true);
       resumeTimer.current = null;
-    }, 280);
+    }, 400);
   };
 
-  /** Autofill scrolls on a later frame. Put the page back without freezing later scrolling. */
+  /** Autofill / keyboard often yank scroll toward the closing page. */
   const correctAutofillJump = () => {
     const main = getMain();
     if (!main || savedScroll.current == null) return;
-    if (Math.abs(main.scrollTop - savedScroll.current) > 4) main.scrollTop = savedScroll.current;
+    if (Math.abs(main.scrollTop - savedScroll.current) > 2) main.scrollTop = savedScroll.current;
   };
 
-  const pinScroll = (ms = 700) => {
+  const pinScroll = (ms = 1400) => {
     pinUntil.current = Date.now() + ms;
+    setSnapEnabled(false);
     correctAutofillJump();
     requestAnimationFrame(correctAutofillJump);
-    window.setTimeout(correctAutofillJump, 40);
-    window.setTimeout(correctAutofillJump, 160);
-    window.setTimeout(correctAutofillJump, 400);
+    window.setTimeout(correctAutofillJump, 16);
+    window.setTimeout(correctAutofillJump, 50);
+    window.setTimeout(correctAutofillJump, 120);
+    window.setTimeout(correctAutofillJump, 280);
+    window.setTimeout(correctAutofillJump, 600);
+    window.setTimeout(correctAutofillJump, 1000);
   };
 
   const holdPageHeight = () => {
@@ -112,45 +125,49 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     const onFocusIn = (e: FocusEvent) => {
       const target = e.target;
       if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
+      // Capture before the browser scrolls the focused field / snap neighbor into view.
+      if (savedScroll.current == null) savedScroll.current = main.scrollTop;
       pauseSnapForTyping();
+      pinScroll(900);
     };
 
     const onFocusOut = () => resumeSnapSoon();
 
     const shouldPinName = (e: Event) => {
       const target = e.target;
-      if (!(e instanceof InputEvent) || !(target instanceof HTMLInputElement) || target.name !== 'name') return false;
-      const burst = (e.data?.length ?? 0) > 1;
-      const replacement =
-        e.inputType === 'insertReplacementText' ||
-        e.inputType === 'insertFromAutocomplete' ||
-        e.inputType === 'insertFromPaste';
-      return burst || replacement;
+      if (!(target instanceof HTMLInputElement) || target.name !== 'name') return false;
+      if (e instanceof InputEvent) {
+        const burst = (e.data?.length ?? 0) > 1;
+        const replacement =
+          e.inputType === 'insertReplacementText' ||
+          e.inputType === 'insertFromAutocomplete' ||
+          e.inputType === 'insertFromPaste';
+        if (burst || replacement) return true;
+      }
+      // Browser autofill often fires a plain change with the full name.
+      return e.type === 'change' && target.value.trim().length > 1;
     };
 
     const onAnyEdit = (e: Event) => {
       pauseSnapForTyping();
-      if (shouldPinName(e)) pinScroll();
+      if (shouldPinName(e)) pinScroll(1600);
     };
 
     const onAutoFill = (e: AnimationEvent) => {
       if (e.animationName !== 'rsvp-autofill-start') return;
-      if (e.target !== document.activeElement) return;
       pauseSnapForTyping();
-      pinScroll();
+      pinScroll(1600);
     };
 
     const onScroll = () => {
-      if (Date.now() < pinUntil.current) {
-        correctAutofillJump();
+      if (!focusedInRsvp.current && Date.now() >= pinUntil.current) return;
+      // While typing or during autofill, never let scroll leave the RSVP page.
+      if (savedScroll.current != null && main.scrollTop > savedScroll.current + 8) {
+        main.scrollTop = savedScroll.current;
         return;
       }
-      const active = document.activeElement;
-      if (
-        (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) &&
-        section.contains(active)
-      ) {
-        savedScroll.current = main.scrollTop;
+      if (Date.now() < pinUntil.current) {
+        correctAutofillJump();
       }
     };
 
@@ -159,7 +176,7 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     section.addEventListener('input', onAnyEdit, true);
     section.addEventListener('change', onAnyEdit, true);
     section.addEventListener('animationstart', onAutoFill, true);
-    main.addEventListener('scroll', onScroll);
+    main.addEventListener('scroll', onScroll, { passive: true });
 
     return () => {
       section.removeEventListener('focusin', onFocusIn);
@@ -169,6 +186,7 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
       section.removeEventListener('animationstart', onAutoFill, true);
       main.removeEventListener('scroll', onScroll);
       if (resumeTimer.current != null) window.clearTimeout(resumeTimer.current);
+      focusedInRsvp.current = false;
       savedScroll.current = null;
       pinUntil.current = 0;
       setSnapEnabled(true);
@@ -400,7 +418,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
                   const burst = Math.abs(next.length - guestName.length) > 1;
                   pauseSnapForTyping();
                   setGuestName(next);
-                  if (burst) pinScroll();
+                  if (burst) pinScroll(1600);
                 }}
                 placeholder={isRtl ? 'اپنا نام...' : 'Enter your name...'}
                 style={fieldStyle}

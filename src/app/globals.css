@@ -137,6 +137,7 @@ main.snap-paused {
 main.snap-paused .closing-stage {
   scroll-snap-align: none;
   scroll-snap-stop: normal;
+  pointer-events: none;
 }
 
 .rsvp form {
@@ -478,13 +479,13 @@ label,
 }
 
 .petals.waleema i {
-  /* Event card: white + garden greens */
+  /* Event card: white + soft teal */
   background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(70, 110, 70, 0.28);
+  box-shadow: 0 2px 6px rgba(58, 104, 104, 0.28);
 }
 
 .petals.waleema i:nth-child(3n) {
-  background: #7BA86F;
+  background: #7AA3A3;
 }
 
 .petals.waleema i:nth-child(3n + 1) {
@@ -492,11 +493,11 @@ label,
 }
 
 .petals.waleema i:nth-child(5n) {
-  background: #5F8A5A;
+  background: #5C8F8F;
 }
 
 .petals.waleema i:nth-child(7n) {
-  background: #A3C49A;
+  background: #A8C4C4;
 }
 
 .petals.baraat-schedule i {
@@ -522,13 +523,13 @@ label,
 }
 
 .petals.waleema-schedule i {
-  /* Schedule: white + light blues */
+  /* Schedule: white + soft teal */
   background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(90, 140, 190, 0.28);
+  box-shadow: 0 2px 6px rgba(58, 104, 104, 0.28);
 }
 
 .petals.waleema-schedule i:nth-child(3n) {
-  background: #A8C8E8;
+  background: #7AA3A3;
 }
 
 .petals.waleema-schedule i:nth-child(3n + 1) {
@@ -536,11 +537,11 @@ label,
 }
 
 .petals.waleema-schedule i:nth-child(5n) {
-  background: #C9DFF5;
+  background: #A8C4C4;
 }
 
 .petals.waleema-schedule i:nth-child(7n) {
-  background: #5B86B5;
+  background: #5C8F8F;
 }
 
 .opening-stage,

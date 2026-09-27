@@ -62,11 +62,12 @@ export const theme = {
       panelBorder: 'rgba(255, 255, 255, 0.22)',
     },
     waleema: {
-      bg: 'linear-gradient(180deg, #E6F1FC 0%, #C9DFF5 100%)',
-      border: 'rgba(90, 140, 190, 0.42)',
-      accent: '#5B86B5',
-      soft: '#C5DBF0',
-      flower: { primary: '#5B86B5', secondary: '#A8C8E8', dark: '#3E6A96' },
+      // Soft teal lifted from the deep #264B4B swatch
+      bg: 'linear-gradient(180deg, #EAF4F4 0%, #C5D9D9 100%)',
+      border: 'rgba(92, 143, 143, 0.42)',
+      accent: '#5C8F8F',
+      soft: '#C9DDDD',
+      flower: { primary: '#5C8F8F', secondary: '#FFFFFF', dark: '#3A6868' },
       bgImage: '/images/waleema-bg.jpg',
       video: '/videos/waleema.mp4',
       poster: '/videos/waleema-poster.jpg',
