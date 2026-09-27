@@ -134,6 +134,12 @@ main.snap-paused {
   overflow-anchor: none;
 }
 
+/* While typing/autofilling, don't let the closing page become a snap neighbor. */
+main.snap-paused .closing-stage {
+  scroll-snap-align: none;
+  scroll-snap-stop: normal;
+}
+
 .rsvp form {
   overflow-anchor: none;
 }

@@ -39,13 +39,16 @@ export function Card({
   style?: React.CSSProperties;
   children: React.ReactNode;
 }) {
+  // Schedule/RSVP pages are tall snap targets — fade-in makes content look like it glitches on land.
+  const skipEnter = /\b(event-schedule|rsvp)\b/.test(className);
+
   return (
     <motion.section
       id={id}
       style={{ width: '100%', margin: 0, borderRadius: 0, ...style }}
       className={`card page-snap ${className}`}
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
+      initial={skipEnter ? false : { opacity: 0 }}
+      whileInView={skipEnter ? undefined : { opacity: 1 }}
       transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
       viewport={{ once: true, amount: 0.12 }}
     >

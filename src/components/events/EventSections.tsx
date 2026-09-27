@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { CalendarDays, MapPin } from 'lucide-react';
 import { wedding, type WeddingEvent } from '@/config/wedding';
 import { theme } from '@/config/theme';
@@ -368,12 +367,8 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         {data.items.map((item, idx) => {
           const isSelected = selectedIdx === idx;
           return (
-            <motion.div
+            <div
               key={idx}
-              initial={{ opacity: 0, x: isRtl ? 16 : -16 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.12 }}
-              transition={{ duration: 0.55, delay: idx * 0.08 }}
               onClick={() => setSelectedIdx(selectedIdx === idx ? null : idx)}
               style={{
                 position: 'relative',
@@ -383,7 +378,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                 borderRadius: 14,
                 background: isSelected ? 'rgba(198,161,91,0.12)' : 'transparent',
                 border: isSelected ? `1px solid ${theme.colors.goldLine}` : '1px solid transparent',
-                transition: 'all 0.3s ease',
+                transition: 'background 0.25s ease, border-color 0.25s ease',
               }}
             >
               <div
@@ -438,7 +433,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
               >
                 {isRtl ? item.descUr : item.descEn}
               </p>
-            </motion.div>
+            </div>
           );
         })}
       </div>

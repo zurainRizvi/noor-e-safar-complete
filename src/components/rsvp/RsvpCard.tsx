@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { theme } from '@/config/theme';
 import { rsvpService } from '@/services/rsvp';
 import { type Locale } from '@/config/translations';
@@ -8,6 +8,8 @@ import { Card, Ornament } from '@/components/shared/Ornament';
 
 export default function RsvpCard({ locale }: { locale: Locale }) {
   const isRtl = locale === 'ur';
+  const lockedScroll = useRef<number | null>(null);
+  const unlockTimer = useRef<number | null>(null);
   const [response, setResponse] = useState<'yes' | 'no' | null>(null);
   const [guestCount, setGuestCount] = useState('');
   const [selectedEvents, setSelectedEvents] = useState<string[]>(['mehndi', 'baraat', 'waleema']);
@@ -30,34 +32,81 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     main.classList.toggle('snap-paused', !enabled);
   };
 
+  const holdScroll = () => {
+    const main = getMain();
+    if (!main || lockedScroll.current == null) return;
+    if (Math.abs(main.scrollTop - lockedScroll.current) > 1) {
+      main.scrollTop = lockedScroll.current;
+    }
+  };
+
+  const beginEditing = () => {
+    const main = getMain();
+    if (!main) return;
+    if (unlockTimer.current != null) {
+      window.clearTimeout(unlockTimer.current);
+      unlockTimer.current = null;
+    }
+    if (lockedScroll.current == null) lockedScroll.current = main.scrollTop;
+    setSnapEnabled(false);
+    holdScroll();
+    requestAnimationFrame(holdScroll);
+  };
+
+  const endEditingSoon = () => {
+    if (unlockTimer.current != null) window.clearTimeout(unlockTimer.current);
+    unlockTimer.current = window.setTimeout(() => {
+      const section = document.getElementById('rsvp-section');
+      const active = document.activeElement;
+      if (
+        section &&
+        (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) &&
+        section.contains(active)
+      ) {
+        return;
+      }
+      lockedScroll.current = null;
+      setSnapEnabled(true);
+      unlockTimer.current = null;
+    }, 800);
+  };
+
   useEffect(() => {
     const section = document.getElementById('rsvp-section');
-    if (!section) return;
+    const main = getMain();
+    if (!section || !main) return;
 
     const onFocusIn = (e: FocusEvent) => {
       const target = e.target;
       if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
-      setSnapEnabled(false);
+      beginEditing();
     };
 
-    const onFocusOut = () => {
-      setTimeout(() => {
-        const active = document.activeElement;
-        if (
-          (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) &&
-          section.contains(active)
-        ) {
-          return;
-        }
-        setSnapEnabled(true);
-      }, 180);
+    const onFocusOut = () => endEditingSoon();
+
+    // Autofill often scrolls without a trusted keypress — pin the viewport while editing.
+    const onScroll = () => holdScroll();
+    const onAnyEdit = () => {
+      beginEditing();
+      holdScroll();
+      window.setTimeout(holdScroll, 0);
+      window.setTimeout(holdScroll, 50);
+      window.setTimeout(holdScroll, 160);
     };
 
     section.addEventListener('focusin', onFocusIn);
     section.addEventListener('focusout', onFocusOut);
+    section.addEventListener('input', onAnyEdit, true);
+    section.addEventListener('change', onAnyEdit, true);
+    main.addEventListener('scroll', onScroll, { passive: true });
+
     return () => {
       section.removeEventListener('focusin', onFocusIn);
       section.removeEventListener('focusout', onFocusOut);
+      section.removeEventListener('input', onAnyEdit, true);
+      section.removeEventListener('change', onAnyEdit, true);
+      main.removeEventListener('scroll', onScroll);
+      if (unlockTimer.current != null) window.clearTimeout(unlockTimer.current);
       setSnapEnabled(true);
     };
   }, []);
@@ -105,6 +154,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
     };
     await rsvpService.submit({ ...payload, guests: Number(payload.guests) });
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    lockedScroll.current = null;
     setSnapEnabled(true);
     setSubmittedData(payload);
     try {
@@ -190,7 +240,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
             onPointerDown={(e) => {
               const target = e.target;
               if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-                setSnapEnabled(false);
+                beginEditing();
               }
             }}
             style={{
@@ -210,8 +260,12 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 autoComplete="name"
                 required
                 value={guestName}
-                onFocus={() => setSnapEnabled(false)}
-                onChange={(e) => setGuestName(e.target.value)}
+                onFocus={() => beginEditing()}
+                onChange={(e) => {
+                  beginEditing();
+                  setGuestName(e.target.value);
+                  holdScroll();
+                }}
                 placeholder={isRtl ? 'اپنا نام...' : 'Enter your name...'}
                 style={fieldStyle}
               />
@@ -251,11 +305,16 @@ _Zurain & Abeeha's Wedding Invitation_`;
                     type="number"
                     name="guests"
                     inputMode="numeric"
+                    autoComplete="off"
                     min={1}
                     max={8}
                     value={guestCount}
-                    onFocus={() => setSnapEnabled(false)}
-                    onChange={(e) => setGuestCount(e.target.value)}
+                    onFocus={() => beginEditing()}
+                    onChange={(e) => {
+                      beginEditing();
+                      setGuestCount(e.target.value);
+                      holdScroll();
+                    }}
                     placeholder="1"
                     style={fieldStyle}
                   />
@@ -295,9 +354,14 @@ _Zurain & Abeeha's Wedding Invitation_`;
               <label style={labelStyle}>{isRtl ? 'پیغام (اختیاری)' : 'OPTIONAL MESSAGE'}</label>
               <textarea
                 name="message"
+                autoComplete="off"
                 value={guestMessage}
-                onFocus={() => setSnapEnabled(false)}
-                onChange={(e) => setGuestMessage(e.target.value)}
+                onFocus={() => beginEditing()}
+                onChange={(e) => {
+                  beginEditing();
+                  setGuestMessage(e.target.value);
+                  holdScroll();
+                }}
                 rows={2}
                 style={{ ...fieldStyle, resize: 'none' }}
               />
