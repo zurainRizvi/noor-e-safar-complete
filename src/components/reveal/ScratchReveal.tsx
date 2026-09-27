@@ -65,20 +65,20 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = canvas.offsetWidth || 220;
-    const height = canvas.offsetHeight || 260;
+    const width = canvas.offsetWidth || 210;
+    const height = canvas.offsetHeight || 200;
     canvas.width = width;
     canvas.height = height;
 
     const grad = ctx.createLinearGradient(0, 0, width, height);
     grad.addColorStop(0, '#FFF5F6');
-    grad.addColorStop(0.35, '#E8C4CB');
-    grad.addColorStop(0.65, '#C9959E');
-    grad.addColorStop(1, '#B07884');
+    grad.addColorStop(0.32, pink.soft);
+    grad.addColorStop(0.68, pink.main);
+    grad.addColorStop(1, pink.deep);
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = 'rgba(255,255,255,0.38)';
+    ctx.fillStyle = 'rgba(255,255,255,0.34)';
     for (let i = 0; i < 28; i++) {
       const x = (i * 47) % width;
       const y = (i * 73) % height;
@@ -90,9 +90,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     ctx.fillStyle = theme.colors.ink;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = isRtl ? 'bold 14px Amiri, serif' : '600 12px "DM Sans", sans-serif';
-    ctx.fillText(isRtl ? 'پردہ ہٹا کر تاریخ جانیے' : 'SCRATCH TO REVEAL', width / 2, height / 2 - 8);
-    ctx.font = isRtl ? '13px Amiri, serif' : '500 11px "DM Sans", sans-serif';
+    ctx.font = isRtl ? 'bold 13px Amiri, serif' : '600 11px "DM Sans", sans-serif';
+    ctx.fillText(isRtl ? 'پردہ ہٹا کر تاریخ جانیے' : 'SCRATCH TO REVEAL', width / 2, height / 2 - 4);
+    ctx.font = isRtl ? '12px Amiri, serif' : '500 10px "DM Sans", sans-serif';
     ctx.fillStyle = 'rgba(61,52,41,0.72)';
     ctx.fillText(isRtl ? 'یا فوری طور پر ظاہر کریں' : 'or tap Instant Reveal below', width / 2, height / 2 + 16);
   }, [isRevealed, isRtl]);
@@ -113,7 +113,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
       for (let i = 3; i < data.length; i += 16) {
         if (data[i] < 128) clear++;
       }
-      if ((clear / sampled) * 100 > 32) celebrate();
+      if ((clear / sampled) * 100 > 28) celebrate();
     } catch {
       // ignore
     }
@@ -129,7 +129,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     const y = clientY - rect.top;
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
-    ctx.arc(x, y, 24, 0, Math.PI * 2);
+    ctx.arc(x, y, 22, 0, Math.PI * 2);
     ctx.fill();
     checkReveal();
   };
@@ -138,65 +138,52 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     <Card
       className="reveal-date-card"
       style={{
-        background: backdrop,
+        backgroundColor: backdrop,
+        backgroundImage: 'url(/images/countdown-bg.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundRepeat: 'no-repeat',
         borderTop: `1px solid ${pink.line}`,
         borderBottom: `1px solid ${pink.line}`,
         color: theme.colors.ink,
         textAlign: 'center',
-        padding: '0 0 max(20px, 2.5vh)',
+        padding: 0,
         position: 'relative',
         overflow: 'hidden',
         justifyContent: 'flex-start',
       }}
     >
-      {/* Full-bleed floral arch. The image is zoomed so the garland reaches both edges. */}
-      <div
-        aria-hidden
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: 'min(23vh, 176px)',
-          overflow: 'hidden',
-          flexShrink: 0,
-          zIndex: 1,
-        }}
-      >
-        <img
-          src="/images/countdown-bg.jpg"
-          alt=""
-          style={{
-            width: '100%',
-            height: '560%',
-            objectFit: 'cover',
-            objectPosition: 'center top',
-            display: 'block',
-          }}
-        />
-      </div>
-
       <Petals tone="red-white" amount={16} />
 
+      <svg width="0" height="0" aria-hidden style={{ position: 'absolute' }}>
+        <defs>
+          <clipPath id="scratch-heart-clip" clipPathUnits="objectBoundingBox">
+            <path d="M0.5,0.935 C0.5,0.935 0.06,0.62 0.06,0.34 C0.06,0.175 0.185,0.06 0.325,0.06 C0.41,0.06 0.47,0.115 0.5,0.19 C0.53,0.115 0.59,0.06 0.675,0.06 C0.815,0.06 0.94,0.175 0.94,0.34 C0.94,0.62 0.5,0.935 0.5,0.935 Z" />
+          </clipPath>
+        </defs>
+      </svg>
+
+      {/* Title sits in the open center under the floral arch — same approach as Counting Days. */}
       <div
         style={{
           position: 'relative',
           zIndex: 2,
           width: '100%',
-          maxWidth: 360,
-          margin: '0 auto',
-          padding: '0 18px',
+          height: '100%',
+          minHeight: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          flex: 1,
+          justifyContent: 'flex-start',
+          padding: isRtl ? 'clamp(78px, 15vh, 124px) 22px 16px' : 'clamp(84px, 14.5vh, 128px) 26px 16px',
         }}
       >
-        {/* Title block below flowers, center aligned */}
         <p
           className="eyebrow"
           style={{
             color: pink.main,
             letterSpacing: isRtl ? '0.1em' : '0.28em',
-            margin: '10px 0 6px',
+            marginBottom: 8,
           }}
         >
           {isRtl ? 'محبت و مسرت کا خاص دن' : 'SAVE THE AUSPICIOUS DATE'}
@@ -204,7 +191,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         <h2
           style={{
             color: theme.colors.ink,
-            margin: '2px 0 4px',
+            margin: '6px 0 10px',
             fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
             lineHeight: isRtl ? 1.65 : 1.12,
             fontSize: isRtl ? 'clamp(22px, 6vw, 28px)' : 'clamp(24px, 6.5vw, 30px)',
@@ -233,11 +220,11 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         <div
           aria-hidden
           style={{
-            width: 'min(214px, 58vw)',
+            width: 'min(200px, 52vw)',
             aspectRatio: '340 / 200',
             margin: '2px auto 8px',
             flexShrink: 0,
-            backgroundColor: backdrop,
+            backgroundColor: 'transparent',
             backgroundImage: 'url(/images/floral-frame.png)',
             backgroundRepeat: 'no-repeat',
             backgroundSize: '282.35% auto',
@@ -245,108 +232,123 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           }}
         />
 
-        {/* Scratch box below the birds */}
+        {/* Pink heart foil */}
         <div
-          className={showHint ? 'foil-live-pink' : undefined}
+          className={showHint ? 'scratch-heart-live' : undefined}
           style={{
             position: 'relative',
-            width: '100%',
-            maxWidth: 196,
-            margin: '0 auto 10px',
-            height: 220,
+            width: 'min(210px, 56vw)',
+            height: 'min(200px, 54vw)',
+            margin: '0 auto 8px',
             flexShrink: 0,
-            borderRadius: '108px 108px 18px 18px',
-            overflow: 'hidden',
-            boxShadow: `0 14px 32px rgba(176,120,132,0.18), 0 0 0 1.5px ${pink.main}`,
-            touchAction: 'none',
-            userSelect: 'none',
-            background: 'linear-gradient(180deg, #FFFCF7 0%, #F8ECEF 100%)',
+            filter: `drop-shadow(0 12px 22px rgba(176,120,132,0.28))`,
           }}
         >
           <div
             style={{
               position: 'absolute',
               inset: 0,
-              zIndex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '24px 14px 18px',
+              clipPath: 'url(#scratch-heart-clip)',
+              WebkitClipPath: 'url(#scratch-heart-clip)',
+              overflow: 'hidden',
+              touchAction: 'none',
+              userSelect: 'none',
+              background: `linear-gradient(165deg, #FFF8F9 0%, ${pink.soft} 42%, ${pink.main} 100%)`,
             }}
           >
-            <p style={{ margin: 0, fontSize: 10, letterSpacing: '0.24em', color: pink.main, fontWeight: 600 }}>
-              {isRtl ? 'منگل' : 'TUESDAY'}
-            </p>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 5, color: theme.colors.ink }}>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 54, lineHeight: 1 }}>12</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20 }}>·</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, letterSpacing: '0.08em' }}>JAN</span>
-              </div>
-              <p style={{ margin: '6px 0 0', color: theme.colors.inkSoft, letterSpacing: '0.18em', fontSize: 11 }}>2027</p>
-            </div>
-            <p style={{ margin: 0, color: theme.colors.muted, fontSize: 11, letterSpacing: '0.14em' }}>
-              {isRtl ? 'لاہور' : 'LAHORE'}
-            </p>
-          </div>
-
-          {!isRevealed && (
-            <canvas
-              ref={canvasRef}
-              onPointerDown={(e) => {
-                isDrawing.current = true;
-                setShowHint(false);
-                (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-                scratchAt(e.clientX, e.clientY);
-              }}
-              onPointerMove={(e) => {
-                if (!isDrawing.current) return;
-                scratchAt(e.clientX, e.clientY);
-              }}
-              onPointerUp={() => {
-                isDrawing.current = false;
-              }}
-              onPointerCancel={() => {
-                isDrawing.current = false;
-              }}
+            <div
               style={{
                 position: 'absolute',
                 inset: 0,
-                width: '100%',
-                height: '100%',
-                zIndex: 2,
-                cursor: 'pointer',
-                touchAction: 'none',
+                zIndex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '36px 22px 28px',
+                gap: 2,
               }}
-            />
-          )}
-          {showHint && !isRevealed && (
-            <>
-              <div className="foil-shimmer" />
-              <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
-                <svg className="scratch-hint-heart" width="42" height="38" viewBox="0 0 42 38" fill="none">
-                  <path
-                    d="M21 34.2C21 34.2 4.2 23.4 4.2 13.05 4.2 7.95 8.05 4.2 12.85 4.2c2.85 0 5.45 1.35 7.15 3.45C21.7 5.55 24.3 4.2 27.15 4.2 31.95 4.2 35.8 7.95 35.8 13.05 35.8 23.4 21 34.2 21 34.2Z"
-                    fill="#FFF5F6"
-                    stroke={pink.main}
-                    strokeWidth="1.7"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M14.2 12.4c1.1-1.55 3.05-2.2 4.7-1.55"
-                    stroke={pink.soft}
-                    strokeWidth="1.4"
-                    strokeLinecap="round"
-                    opacity="0.9"
-                  />
-                </svg>
-                <span className="scratch-hint-spark scratch-hint-spark-a" />
-                <span className="scratch-hint-spark scratch-hint-spark-b" />
-                <span className="scratch-hint-spark scratch-hint-spark-c" />
+            >
+              <p style={{ margin: 0, fontSize: 10, letterSpacing: '0.24em', color: pink.deep, fontWeight: 600 }}>
+                {isRtl ? 'منگل' : 'TUESDAY'}
+              </p>
+              <div style={{ textAlign: 'center', marginTop: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 5, color: theme.colors.ink }}>
+                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 46, lineHeight: 1 }}>12</span>
+                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18 }}>·</span>
+                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, letterSpacing: '0.08em' }}>JAN</span>
+                </div>
+                <p style={{ margin: '4px 0 0', color: theme.colors.inkSoft, letterSpacing: '0.18em', fontSize: 11 }}>2027</p>
               </div>
-            </>
-          )}
+              <p style={{ margin: '6px 0 0', color: theme.colors.muted, fontSize: 10, letterSpacing: '0.14em' }}>
+                {isRtl ? 'لاہور' : 'LAHORE'}
+              </p>
+            </div>
+
+            {!isRevealed && (
+              <canvas
+                ref={canvasRef}
+                onPointerDown={(e) => {
+                  isDrawing.current = true;
+                  setShowHint(false);
+                  (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+                  scratchAt(e.clientX, e.clientY);
+                }}
+                onPointerMove={(e) => {
+                  if (!isDrawing.current) return;
+                  scratchAt(e.clientX, e.clientY);
+                }}
+                onPointerUp={() => {
+                  isDrawing.current = false;
+                }}
+                onPointerCancel={() => {
+                  isDrawing.current = false;
+                }}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  zIndex: 2,
+                  cursor: 'pointer',
+                  touchAction: 'none',
+                }}
+              />
+            )}
+
+            {showHint && !isRevealed && (
+              <>
+                <div className="foil-shimmer" />
+                <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
+                  <svg width="36" height="54" viewBox="0 0 36 54" fill="none">
+                    {/* One pointing index finger + simple palm */}
+                    <path
+                      d="M15.4 24.5V6.8c0-2.55 1.7-4.3 3.85-4.3S23.1 4.25 23.1 6.8v17.7"
+                      fill="#FFF5F6"
+                      stroke={pink.main}
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M11.2 26.2c-2.85 1-4.8 3.5-4.8 6.6 0 5.55 4.7 12.8 12.85 15.7 8 2.85 16.15-.2 19.4-5.7 2.25-3.8 1.25-8-2.15-10.1-1.2-.75-2.7-.95-4.15-.55l-1.2.4"
+                      fill="#FFF5F6"
+                      stroke={pink.main}
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M11.5 26.8c0-1.85 1.25-3.15 2.95-3.15h8.5c1.55 0 2.8 1.15 2.8 2.7v3.35"
+                      fill="#FFF5F6"
+                      stroke={pink.main}
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="19.25" cy="3.85" r="1.2" fill={pink.soft} />
+                  </svg>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {!isRevealed && (
