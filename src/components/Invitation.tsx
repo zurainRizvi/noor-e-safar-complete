@@ -27,9 +27,17 @@ export default function Invitation() {
   useEffect(() => {
     const root = document.documentElement;
     let typing = false;
+    let lastWidth = window.innerWidth;
     const apply = () => {
       if (typing) return;
-      root.style.setProperty('--app-h', `${window.innerHeight}px`);
+      const next = window.innerHeight;
+      const width = window.innerWidth;
+      const prev = Number.parseFloat(root.style.getPropertyValue('--app-h')) || 0;
+      const widthChanged = Math.abs(width - lastWidth) > 30;
+      lastWidth = width;
+      // Toolbar and keyboard change innerHeight. Shrinking --app-h collapses the RSVP and closing pages.
+      if (!widthChanged && prev && next < prev - 1) return;
+      root.style.setProperty('--app-h', `${next}px`);
     };
     apply();
 

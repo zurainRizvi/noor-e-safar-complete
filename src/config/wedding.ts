@@ -82,7 +82,7 @@ export const wedding = {
     contactNumber: '923053333409',
     shareMessage: "You are warmly invited to Zurain and Abeeha's wedding celebrations in Lahore, January 2027.",
   },
-  rsvp: { deadline: '2026-12-20', maxGuests: 8 },
+  rsvp: { deadline: '2026-12-20' },
   musicPath: '/audio/mere-rashke-qamar.m4a',
   social: {
     title: 'Noor-e-Safar — Zurain & Abeeha',

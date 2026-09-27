@@ -142,12 +142,12 @@ export default function ClosingStage({ locale }: { locale: Locale }) {
                 {locale === 'ur' ? (
                   <>
                     <span>آپ کی آمد، </span>
-                    <em style={{ color: theme.colors.gold, fontStyle: 'normal' }}>ہماری خوشی۔</em>
+                    <em style={{ color: '#5C4520', fontStyle: 'normal', fontWeight: 700, fontFamily: "'Amiri', serif" }}>ہماری خوشی۔</em>
                   </>
                 ) : (
                   <>
                     <span>Your presence, </span>
-                    <em style={{ color: theme.colors.gold, fontStyle: 'italic' }}>our joy.</em>
+                    <em style={{ color: '#5C4520', fontStyle: 'italic', fontWeight: 700, whiteSpace: 'nowrap' }}>our joy.</em>
                   </>
                 )}
               </h2>

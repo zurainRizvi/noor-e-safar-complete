@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { CalendarDays, MapPin } from 'lucide-react';
+import { CalendarDays, Map, MapPin } from 'lucide-react';
 import { wedding, type EventId, type WeddingEvent } from '@/config/wedding';
 import { theme } from '@/config/theme';
 import { t, type Locale } from '@/config/translations';
@@ -701,7 +701,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 padding: '8px 12px',
               }}
             >
-              {t(locale, 'maps')}
+              <Map size={13} /> {t(locale, 'maps')}
             </a>
             <button
               type="button"

@@ -14,10 +14,20 @@ const RSVP_MUTED = 'rgba(247, 241, 232, 0.72)';
 const RSVP_LINE = 'rgba(212, 175, 87, 0.35)';
 const RSVP_FIELD = 'rgba(255, 248, 238, 0.08)';
 
+function WhatsAppIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+      <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.5 0 .16 5.33.16 11.89c0 2.1.55 4.14 1.59 5.95L0 24l6.33-1.66a11.9 11.9 0 0 0 5.72 1.46h.01c6.56 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.16-3.44-8.42zM12.06 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.76.99 1-3.66-.24-.38a9.86 9.86 0 0 1-1.51-5.27c0-5.45 4.44-9.89 9.9-9.89 2.64 0 5.13 1.03 7 2.9a9.82 9.82 0 0 1 2.89 7c0 5.45-4.44 9.9-9.88 9.9zm5.42-7.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.64-2.05-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z" />
+    </svg>
+  );
+}
+
 export default function RsvpCard({ locale }: { locale: Locale }) {
   const isRtl = locale === 'ur';
   const savedScroll = useRef<number | null>(null);
   const resumeTimer = useRef<number | null>(null);
+  const pinUntil = useRef(0);
+  const [pageFloor, setPageFloor] = useState(0);
   const [response, setResponse] = useState<'yes' | 'no' | null>(null);
   const [guestCount, setGuestCount] = useState('');
   const [selectedEvents, setSelectedEvents] = useState<string[]>(['mehndi', 'baraat', 'waleema']);
@@ -47,7 +57,9 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
       window.clearTimeout(resumeTimer.current);
       resumeTimer.current = null;
     }
-    savedScroll.current = main.scrollTop;
+    // Keep the position from focus / the last intentional scroll. Overwriting it
+    // after autofill has already jumped makes the correction a no-op.
+    if (savedScroll.current == null) savedScroll.current = main.scrollTop;
     setSnapEnabled(false);
   };
 
@@ -69,22 +81,33 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     }, 280);
   };
 
-  /** Autofill can yank scroll; only undo large jumps — never block intentional scrolling. */
+  /** Autofill scrolls on a later frame. Put the page back without freezing later scrolling. */
   const correctAutofillJump = () => {
     const main = getMain();
     if (!main || savedScroll.current == null) return;
-    const saved = savedScroll.current;
-    const undo = () => {
-      if (Math.abs(main.scrollTop - saved) > 140) main.scrollTop = saved;
-    };
-    undo();
-    requestAnimationFrame(undo);
-    window.setTimeout(undo, 40);
+    if (Math.abs(main.scrollTop - savedScroll.current) > 4) main.scrollTop = savedScroll.current;
+  };
+
+  const pinScroll = (ms = 700) => {
+    pinUntil.current = Date.now() + ms;
+    correctAutofillJump();
+    requestAnimationFrame(correctAutofillJump);
+    window.setTimeout(correctAutofillJump, 40);
+    window.setTimeout(correctAutofillJump, 160);
+    window.setTimeout(correctAutofillJump, 400);
+  };
+
+  const holdPageHeight = () => {
+    const section = document.getElementById('rsvp-section');
+    if (!section) return;
+    const h = Math.ceil(section.getBoundingClientRect().height);
+    setPageFloor((prev) => (h > prev ? h : prev));
   };
 
   useEffect(() => {
     const section = document.getElementById('rsvp-section');
-    if (!section) return;
+    const main = getMain();
+    if (!section || !main) return;
 
     const onFocusIn = (e: FocusEvent) => {
       const target = e.target;
@@ -94,37 +117,76 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
 
     const onFocusOut = () => resumeSnapSoon();
 
-    const onAnyEdit = () => {
+    const shouldPinName = (e: Event) => {
+      const target = e.target;
+      if (!(e instanceof InputEvent) || !(target instanceof HTMLInputElement) || target.name !== 'name') return false;
+      const burst = (e.data?.length ?? 0) > 1;
+      const replacement =
+        e.inputType === 'insertReplacementText' ||
+        e.inputType === 'insertFromAutocomplete' ||
+        e.inputType === 'insertFromPaste';
+      return burst || replacement;
+    };
+
+    const onAnyEdit = (e: Event) => {
       pauseSnapForTyping();
-      correctAutofillJump();
+      if (shouldPinName(e)) pinScroll();
+    };
+
+    const onAutoFill = (e: AnimationEvent) => {
+      if (e.animationName !== 'rsvp-autofill-start') return;
+      if (e.target !== document.activeElement) return;
+      pauseSnapForTyping();
+      pinScroll();
+    };
+
+    const onScroll = () => {
+      if (Date.now() < pinUntil.current) {
+        correctAutofillJump();
+        return;
+      }
+      const active = document.activeElement;
+      if (
+        (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) &&
+        section.contains(active)
+      ) {
+        savedScroll.current = main.scrollTop;
+      }
     };
 
     section.addEventListener('focusin', onFocusIn);
     section.addEventListener('focusout', onFocusOut);
     section.addEventListener('input', onAnyEdit, true);
     section.addEventListener('change', onAnyEdit, true);
+    section.addEventListener('animationstart', onAutoFill, true);
+    main.addEventListener('scroll', onScroll);
 
     return () => {
       section.removeEventListener('focusin', onFocusIn);
       section.removeEventListener('focusout', onFocusOut);
       section.removeEventListener('input', onAnyEdit, true);
       section.removeEventListener('change', onAnyEdit, true);
+      section.removeEventListener('animationstart', onAutoFill, true);
+      main.removeEventListener('scroll', onScroll);
       if (resumeTimer.current != null) window.clearTimeout(resumeTimer.current);
       savedScroll.current = null;
+      pinUntil.current = 0;
       setSnapEnabled(true);
     };
   }, []);
 
   const chooseAttendance = (val: 'yes' | 'no') => {
-    // Expanding/collapsing the form must never leave scroll frozen.
+    // Collapsing the guest fields must not pull the closing page up.
+    holdPageHeight();
     savedScroll.current = null;
-    setSnapEnabled(false);
+    pinUntil.current = 0;
+    setSnapEnabled(true);
     setResponse(val);
   };
 
   const toggleEvent = (id: string) => {
     savedScroll.current = null;
-    setSnapEnabled(false);
+    setSnapEnabled(true);
     if (selectedEvents.includes(id)) {
       if (selectedEvents.length > 1) setSelectedEvents(selectedEvents.filter((e) => e !== id));
     } else {
@@ -165,16 +227,16 @@ _Zurain & Abeeha's Wedding Invitation_`;
       message: guestMessage.trim(),
       submittedAt: new Date().toISOString(),
     };
-    // Open WhatsApp before any await — Android (Redmi) drops the gesture after async work.
-    openWhatsAppChat(wedding.whatsapp.contactNumber, getWhatsAppMessage(payload));
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     savedScroll.current = null;
+    pinUntil.current = 0;
     setSnapEnabled(true);
+    holdPageHeight();
     setSubmittedData(payload);
     try {
       await rsvpService.submit({ ...payload, guests: Number(payload.guests) });
     } catch {
-      // Local save failure should not block WhatsApp.
+      // A local save failure should still show the saved confirmation.
     }
     try {
       const confetti = (await import('canvas-confetti')).default;
@@ -249,6 +311,8 @@ _Zurain & Abeeha's Wedding Invitation_`;
         overflow: 'visible',
         color: RSVP_INK,
         justifyContent: 'flex-start',
+        minHeight: pageFloor > 0 ? `max(${pageFloor}px, var(--app-h, 100svh))` : undefined,
+        overflowAnchor: 'none',
       }}
     >
       <div style={{ width: '100%', maxWidth: 380, margin: '0 auto' }}>
@@ -285,7 +349,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 <>
                   Thank you, dear guest
                   <em style={{ color: theme.colors.goldSoft, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>
-                    Your response is saved — WhatsApp is ready to send
+                    Your response is saved
                   </em>
                 </>
               )
@@ -332,9 +396,11 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 value={guestName}
                 onFocus={() => pauseSnapForTyping()}
                 onChange={(e) => {
+                  const next = e.target.value;
+                  const burst = Math.abs(next.length - guestName.length) > 1;
                   pauseSnapForTyping();
-                  setGuestName(e.target.value);
-                  correctAutofillJump();
+                  setGuestName(next);
+                  if (burst) pinScroll();
                 }}
                 placeholder={isRtl ? 'اپنا نام...' : 'Enter your name...'}
                 style={fieldStyle}
@@ -391,14 +457,11 @@ _Zurain & Abeeha's Wedding Invitation_`;
                     name="guests"
                     inputMode="numeric"
                     autoComplete="off"
-                    min={1}
-                    max={8}
                     value={guestCount}
                     onFocus={() => pauseSnapForTyping()}
                     onChange={(e) => {
                       pauseSnapForTyping();
                       setGuestCount(e.target.value);
-                      correctAutofillJump();
                     }}
                     placeholder="1"
                     style={fieldStyle}
@@ -459,7 +522,6 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 onChange={(e) => {
                   pauseSnapForTyping();
                   setGuestMessage(e.target.value);
-                  correctAutofillJump();
                 }}
                 rows={2}
                 placeholder={isRtl ? 'دعائیں یا پیغام...' : 'Optional dua or wishes...'}
@@ -469,8 +531,8 @@ _Zurain & Abeeha's Wedding Invitation_`;
 
             <p style={{ margin: '2px 0 0', color: RSVP_MUTED, fontSize: 12, lineHeight: 1.5 }}>
               {isRtl
-                ? 'تصدیق پر واٹس ایپ کھل جائے گا — صرف بھیجیں دبائیں'
-                : 'On confirm, WhatsApp opens with your RSVP — just tap Send'}
+                ? 'جواب محفوظ ہو جائے گا — بھیجنے کے لیے واٹس ایپ کا بٹن دبائیں'
+                : 'Your reply is saved here. Send it on WhatsApp when you are ready.'}
             </p>
 
             <button
@@ -496,15 +558,15 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 fontFamily: isRtl ? "'Amiri', serif" : undefined,
               }}
             >
-              {isRtl ? 'تصدیق کریں اور واٹس ایپ کھولیں' : 'Confirm & Open WhatsApp'}
+              {isRtl ? 'جواب محفوظ کریں' : 'Confirm RSVP'}
             </button>
           </form>
         ) : (
           <div style={{ margin: '14px auto 0', textAlign: 'center' }}>
             <p style={{ color: RSVP_MUTED, fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>
               {isRtl
-                ? 'اگر واٹس ایپ نہ کھلا ہو تو دوبارہ کوشش کریں'
-                : 'If WhatsApp did not open, tap below to try again'}
+                ? 'جواب بھیجنے کے لیے نیچے واٹس ایپ دبائیں'
+                : 'Tap Send on WhatsApp to share your reply'}
             </p>
             <button
               type="button"
@@ -520,9 +582,14 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 marginTop: 10,
                 cursor: 'pointer',
                 minHeight: 48,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
               }}
             >
-              {isRtl ? 'واٹس ایپ پر بھیجیں' : 'Open WhatsApp to Send'}
+              <WhatsAppIcon />
+              {isRtl ? 'واٹس ایپ پر بھیجیں' : 'Send on WhatsApp'}
             </button>
             <button
               type="button"
