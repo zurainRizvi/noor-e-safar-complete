@@ -463,7 +463,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
           alignItems: 'center',
           justifyContent: 'flex-start',
           // Keep copy in the upper safe zone — clear of faces / illustration
-          padding: isRtl ? '72px 24px 88px' : '78px 28px 84px',
+          padding: isRtl ? '56px 18px 88px' : '60px 20px 84px',
           boxSizing: 'border-box',
           opacity: showText ? 1 : 0,
           transform: showText ? 'translateY(0)' : 'translateY(10px)',
@@ -471,127 +471,177 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
           pointerEvents: showText ? 'auto' : 'none',
         }}
       >
-        <p
-          className="eyebrow"
+        <div
           style={{
-            color: ev.cardAccent,
-            position: 'relative',
-            zIndex: 2,
-            letterSpacing: isRtl ? '0.1em' : undefined,
-            textShadow: e.id === 'mehndi' ? '0 1px 0 rgba(255,255,255,0.35)' : '0 1px 8px rgba(0,0,0,0.35)',
+            width: '100%',
+            maxWidth: 360,
+            padding: isRtl ? '22px 18px 24px' : '24px 20px 26px',
+            borderRadius: 22,
+            background: ev.panelBg,
+            border: `1px solid ${ev.panelBorder}`,
+            boxShadow:
+              e.id === 'mehndi'
+                ? '0 12px 36px rgba(61, 52, 41, 0.12)'
+                : '0 16px 40px rgba(0, 0, 0, 0.35)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
           }}
         >
-          0{i + 1} · {isRtl ? n[1] : n[0].toUpperCase()}
-        </p>
-        <h2
-          style={{
-            color: ev.cardInk,
-            position: 'relative',
-            zIndex: 2,
-            margin: '10px 0',
-            fontFamily: isRtl ? "'Amiri', serif" : undefined,
-            lineHeight: isRtl ? 1.55 : undefined,
-            textShadow: e.id === 'mehndi' ? '0 1px 0 rgba(255,255,255,0.4)' : '0 2px 14px rgba(0,0,0,0.4)',
-          }}
-        >
-          {isRtl ? n[1] : n[0]}
-          <em
+          <p
+            className="eyebrow"
             style={{
               color: ev.cardAccent,
-              display: 'block',
-              fontSize: isRtl ? '0.62em' : '0.55em',
-              marginTop: 10,
-              fontStyle: isRtl ? 'normal' : 'italic',
-              lineHeight: isRtl ? 1.7 : undefined,
+              position: 'relative',
+              zIndex: 2,
+              letterSpacing: isRtl ? '0.1em' : '0.26em',
+              fontSize: isRtl ? 12 : 11,
+              fontWeight: 700,
             }}
           >
-            {isRtl ? s[1] : s[0]}
-          </em>
-        </h2>
-        <Ornament color={ev.cardAccent} />
-        <div className="date" style={{ position: 'relative', zIndex: 2, margin: '22px 0 18px', justifyContent: 'center' }}>
-          <strong
+            0{i + 1} · {isRtl ? n[1] : n[0].toUpperCase()}
+          </p>
+          <h2
             style={{
               color: ev.cardInk,
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 88,
-              lineHeight: 0.85,
-              textShadow: e.id === 'mehndi' ? 'none' : '0 2px 16px rgba(0,0,0,0.4)',
+              position: 'relative',
+              zIndex: 2,
+              margin: '10px 0 4px',
+              fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+              fontSize: isRtl ? 'clamp(34px, 9vw, 44px)' : 'clamp(40px, 10vw, 52px)',
+              fontWeight: 600,
+              lineHeight: isRtl ? 1.45 : 1.05,
+              letterSpacing: isRtl ? undefined : '0.01em',
             }}
           >
-            {date.getDate()}
-          </strong>
-          <span style={{ textAlign: isRtl ? 'right' : 'left', color: ev.cardInkSoft }}>
-            {dayName}
-            <small
+            {isRtl ? n[1] : n[0]}
+            <em
               style={{
-                display: 'block',
-                marginTop: 6,
-                letterSpacing: isRtl ? '0.06em' : '0.18em',
                 color: ev.cardAccent,
-                fontFamily: isRtl ? "'Amiri', serif" : undefined,
-                fontSize: isRtl ? 13 : undefined,
+                display: 'block',
+                fontSize: isRtl ? '0.52em' : '0.42em',
+                marginTop: 10,
+                fontStyle: isRtl ? 'normal' : 'italic',
+                fontWeight: isRtl ? 600 : 500,
+                lineHeight: isRtl ? 1.65 : 1.35,
+                letterSpacing: isRtl ? '0.02em' : '0.04em',
               }}
             >
-              {monthLabel} · {date.getFullYear()}
-            </small>
-          </span>
-        </div>
-        <p
-          className="event-time"
-          style={{
-            color: ev.cardAccent,
-            position: 'relative',
-            zIndex: 2,
-            fontFamily: isRtl ? "'Amiri', serif" : undefined,
-            letterSpacing: isRtl ? '0.04em' : undefined,
-            lineHeight: isRtl ? 1.7 : undefined,
-          }}
-        >
-          {dayName} · {timeLabel}
-        </p>
-        <div className="venue" style={{ color: ev.cardInkSoft, position: 'relative', zIndex: 2 }}>
-          <MapPin size={16} color={ev.cardAccent} />
-          <span>{e.venue}</span>
-        </div>
-        <div
-          className="actions"
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            display: 'flex',
-            gap: 10,
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            marginTop: 16,
-          }}
-        >
-          <a
-            href={e.mapUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="btn soft"
+              {isRtl ? s[1] : s[0]}
+            </em>
+          </h2>
+          <Ornament color={ev.cardAccent} />
+          <div className="date" style={{ position: 'relative', zIndex: 2, margin: '16px 0 12px', justifyContent: 'center' }}>
+            <strong
+              style={{
+                color: ev.cardInk,
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(72px, 18vw, 92px)',
+                lineHeight: 0.85,
+                fontWeight: 600,
+              }}
+            >
+              {date.getDate()}
+            </strong>
+            <span
+              style={{
+                textAlign: isRtl ? 'right' : 'left',
+                color: ev.cardInkSoft,
+                fontSize: isRtl ? 17 : 16,
+                fontWeight: 600,
+                lineHeight: 1.25,
+              }}
+            >
+              {dayName}
+              <small
+                style={{
+                  display: 'block',
+                  marginTop: 6,
+                  letterSpacing: isRtl ? '0.06em' : '0.16em',
+                  color: ev.cardAccent,
+                  fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                  fontSize: isRtl ? 14 : 12,
+                  fontWeight: 700,
+                }}
+              >
+                {monthLabel} · {date.getFullYear()}
+              </small>
+            </span>
+          </div>
+          <p
+            className="event-time"
             style={{
-              background: ev.buttonBg,
-              borderColor: ev.buttonBorder,
-              color: ev.buttonText,
+              color: ev.cardAccent,
+              position: 'relative',
+              zIndex: 2,
+              fontFamily: isRtl ? "'Amiri', serif" : "'DM Sans', sans-serif",
+              letterSpacing: isRtl ? '0.04em' : '0.06em',
+              lineHeight: isRtl ? 1.7 : 1.4,
+              fontSize: isRtl ? 16 : 14,
+              fontWeight: 600,
+              margin: '4px 0 0',
             }}
           >
-            {t(locale, 'maps')}
-          </a>
-          <a
-            href={calendarUrl(e)}
-            target="_blank"
-            rel="noreferrer"
-            className="btn soft"
+            {dayName} · {timeLabel}
+          </p>
+          <div
+            className="venue"
             style={{
-              background: ev.buttonBg,
-              borderColor: ev.buttonBorder,
-              color: ev.buttonText,
+              color: ev.cardInk,
+              position: 'relative',
+              zIndex: 2,
+              fontSize: isRtl ? 16 : 15,
+              fontWeight: 600,
+              marginTop: 8,
             }}
           >
-            <CalendarDays size={14} /> {t(locale, 'calendar')}
-          </a>
+            <MapPin size={16} color={ev.cardAccent} />
+            <span>{e.venue}</span>
+          </div>
+          <div
+            className="actions"
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              display: 'flex',
+              gap: 10,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              marginTop: 16,
+            }}
+          >
+            <a
+              href={e.mapUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn soft"
+              style={{
+                background: ev.buttonBg,
+                borderColor: ev.buttonBorder,
+                color: ev.buttonText,
+                fontWeight: 600,
+              }}
+            >
+              {t(locale, 'maps')}
+            </a>
+            <a
+              href={calendarUrl(e)}
+              target="_blank"
+              rel="noreferrer"
+              className="btn soft"
+              style={{
+                background: ev.buttonBg,
+                borderColor: ev.buttonBorder,
+                color: ev.buttonText,
+                fontWeight: 600,
+              }}
+            >
+              <CalendarDays size={14} /> {t(locale, 'calendar')}
+            </a>
+          </div>
         </div>
       </div>
     </Card>

@@ -440,20 +440,46 @@ label,
   background: #fff;
 }
 
+.petals.baraat i {
+  background: #C62828;
+  box-shadow: 0 2px 6px rgba(180, 40, 40, 0.4);
+}
+
 .petals.baraat i:nth-child(3n) {
-  background: #E2B6B6;
+  background: #E53935;
 }
 
 .petals.baraat i:nth-child(3n + 1) {
-  background: #C48484;
+  background: #B71C1C;
+}
+
+.petals.baraat i:nth-child(5n) {
+  background: #FFCDD2;
+}
+
+.petals.baraat i:nth-child(7n) {
+  background: #EF5350;
+}
+
+.petals.waleema i {
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(45, 180, 180, 0.35);
 }
 
 .petals.waleema i:nth-child(3n) {
-  background: #B5C7DD;
+  background: #2DD4BF; /* ferozi */
 }
 
 .petals.waleema i:nth-child(3n + 1) {
-  background: #7E9BC0;
+  background: #5EEAD4;
+}
+
+.petals.waleema i:nth-child(5n) {
+  background: #FFFFFF;
+}
+
+.petals.waleema i:nth-child(7n) {
+  background: #14B8A6;
 }
 
 .opening-stage,
