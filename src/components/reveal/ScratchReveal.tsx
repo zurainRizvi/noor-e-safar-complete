@@ -139,7 +139,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
       className="reveal-date-card"
       style={{
         backgroundColor: backdrop,
-        backgroundImage: 'url(/images/countdown-bg.jpg)',
+        backgroundImage: 'url(/images/scratch-reveal-bg.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center top',
         backgroundRepeat: 'no-repeat',
@@ -154,48 +154,6 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
       }}
     >
       <Petals tone="red-white" amount={16} />
-
-      {/* Soft side washes — hide mid-arch green foliage only; top pink flowers stay open. */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: '34%',
-          width: '28%',
-          height: '48%',
-          background: `linear-gradient(90deg, ${backdrop} 0%, ${backdrop} 42%, rgba(228,229,224,0.72) 72%, transparent 100%)`,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          right: 0,
-          top: '34%',
-          width: '28%',
-          height: '48%',
-          background: `linear-gradient(270deg, ${backdrop} 0%, ${backdrop} 42%, rgba(228,229,224,0.72) 72%, transparent 100%)`,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      />
-      {/* Soften the arch start under the rings without covering the dove crop or top blooms. */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          left: '18%',
-          right: '18%',
-          top: '36%',
-          height: '14%',
-          background: `linear-gradient(180deg, transparent 0%, rgba(228,229,224,0.55) 40%, rgba(228,229,224,0.2) 100%)`,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      />
 
       <svg width="0" height="0" aria-hidden style={{ position: 'absolute' }}>
         <defs>
