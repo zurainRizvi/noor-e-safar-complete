@@ -25,14 +25,19 @@ export default function ClosingStage({ locale }: { locale: Locale }) {
         const video = videoRef.current;
         if (!entry || !video) return;
 
-        if (entry.intersectionRatio >= 0.9) {
+          if (entry.intersectionRatio >= 0.9) {
           if (onPage.current) return;
           onPage.current = true;
           setShowCopy(false);
           video.muted = true;
+          video.defaultMuted = true;
           video.playsInline = true;
+          video.setAttribute('muted', '');
+          video.setAttribute('playsinline', '');
+          video.setAttribute('webkit-playsinline', '');
           if (video.readyState >= 1) video.currentTime = 0;
-          video.play().catch(() => {
+          const pending = video.play();
+          void pending?.catch(() => {
             if (onPage.current) setShowCopy(true);
           });
           return;

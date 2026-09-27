@@ -78,6 +78,87 @@ export default function Invitation() {
   }, []);
 
   useEffect(() => {
+    const main = document.querySelector('main');
+    if (!main) return;
+
+    // Cards that fit the screen must not be nested scrollports. Android cancels
+    // the click when an overflow:auto page can scroll by even a pixel.
+    const releaseTightScrollers = () => {
+      main.querySelectorAll('.card.page-snap').forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        if (node.classList.contains('event-schedule') || node.classList.contains('rsvp')) return;
+        const overflows = node.scrollHeight > node.clientHeight + 4;
+        node.style.overflowY = overflows ? 'auto' : 'hidden';
+      });
+    };
+    releaseTightScrollers();
+    const layoutTimers = [250, 900].map((ms) => window.setTimeout(releaseTightScrollers, ms));
+    window.addEventListener('resize', releaseTightScrollers);
+
+    // If Android eats the click after a still finger, replay it once.
+    let startX = 0;
+    let startY = 0;
+    let armed: HTMLElement | null = null;
+    let replayTimer = 0;
+
+    const tappable = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) return null;
+      if (target.closest('.scratch-surface')) return null;
+      const el = target.closest('button, a, [data-tap]');
+      if (!(el instanceof HTMLElement)) return null;
+      if (el.closest('.scratch-surface')) return null;
+      if (el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true') return null;
+      return el;
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      startX = touch.clientX;
+      startY = touch.clientY;
+      armed = tappable(event.target);
+      window.clearTimeout(replayTimer);
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      const el = armed;
+      armed = null;
+      if (!el || !el.isConnected) return;
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      if (Math.hypot(touch.clientX - startX, touch.clientY - startY) > 18) return;
+
+      const cancelReplay = () => {
+        window.clearTimeout(replayTimer);
+        main.removeEventListener('click', cancelReplay, true);
+      };
+      main.addEventListener('click', cancelReplay, true);
+      replayTimer = window.setTimeout(() => {
+        main.removeEventListener('click', cancelReplay, true);
+        if (!el.isConnected) return;
+        el.click();
+      }, 480);
+    };
+
+    const onTouchCancel = () => {
+      armed = null;
+    };
+
+    main.addEventListener('touchstart', onTouchStart, { passive: true });
+    main.addEventListener('touchend', onTouchEnd);
+    main.addEventListener('touchcancel', onTouchCancel);
+
+    return () => {
+      layoutTimers.forEach((id) => window.clearTimeout(id));
+      window.removeEventListener('resize', releaseTightScrollers);
+      window.clearTimeout(replayTimer);
+      main.removeEventListener('touchstart', onTouchStart);
+      main.removeEventListener('touchend', onTouchEnd);
+      main.removeEventListener('touchcancel', onTouchCancel);
+    };
+  }, [contentReady, locale]);
+
+  useEffect(() => {
     const el = audio.current;
     if (!el) return;
 

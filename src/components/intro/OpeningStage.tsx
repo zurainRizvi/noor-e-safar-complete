@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { theme } from '@/config/theme';
 import { Ornament } from '@/components/shared/Ornament';
@@ -28,16 +28,18 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
   const beganRef = useRef(false);
   const heroReadyRef = useRef(false);
   const timersRef = useRef<number[]>([]);
+  const beginRef = useRef<() => void>(() => {});
+  const unbindBeginRef = useRef<(() => void) | null>(null);
 
   const [phase, setPhase] = useState<Phase>('awaitingTap');
   const [showInvite, setShowInvite] = useState(false);
   const [showHeroCard, setShowHeroCard] = useState(false);
+  const [videoStarted, setVideoStarted] = useState(false);
 
   const curtainSrc = `${theme.videos.opening}?v=${theme.videos.version}`;
   const posterSrc = `${theme.videos.openingPoster}?v=${theme.videos.version}`;
 
   const showTap = phase === 'awaitingTap';
-  const playing = phase === 'curtain' || phase === 'hero';
   const showHero = showHeroCard || phase === 'hero';
 
   const clearTimers = () => {
@@ -54,55 +56,58 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
     }
   };
 
-  useEffect(() => () => clearTimers(), []);
+  useEffect(() => () => {
+    clearTimers();
+    unbindBeginRef.current?.();
+  }, []);
 
-  const playCurtain = async () => {
+  const attachCurtain = useCallback((node: HTMLVideoElement | null) => {
+    curtainRef.current = node;
+    if (!node) return;
+    // iOS ignores a muted video that only has the React prop; the DOM property
+    // and playsinline attributes must exist before play().
+    node.muted = true;
+    node.defaultMuted = true;
+    node.volume = 0;
+    node.playsInline = true;
+    node.setAttribute('muted', '');
+    node.setAttribute('playsinline', '');
+    node.setAttribute('webkit-playsinline', '');
+  }, []);
+
+  const playCurtainNow = () => {
     const video = curtainRef.current;
-    if (!video) {
-      setPhase('hero');
-      revealHero();
-      return;
-    }
-
-    try {
-      video.pause();
-      video.muted = true;
-      video.playsInline = true;
-      if (video.readyState >= 1) {
-        video.currentTime = 0;
-      } else {
-        await new Promise<void>((resolve) => {
-          const onMeta = () => {
-            video.removeEventListener('loadedmetadata', onMeta);
-            resolve();
-          };
-          video.addEventListener('loadedmetadata', onMeta);
-          // Don't hang forever on slow mobile networks.
-          window.setTimeout(() => {
-            video.removeEventListener('loadedmetadata', onMeta);
-            resolve();
-          }, 2500);
-        });
-        try {
-          video.currentTime = 0;
-        } catch {
-          // ignore seek failures before data is ready
-        }
-      }
-      await video.play();
-    } catch {
-      setPhase('hero');
-      revealHero();
-    }
+    if (!video) return;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.volume = 0;
+    video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    // Must run in the tap turn. Awaiting metadata, seeking, or pausing first
+    // drops iOS user activation, so play() is rejected and the curtain stays shut.
+    const pending = video.play();
+    void pending?.catch(() => {
+      const retry = () => {
+        video.muted = true;
+        void video.play().catch(() => {});
+      };
+      video.addEventListener('canplay', retry, { once: true });
+      video.addEventListener('loadeddata', retry, { once: true });
+    });
   };
 
-  const begin = (e?: React.SyntheticEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
+  const begin = () => {
     if (beganRef.current) return;
     beganRef.current = true;
 
-    onBegin();
+    playCurtainNow();
+    try {
+      onBegin();
+    } catch {
+      // A failed music seek must not cancel the curtain.
+    }
     setPhase('curtain');
     setShowInvite(false);
     setShowHeroCard(false);
@@ -115,9 +120,39 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
         revealHero();
       }, HERO_IN_MS),
     );
-
-    void playCurtain();
   };
+
+  useEffect(() => {
+    beginRef.current = begin;
+  });
+
+  const attachBeginButton = useCallback((node: HTMLButtonElement | null) => {
+    unbindBeginRef.current?.();
+    unbindBeginRef.current = null;
+    if (!node) return;
+
+    let startX = 0;
+    let startY = 0;
+    const onStart = (event: TouchEvent) => {
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      startX = touch.clientX;
+      startY = touch.clientY;
+    };
+    const onEnd = (event: TouchEvent) => {
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      if (Math.hypot(touch.clientX - startX, touch.clientY - startY) > 18) return;
+      // iOS in-app browsers only treat touchend as the media user-gesture.
+      beginRef.current();
+    };
+    node.addEventListener('touchstart', onStart, { passive: true });
+    node.addEventListener('touchend', onEnd);
+    unbindBeginRef.current = () => {
+      node.removeEventListener('touchstart', onStart);
+      node.removeEventListener('touchend', onEnd);
+    };
+  }, []);
 
   const handleCurtainEnded = () => {
     revealHero();
@@ -136,7 +171,7 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
       }}
     >
       <video
-        ref={curtainRef}
+        ref={attachCurtain}
         src={curtainSrc}
         poster={posterSrc}
         playsInline
@@ -144,6 +179,8 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
         preload="auto"
         controls={false}
         disablePictureInPicture
+        onPlay={() => setVideoStarted(true)}
+        onPlaying={() => setVideoStarted(true)}
         onEnded={handleCurtainEnded}
         style={{
           position: 'absolute',
@@ -156,7 +193,7 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
         }}
       />
 
-      {!playing && (
+      {!videoStarted && (
         <img
           src={posterSrc}
           alt=""
@@ -211,6 +248,7 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
             }}
           >
             <button
+              ref={attachBeginButton}
               type="button"
               className="tap-begin"
               onClick={begin}

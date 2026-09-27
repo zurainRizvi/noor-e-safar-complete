@@ -332,6 +332,16 @@ h2 {
   z-index: 1;
 }
 
+button,
+a,
+input,
+textarea,
+select,
+label,
+[data-tap] {
+  touch-action: manipulation;
+}
+
 .petals i {
   position: absolute;
   top: -20px;
@@ -611,6 +621,31 @@ h2 {
   background: linear-gradient(105deg, transparent 36%, rgba(255, 255, 255, 0.55) 50%, transparent 64%);
   background-size: 220% 100%;
   animation: foilShimmer 2.6s ease-in-out infinite;
+}
+
+.scratch-surface {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.scratch-heart-visual,
+.scratch-heart-visual *,
+.scratch-hint,
+.scratch-hint *,
+.foil-shimmer,
+.petals,
+.petals *,
+.botanical-climber-container,
+.botanical-climber-container *,
+.garland-svg-strand,
+.garland-svg-strand *,
+.schedule-bow,
+.schedule-bow *,
+.hero-birds,
+.hero-birds * {
+  pointer-events: none !important;
 }
 
 .scratch-hint {

@@ -10,25 +10,16 @@ import { Petals } from '@/components/shared/Petals';
 import { BotanicalClimber, EventCornerOrnament, ScheduleBow, TopCanopyArch } from '@/components/events/Botanicals';
 import { schedulesData } from '@/components/events/schedulesData';
 
-function calendar(e: WeddingEvent) {
-  const d = e.date.replaceAll('-', '');
-  const body = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'BEGIN:VEVENT',
-    `DTSTART:${d}T183000`,
-    `DTEND:${d}T220000`,
-    `SUMMARY:${e.name} — Zurain & Abeeha`,
-    `LOCATION:${e.venue}`,
-    'END:VEVENT',
-    'END:VCALENDAR',
-  ].join('\r\n');
-  const url = URL.createObjectURL(new Blob([body], { type: 'text/calendar' }));
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${e.id}.ics`;
-  a.click();
-  URL.revokeObjectURL(url);
+function calendarUrl(e: WeddingEvent) {
+  const day = e.date.replaceAll('-', '');
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: `${e.name} — Zurain & Abeeha`,
+    dates: `${day}T183000/${day}T220000`,
+    location: e.venue,
+    details: `${e.name} — Zurain & Abeeha`,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
 export function Blessing({ locale }: { locale: Locale }) {
@@ -317,9 +308,9 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         <a href={e.mapUrl} target="_blank" rel="noreferrer" className="btn soft">
           {t(locale, 'maps')}
         </a>
-        <button type="button" className="btn soft" onClick={() => calendar(e)}>
+        <a href={calendarUrl(e)} target="_blank" rel="noreferrer" className="btn soft">
           <CalendarDays size={14} /> {t(locale, 'calendar')}
-        </button>
+        </a>
       </div>
     </Card>
   );
@@ -410,11 +401,14 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         {data.items.map((item, idx) => {
           const isSelected = selectedIdx === idx;
           return (
-            <div
+            <button
               key={idx}
+              type="button"
               onClick={() => setSelectedIdx(selectedIdx === idx ? null : idx)}
               style={{
                 position: 'relative',
+                display: 'block',
+                width: '100%',
                 marginBottom: idx === data.items.length - 1 ? 40 : 18,
                 cursor: 'pointer',
                 padding: isRtl ? '12px 14px 14px' : '10px 14px',
@@ -422,6 +416,10 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                 background: isSelected ? 'rgba(198,161,91,0.12)' : 'transparent',
                 border: isSelected ? `1px solid ${theme.colors.goldLine}` : '1px solid transparent',
                 transition: 'background 0.25s ease, border-color 0.25s ease',
+                font: 'inherit',
+                color: 'inherit',
+                textAlign: isRtl ? 'right' : 'left',
+                touchAction: 'manipulation',
               }}
             >
               <div
@@ -476,7 +474,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
               >
                 {isRtl ? item.descUr : item.descEn}
               </p>
-            </div>
+            </button>
           );
         })}
       </div>
