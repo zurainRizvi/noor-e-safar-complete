@@ -517,7 +517,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 isolation: 'isolate',
                 opacity: 1,
                 transform: panelIn ? 'translate3d(0, 0, 0)' : 'translate3d(0, 72px, 0)',
-                transition: 'transform 0.75s cubic-bezier(0.22, 1, 0.36, 1)',
+                transition: 'transform 1.35s cubic-bezier(0.22, 0.82, 0.28, 1)',
                 willChange: 'transform',
                 display: 'flex',
                 flexDirection: 'column',
