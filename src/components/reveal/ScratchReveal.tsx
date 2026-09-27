@@ -267,7 +267,8 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                 overflow: 'hidden',
                 touchAction: 'none',
                 userSelect: 'none',
-                background: `linear-gradient(165deg, #FFF8F9 0%, ${pink.soft} 42%, ${pink.main} 100%)`,
+                // Revealed (scratched) face — near-white blush so foil contrast is obvious
+                background: 'linear-gradient(165deg, #FFFEFE 0%, #FFF8F9 48%, #F7EBEE 100%)',
               }}
             >
               <div
@@ -284,7 +285,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                   pointerEvents: 'none',
                 }}
               >
-                <p style={{ margin: 0, fontSize: 10, letterSpacing: '0.24em', color: pink.deep, fontWeight: 600 }}>
+                <p style={{ margin: 0, fontSize: 10, letterSpacing: '0.24em', color: pink.main, fontWeight: 600 }}>
                   {isRtl ? 'منگل' : 'TUESDAY'}
                 </p>
                 <div style={{ textAlign: 'center', marginTop: 4 }}>
@@ -337,30 +338,14 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                   <div className="foil-shimmer" />
                 <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
                   <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                    {/* Magical wand — tip spark + slender wood shaft */}
-                    <circle cx="14" cy="14" r="3.2" fill="#FFF8F9" stroke={pink.main} strokeWidth="1.2" />
-                    <path
-                      d="M16.2 16.2 L48.8 48.8"
-                      stroke={pink.deep}
-                      strokeWidth="3.2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M16.2 16.2 L48.8 48.8"
-                      stroke={pink.soft}
-                      strokeWidth="1.4"
-                      strokeLinecap="round"
-                      opacity="0.95"
-                    />
-                    <path
-                      d="M45.6 45.6 L50.2 50.2"
-                      stroke={theme.colors.ink}
-                      strokeWidth="3.4"
-                      strokeLinecap="round"
-                    />
-                    <path d="M11 8.5 L14 14 L8.5 11" stroke={pink.soft} strokeWidth="1.1" strokeLinecap="round" />
-                    <path d="M18.5 9.2 L14 14 L19.2 12.4" stroke={pink.main} strokeWidth="1.1" strokeLinecap="round" opacity="0.85" />
-                    <circle cx="14" cy="14" r="1.15" fill={pink.main} />
+                    {/* Gold wand — reads clearly on pink foil */}
+                    <circle cx="14" cy="14" r="3.4" fill="#FFF8EE" stroke="#C6A15B" strokeWidth="1.35" />
+                    <path d="M16.4 16.4 L48.6 48.6" stroke="#8A6A2E" strokeWidth="3.4" strokeLinecap="round" />
+                    <path d="M16.4 16.4 L48.6 48.6" stroke="#E0C075" strokeWidth="1.55" strokeLinecap="round" />
+                    <path d="M45.2 45.2 L50.4 50.4" stroke="#5C4A28" strokeWidth="3.6" strokeLinecap="round" />
+                    <path d="M10.6 8.2 L14 14 L8.2 10.8" stroke="#FFF2CE" strokeWidth="1.2" strokeLinecap="round" />
+                    <path d="M19 9 L14 14 L19.6 12.6" stroke="#E0C075" strokeWidth="1.15" strokeLinecap="round" />
+                    <circle cx="14" cy="14" r="1.25" fill="#C6A15B" />
                   </svg>
                 </div>
                 </>
