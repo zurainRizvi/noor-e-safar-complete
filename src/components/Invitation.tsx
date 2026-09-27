@@ -2357,6 +2357,7 @@ export default function Invitation() {
   const isPreseekedRef = useRef(false);
   const boomerangAnimRef = useRef<number | null>(null);
   const [isReversing, setIsReversing] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   // Synchronous hardware-synchronized frame capture during forward playback
   useEffect(() => {
@@ -2537,7 +2538,7 @@ export default function Invitation() {
       video.current.muted = true;
       video.current.currentTime = 0;
       video.current.playbackRate = 1;
-      video.current.play().catch(() => {});
+      video.current.play().then(() => setIsVideoPlaying(true)).catch(() => {});
     }
     setZooming(true);
     startChaapTilak();
@@ -2620,6 +2621,25 @@ export default function Invitation() {
           backgroundSize: 'cover',
         }}
       >
+        {/* Instant Curtain Poster Overlay for Mobile & Desktop - Guarantees instant curtain render before video starts */}
+        <img
+          src="/curtain-poster.png"
+          alt="Curtain Background"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 1,
+            transform: (zooming || open) ? 'scale(1.18)' : 'scale(1.0)',
+            transformOrigin: 'center center',
+            opacity: isVideoPlaying ? 0 : 0.92,
+            transition: 'opacity 0.6s ease-out, transform 1.6s cubic-bezier(0.22, 1, 0.36, 1)',
+            pointerEvents: 'none',
+          }}
+        />
+
         <video
           ref={video}
           src="/intro-video.mp4"
@@ -2627,9 +2647,13 @@ export default function Invitation() {
           preload="auto"
           playsInline
           muted
+          onPlay={() => setIsVideoPlaying(true)}
+          onPlaying={() => setIsVideoPlaying(true)}
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleVideoEnd}
           style={{
+            position: 'relative',
+            zIndex: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
@@ -2637,7 +2661,6 @@ export default function Invitation() {
             transformOrigin: 'center center',
             opacity: 0.92,
             transition: 'transform 1.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 2s ease-in-out',
-            backgroundColor: '#101410',
           }}
         />
         {/* Canvas overlay that renders the captured reverse frames seamlessly */}
