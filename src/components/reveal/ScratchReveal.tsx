@@ -324,45 +324,26 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           {showHint && !isRevealed && (
             <>
               <div className="foil-shimmer" />
-              <div className="scratch-finger" aria-hidden>
-                <svg width="48" height="56" viewBox="0 0 56 64" fill="none">
+              <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
+                <svg className="scratch-hint-heart" width="42" height="38" viewBox="0 0 42 38" fill="none">
                   <path
-                    d="M22.5 28.5V10.8c0-2.7 1.7-4.5 4-4.5s4 1.8 4 4.5v17.2"
+                    d="M21 34.2C21 34.2 4.2 23.4 4.2 13.05 4.2 7.95 8.05 4.2 12.85 4.2c2.85 0 5.45 1.35 7.15 3.45C21.7 5.55 24.3 4.2 27.15 4.2 31.95 4.2 35.8 7.95 35.8 13.05 35.8 23.4 21 34.2 21 34.2Z"
                     fill="#FFF5F6"
                     stroke={pink.main}
-                    strokeWidth="1.6"
+                    strokeWidth="1.7"
                     strokeLinejoin="round"
                   />
                   <path
-                    d="M30.5 28.2V14.2c0-2.15 1.45-3.6 3.35-3.6 1.9 0 3.35 1.45 3.35 3.6v15.4"
-                    fill="#FFF5F6"
-                    stroke={pink.main}
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
+                    d="M14.2 12.4c1.1-1.55 3.05-2.2 4.7-1.55"
+                    stroke={pink.soft}
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    opacity="0.9"
                   />
-                  <path
-                    d="M37.2 30.2V18.4c0-1.95 1.35-3.25 3.1-3.25 1.75 0 3.1 1.3 3.1 3.25v14.1"
-                    fill="#FFF5F6"
-                    stroke={pink.main}
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M14.8 29.8V20.6c0-2.1 1.4-3.5 3.3-3.5 1.85 0 3.25 1.4 3.25 3.5v10.5"
-                    fill="#FFF5F6"
-                    stroke={pink.main}
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M14.6 31.2c-3.4 1.1-5.7 3.9-5.7 7.5 0 6.4 5.4 14.8 14.8 18.2 9.2 3.3 18.6-0.2 22.4-6.6 2.6-4.4 1.5-9.2-2.4-11.6-1.4-0.9-3.1-1.1-4.8-0.7"
-                    fill="#FFF5F6"
-                    stroke={pink.main}
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="26.5" cy="7.2" r="1.35" fill={pink.soft} />
                 </svg>
+                <span className="scratch-hint-spark scratch-hint-spark-a" />
+                <span className="scratch-hint-spark scratch-hint-spark-b" />
+                <span className="scratch-hint-spark scratch-hint-spark-c" />
               </div>
             </>
           )}
