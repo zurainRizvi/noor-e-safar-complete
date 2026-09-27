@@ -140,7 +140,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     >
       <Petals tone="gold-white" amount={38} />
 
-      <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: '0.28em', marginBottom: 8 }}>
+      <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: isRtl ? '0.1em' : '0.28em', marginBottom: 8 }}>
         {isRtl ? 'محبت و مسرت کا خاص دن' : 'SAVE THE AUSPICIOUS DATE'}
       </p>
       <h2

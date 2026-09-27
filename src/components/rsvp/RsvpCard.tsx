@@ -135,9 +135,9 @@ _Zurain & Abeeha's Wedding Invitation_`;
   }
 
   const eventsList = [
-    { id: 'mehndi', labelEn: 'Mehndi (12 Jan)', labelUr: 'مہندی (۱۲ جنوری)', color: theme.events.mehndi.accent },
-    { id: 'baraat', labelEn: 'Baraat (13 Jan)', labelUr: 'بارات (۱۳ جنوری)', color: theme.events.baraat.accent },
-    { id: 'waleema', labelEn: 'Waleema (14 Jan)', labelUr: 'ولیمہ (۱۴ جنوری)', color: theme.events.waleema.accent },
+    { id: 'mehndi', labelEn: 'Mehndi (12 Jan)', labelUr: 'مہندی — ۱۲ جنوری', color: theme.events.mehndi.accent },
+    { id: 'baraat', labelEn: 'Baraat (13 Jan)', labelUr: 'بارات — ۱۳ جنوری', color: theme.events.baraat.accent },
+    { id: 'waleema', labelEn: 'Waleema (14 Jan)', labelUr: 'ولیمہ — ۱۴ جنوری', color: theme.events.waleema.accent },
   ];
 
   const fieldStyle: React.CSSProperties = {
@@ -155,12 +155,14 @@ _Zurain & Abeeha's Wedding Invitation_`;
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontSize: 11,
-    letterSpacing: '0.14em',
-    textTransform: 'uppercase',
+    fontSize: isRtl ? 13 : 11,
+    letterSpacing: isRtl ? '0.04em' : '0.14em',
+    textTransform: isRtl ? 'none' : 'uppercase',
     color: theme.colors.gold,
     marginBottom: 6,
     fontWeight: 600,
+    fontFamily: isRtl ? "'Amiri', serif" : undefined,
+    lineHeight: isRtl ? 1.7 : undefined,
   };
 
   return (
@@ -256,7 +258,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
                       minHeight: 46,
                     }}
                   >
-                    {val === 'yes' ? (isRtl ? '✓ خوشی سے شریک' : '✓ Joyfully Attend') : isRtl ? '✕ معذرت' : '✕ Regretfully Decline'}
+                    {val === 'yes' ? (isRtl ? '✓ خوشی سے شرکت' : '✓ Joyfully Attend') : isRtl ? '✕ معذرت' : '✕ Regretfully Decline'}
                   </button>
                 ))}
               </div>

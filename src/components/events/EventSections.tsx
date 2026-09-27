@@ -45,17 +45,17 @@ export function Blessing({ locale }: { locale: Locale }) {
       }}
     >
       <Petals tone="red-white" amount={22} />
-      <p className="eyebrow" style={{ color: theme.colors.gold }}>
+      <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: isRtl ? '0.1em' : undefined }}>
         {isRtl ? 'اللہ کے نام سے' : 'IN THE NAME OF ALLAH'}
       </p>
       <p className="arabic" style={{ color: theme.colors.ink, margin: '12px 0', fontSize: 28, lineHeight: 1.9, fontFamily: "'Amiri', serif" }}>
         {wedding.invitation.arabic}
       </p>
       <Ornament />
-      <h2 style={{ color: theme.colors.ink, margin: '14px 0 10px', fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif" }}>
+      <h2 style={{ color: theme.colors.ink, margin: '14px 0 10px', fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif", lineHeight: isRtl ? 1.65 : undefined }}>
         {isRtl ? 'محبت سے آغاز' : 'With love, we begin.'}
       </h2>
-      <p className="copy" style={{ color: theme.colors.inkSoft, maxWidth: 330, margin: '0 auto', fontSize: 17, lineHeight: 1.7 }}>
+      <p className="copy" style={{ color: theme.colors.inkSoft, maxWidth: 330, margin: '0 auto', fontSize: isRtl ? 16 : 17, lineHeight: isRtl ? 1.9 : 1.7, fontFamily: isRtl ? "'Amiri', serif" : undefined }}>
         {isRtl
           ? 'اللہ کے نام سے ہم ایک حسین سفر کا آغاز کرتے ہیں اور آپ کو اس لمحے میں شریک ہونے کی دعوت دیتے ہیں۔'
           : 'In the name of Allah, we begin a beautiful journey and invite you to share this precious moment with us.'}
@@ -72,13 +72,14 @@ export function Blessing({ locale }: { locale: Locale }) {
 
 export function Countdown({ locale }: { locale: Locale }) {
   const [left, setLeft] = useState(0);
+  const isRtl = locale === 'ur';
   useEffect(() => {
     const tick = () => setLeft(Math.max(0, new Date(wedding.countdownTarget).getTime() - Date.now()));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
-  const labels = locale === 'ur' ? ['دن', 'گھنٹے', 'منٹ', 'سیکنڈ'] : ['DAYS', 'HOURS', 'MINUTES', 'SECONDS'];
+  const labels = isRtl ? ['دن', 'گھنٹے', 'منٹ', 'سیکنڈ'] : ['DAYS', 'HOURS', 'MINUTES', 'SECONDS'];
   const v = [
     Math.floor(left / 86400000),
     Math.floor(left / 3600000) % 24,
@@ -93,7 +94,8 @@ export function Countdown({ locale }: { locale: Locale }) {
         backgroundColor: '#F4EEE6',
         backgroundImage: 'url(/images/countdown-bg.jpg)',
         backgroundSize: 'cover',
-        backgroundPosition: 'center top',
+        /* Bias to the couple/gazebo so doves stay off-frame */
+        backgroundPosition: 'center 82%',
         backgroundRepeat: 'no-repeat',
         color: theme.colors.ink,
         borderTop: `1px solid ${theme.colors.goldLine}`,
@@ -113,59 +115,44 @@ export function Countdown({ locale }: { locale: Locale }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: 'max(22px, 4.2vh) 20px max(20px, 3vh)',
+          padding: 'max(48px, 7.5vh) 22px max(24px, 3vh)',
+          /* Opaque cream veil fully covers any remaining bird area */
           background:
-            'linear-gradient(180deg, rgba(255,252,247,0.42) 0%, rgba(255,252,247,0.12) 14%, transparent 26%)',
+            'linear-gradient(180deg, #F7F1E8 0%, #F7F1E8 34%, rgba(247,241,232,0.96) 44%, rgba(247,241,232,0.7) 54%, rgba(247,241,232,0.2) 66%, transparent 78%)',
         }}
       >
-        {/* Compact title sits in the floral arch band */}
-        <div style={{ textAlign: 'center', maxWidth: 320 }}>
-          <p
-            className="eyebrow"
-            style={{
-              color: theme.colors.gold,
-              marginBottom: 4,
-              fontSize: 9,
-              textShadow: '0 1px 0 rgba(255,252,247,0.85)',
-            }}
-          >
-            {locale === 'ur' ? 'ابدیت تک' : 'UNTIL FOREVER BEGINS'}
-          </p>
-          <h2
-            style={{
-              color: theme.colors.ink,
-              margin: 0,
-              fontFamily: locale === 'ur' ? "'Amiri', serif" : "'Cormorant Garamond', serif",
-              fontSize: locale === 'ur' ? 'clamp(22px, 5.6vw, 28px)' : 'clamp(24px, 6vw, 30px)',
-              lineHeight: locale === 'ur' ? 1.55 : 1.15,
-              textShadow: '0 1px 0 rgba(255,252,247,0.9)',
-            }}
-          >
-            {locale === 'ur' ? 'دن گن رہے ہیں۔' : 'Counting the days.'}
-          </h2>
-        </div>
-
-        {/* Leave the dove / rings band clear */}
-        <div
-          aria-hidden
-          className="count-dove-gap"
+        <p
+          className="eyebrow"
           style={{
-            width: '100%',
-            height: 'clamp(88px, 16.5vh, 128px)',
-            flexShrink: 0,
+            color: theme.colors.gold,
+            letterSpacing: isRtl ? '0.12em' : '0.28em',
+            marginBottom: 8,
           }}
-        />
-
-        {/* Counter sits in the open cream space below the pigeons */}
+        >
+          {isRtl ? 'ابدیت تک' : 'UNTIL FOREVER BEGINS'}
+        </p>
+        <h2
+          style={{
+            color: theme.colors.ink,
+            margin: '6px 0 12px',
+            fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+            fontSize: isRtl ? 'clamp(26px, 7vw, 34px)' : undefined,
+            lineHeight: isRtl ? 1.65 : 1.15,
+          }}
+        >
+          {isRtl ? 'دن گن رہے ہیں۔' : 'Counting the days.'}
+        </h2>
+        <Ornament />
         <div
           className="count-grid count-grid-merged"
           style={{
+            marginTop: 16,
             width: '100%',
-            maxWidth: 320,
+            maxWidth: 340,
             borderRadius: 18,
             overflow: 'hidden',
             border: `1px solid ${theme.colors.goldLine}`,
-            background: 'rgba(255, 252, 247, 0.78)',
+            background: 'rgba(255, 252, 247, 0.88)',
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
             boxShadow: '0 12px 28px rgba(61, 52, 41, 0.12)',
@@ -174,7 +161,7 @@ export function Countdown({ locale }: { locale: Locale }) {
           {v.map((n, i) => (
             <span key={i} style={{ borderColor: 'rgba(198,161,91,0.28)' }}>
               <strong style={{ color: theme.colors.gold }}>{String(n).padStart(2, '0')}</strong>
-              <small style={{ color: theme.colors.muted }}>{labels[i]}</small>
+              <small style={{ color: theme.colors.muted, letterSpacing: isRtl ? '0.04em' : '0.12em' }}>{labels[i]}</small>
             </span>
           ))}
         </div>
@@ -196,6 +183,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
     locale === 'ur'
       ? ({ Tuesday: 'منگل', Wednesday: 'بدھ', Thursday: 'جمعرات', Friday: 'جمعہ' } as const)[e.day as 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday']
       : e.day;
+  const timeLabel = isRtl ? 'شام ۷:۰۰ – ۱۰:۰۰' : e.time;
+  const monthLabel = isRtl
+    ? date.toLocaleString('ur-PK', { month: 'long' })
+    : date.toLocaleString('en-GB', { month: 'long' }).toUpperCase();
   const ev = theme.events[e.id];
 
   return (
@@ -208,18 +199,44 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         color: theme.colors.ink,
         position: 'relative',
         overflow: 'hidden',
-        padding: '136px 28px 84px',
+        padding: isRtl ? '120px 24px 88px' : '136px 28px 84px',
       }}
     >
       <BotanicalClimber type={e.id} />
       <Petals amount={16} tone={e.id} />
       <EventCornerOrnament type={e.id} isRtl={isRtl} />
-      <p className="eyebrow" style={{ color: theme.colors.gold, position: 'relative', zIndex: 2 }}>
+      <p
+        className="eyebrow"
+        style={{
+          color: theme.colors.gold,
+          position: 'relative',
+          zIndex: 2,
+          letterSpacing: isRtl ? '0.1em' : undefined,
+        }}
+      >
         0{i + 1} · {isRtl ? n[1] : n[0].toUpperCase()}
       </p>
-      <h2 style={{ color: theme.colors.ink, position: 'relative', zIndex: 2, margin: '10px 0' }}>
+      <h2
+        style={{
+          color: theme.colors.ink,
+          position: 'relative',
+          zIndex: 2,
+          margin: '10px 0',
+          fontFamily: isRtl ? "'Amiri', serif" : undefined,
+          lineHeight: isRtl ? 1.55 : undefined,
+        }}
+      >
         {isRtl ? n[1] : n[0]}
-        <em style={{ color: ev.accent, display: 'block', fontSize: '0.55em', marginTop: 10, fontStyle: isRtl ? 'normal' : 'italic' }}>
+        <em
+          style={{
+            color: ev.accent,
+            display: 'block',
+            fontSize: isRtl ? '0.62em' : '0.55em',
+            marginTop: 10,
+            fontStyle: isRtl ? 'normal' : 'italic',
+            lineHeight: isRtl ? 1.7 : undefined,
+          }}
+        >
           {isRtl ? s[1] : s[0]}
         </em>
       </h2>
@@ -228,15 +245,34 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         <strong style={{ color: theme.colors.ink, fontFamily: "'Cormorant Garamond', serif", fontSize: 88, lineHeight: 0.85 }}>
           {date.getDate()}
         </strong>
-        <span style={{ textAlign: 'left', color: theme.colors.inkSoft }}>
+        <span style={{ textAlign: isRtl ? 'right' : 'left', color: theme.colors.inkSoft }}>
           {dayName}
-          <small style={{ display: 'block', marginTop: 6, letterSpacing: '0.18em', color: theme.colors.gold }}>
-            {date.toLocaleString(locale === 'ur' ? 'ur-PK' : 'en-GB', { month: 'long' }).toUpperCase()} · {date.getFullYear()}
+          <small
+            style={{
+              display: 'block',
+              marginTop: 6,
+              letterSpacing: isRtl ? '0.06em' : '0.18em',
+              color: theme.colors.gold,
+              fontFamily: isRtl ? "'Amiri', serif" : undefined,
+              fontSize: isRtl ? 13 : undefined,
+            }}
+          >
+            {monthLabel} · {date.getFullYear()}
           </small>
         </span>
       </div>
-      <p className="event-time" style={{ color: theme.colors.gold, position: 'relative', zIndex: 2 }}>
-        {isRtl ? e.day : e.day} · {e.time}
+      <p
+        className="event-time"
+        style={{
+          color: theme.colors.gold,
+          position: 'relative',
+          zIndex: 2,
+          fontFamily: isRtl ? "'Amiri', serif" : undefined,
+          letterSpacing: isRtl ? '0.04em' : undefined,
+          lineHeight: isRtl ? 1.7 : undefined,
+        }}
+      >
+        {dayName} · {timeLabel}
       </p>
       <div className="venue" style={{ color: theme.colors.inkSoft, position: 'relative', zIndex: 2 }}>
         <MapPin size={16} color={theme.colors.gold} />
@@ -262,14 +298,14 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
 
   return (
     <Card
-      className={`event-schedule ${eventId}`}
+      className={`event-schedule ${eventId}${isRtl ? ' is-urdu' : ''}`}
       style={{
         background: ev.bg,
         borderTop: `1px solid ${ev.border}`,
         position: 'relative',
         overflow: 'hidden',
         textAlign: isRtl ? 'right' : 'left',
-        padding: '120px 28px 168px',
+        padding: isRtl ? '108px 22px 180px' : '120px 28px 168px',
         color: theme.colors.ink,
       }}
     >
@@ -277,14 +313,37 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
       <Petals amount={14} tone={eventId} />
       <ScheduleBow id={eventId} isRtl={isRtl} />
 
-      <div style={{ width: '100%', textAlign: 'center', marginBottom: 28, position: 'relative', zIndex: 2 }}>
-        <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: '0.3em' }}>
+      <div style={{ width: '100%', textAlign: 'center', marginBottom: isRtl ? 24 : 28, position: 'relative', zIndex: 2 }}>
+        <p
+          className="eyebrow"
+          style={{
+            color: theme.colors.gold,
+            letterSpacing: isRtl ? '0.12em' : '0.3em',
+            fontFamily: isRtl ? "'Amiri', serif" : undefined,
+          }}
+        >
           {isRtl ? 'تقریب کا شیڈول' : 'EVENT TIMELINE'}
         </p>
-        <h2 style={{ color: theme.colors.ink, margin: '8px 0 14px' }}>
+        <h2
+          style={{
+            color: theme.colors.ink,
+            margin: '8px 0 14px',
+            fontFamily: isRtl ? "'Amiri', serif" : undefined,
+            lineHeight: isRtl ? 1.6 : undefined,
+          }}
+        >
           {isRtl ? data.nameUr : data.nameEn}
-          <em style={{ color: theme.colors.gold, fontStyle: 'italic', display: 'block', fontSize: '0.65em', marginTop: 6 }}>
-            {isRtl ? 'کا شیڈول' : 'Schedule'}
+          <em
+            style={{
+              color: theme.colors.gold,
+              fontStyle: isRtl ? 'normal' : 'italic',
+              display: 'block',
+              fontSize: isRtl ? '0.72em' : '0.65em',
+              marginTop: 6,
+              lineHeight: isRtl ? 1.7 : undefined,
+            }}
+          >
+            {isRtl ? 'تفصیلی شیڈول' : 'Schedule'}
           </em>
         </h2>
         <Ornament />
@@ -296,9 +355,9 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
           width: '100%',
           maxWidth: 380,
           margin: '0 auto',
-          paddingLeft: isRtl ? 0 : 36,
-          paddingRight: isRtl ? 36 : 0,
-          paddingBottom: 48,
+          paddingLeft: isRtl ? 8 : 36,
+          paddingRight: isRtl ? 36 : 8,
+          paddingBottom: 56,
           zIndex: 2,
         }}
       >
@@ -306,7 +365,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
           style={{
             position: 'absolute',
             top: 12,
-            bottom: 24,
+            bottom: 40,
             left: isRtl ? 'auto' : 10,
             right: isRtl ? 10 : 'auto',
             width: 2,
@@ -320,14 +379,14 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
               key={idx}
               initial={{ opacity: 0, x: isRtl ? 16 : -16 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.55, delay: idx * 0.1 }}
+              viewport={{ once: true, amount: 0.12 }}
+              transition={{ duration: 0.55, delay: idx * 0.08 }}
               onClick={() => setSelectedIdx(selectedIdx === idx ? null : idx)}
               style={{
                 position: 'relative',
-                marginBottom: idx === data.items.length - 1 ? 36 : 20,
+                marginBottom: idx === data.items.length - 1 ? 40 : 18,
                 cursor: 'pointer',
-                padding: '10px 14px',
+                padding: isRtl ? '12px 14px 14px' : '10px 14px',
                 borderRadius: 14,
                 background: isSelected ? 'rgba(198,161,91,0.12)' : 'transparent',
                 border: isSelected ? `1px solid ${theme.colors.goldLine}` : '1px solid transparent',
@@ -337,7 +396,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
               <div
                 style={{
                   position: 'absolute',
-                  top: 12,
+                  top: 14,
                   left: isRtl ? 'auto' : -33,
                   right: isRtl ? -33 : 'auto',
                   width: 16,
@@ -347,21 +406,43 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                   border: `2px solid ${theme.colors.gold}`,
                 }}
               />
-              <span style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', color: theme.colors.gold, marginBottom: 4 }}>
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: isRtl ? 13 : 11,
+                  fontWeight: 600,
+                  letterSpacing: isRtl ? '0.02em' : '0.14em',
+                  color: theme.colors.gold,
+                  marginBottom: 4,
+                  fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                  lineHeight: isRtl ? 1.7 : undefined,
+                }}
+              >
                 {isRtl ? item.timeUr : item.timeEn}
               </span>
               <h3
                 style={{
-                  margin: '0 0 4px',
-                  fontSize: isRtl ? 22 : 24,
+                  margin: '0 0 6px',
+                  fontSize: isRtl ? 20 : 24,
                   color: theme.colors.ink,
                   fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
-                  lineHeight: isRtl ? 1.55 : 1.2,
+                  lineHeight: isRtl ? 1.7 : 1.2,
+                  overflowWrap: 'break-word',
+                  wordBreak: 'normal',
                 }}
               >
                 {isRtl ? item.titleUr : item.titleEn}
               </h3>
-              <p style={{ margin: 0, fontSize: 13, color: theme.colors.inkSoft, lineHeight: isRtl ? 1.75 : 1.45 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: isRtl ? 14 : 13,
+                  color: theme.colors.inkSoft,
+                  lineHeight: isRtl ? 1.85 : 1.45,
+                  fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                  overflowWrap: 'break-word',
+                }}
+              >
                 {isRtl ? item.descUr : item.descEn}
               </p>
             </motion.div>
