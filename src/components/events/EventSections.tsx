@@ -249,19 +249,25 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
 
   // Slide glass up from bottom without touching opacity (keeps blur stable).
   useEffect(() => {
-    if (!showText) {
+    if (!showText) return;
+    let cancelled = false;
+    const start = window.setTimeout(() => {
+      if (cancelled) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setPanelIn(true);
+        return;
+      }
       setPanelIn(false);
-      return;
-    }
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setPanelIn(true);
-      return;
-    }
-    setPanelIn(false);
-    const id = window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => setPanelIn(true));
-    });
-    return () => window.cancelAnimationFrame(id);
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          if (!cancelled) setPanelIn(true);
+        });
+      });
+    }, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(start);
+    };
   }, [showText]);
 
   const revealText = () => {
@@ -533,14 +539,16 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               color: ev.cardAccent,
               position: 'relative',
               zIndex: 2,
-              letterSpacing: isRtl ? '0.04em' : '0.22em',
-              fontSize: isRtl ? 11 : 10,
+              letterSpacing: isRtl ? '0.08em' : '0.28em',
+              fontSize: isRtl ? 12 : 11,
               fontWeight: 700,
               fontFamily: isRtl ? "'Amiri', serif" : undefined,
               maxWidth: '100%',
+              textAlign: 'center',
+              width: '100%',
             }}
           >
-            0{i + 1} · {isRtl ? n[1] : n[0].toUpperCase()}
+            0{i + 1}
           </p>
           <h2
             style={{
@@ -555,6 +563,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               letterSpacing: isRtl ? '0' : '0.01em',
               maxWidth: '100%',
               overflowWrap: 'anywhere',
+              textAlign: 'center',
             }}
           >
             {isRtl ? n[1] : n[0]}
@@ -642,9 +651,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               margin: '2px 0 0',
               maxWidth: '100%',
               overflowWrap: 'anywhere',
+              textAlign: 'center',
             }}
           >
-            {dayName} · {timeLabel}
+            {timeLabel}
           </p>
           <div
             className="venue"
@@ -742,7 +752,12 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
       }}
     >
       <TopCanopyArch type={eventId} />
-      <Petals amount={14} tone={eventId === 'waleema' ? 'waleema-schedule' : eventId} />
+      <Petals
+        amount={14}
+        tone={
+          eventId === 'waleema' ? 'waleema-schedule' : eventId === 'baraat' ? 'baraat-schedule' : eventId
+        }
+      />
       <ScheduleBow id={eventId} isRtl={isRtl} />
 
       <div style={{ width: '100%', textAlign: 'center', marginBottom: isRtl ? 24 : 28, position: 'relative', zIndex: 2 }}>

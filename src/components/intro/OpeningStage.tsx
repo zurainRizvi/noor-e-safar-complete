@@ -20,8 +20,8 @@ type Phase = 'awaitingTap' | 'curtain' | 'hero';
 
 /** Wall-clock overlay schedule (ms after tap) — independent of video buffering. */
 const INVITE_IN_MS = 300;
-const INVITE_OUT_MS = 4000;
-const HERO_IN_MS = 6000;
+const INVITE_OUT_MS = 5000; // +1s so Mrs. Hameed stays longer
+const HERO_IN_MS = 5800; // after invite fully exits — never overlap
 
 export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
   const curtainRef = useRef<HTMLVideoElement>(null);
@@ -222,7 +222,7 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
           >
             <p className="opening-invite-host">Mrs. Hameed Rizvi</p>
             <p className="opening-invite-body">
-              Cordially invites you to the Wedding Ceremony of her Son.
+              Cordially invites you to the Wedding Ceremony of her beloved Son.
             </p>
           </motion.div>
         )}
@@ -297,9 +297,9 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
         {showHero && (
           <motion.div
             key="hero"
-            initial={{ opacity: 0, y: '48%' }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ y: 80 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 1.25, ease: [0.22, 0.82, 0.28, 1] }}
             style={{
               position: 'absolute',
               left: 0,
@@ -313,6 +313,10 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
               pointerEvents: 'none',
             }}
           >
+            {/*
+              Glass stays opacity 1 always — never fade opacity on backdrop-filter
+              (that causes the clear→blur glitch). Slide uses transform only.
+            */}
             <div
               style={{
                 width: '100%',
@@ -320,12 +324,15 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
                 background: theme.colors.creamGlass,
                 backdropFilter: 'blur(14px)',
                 WebkitBackdropFilter: 'blur(14px)',
+                isolation: 'isolate',
+                opacity: 1,
                 border: `1px solid ${theme.colors.goldLine}`,
                 borderRadius: '24px',
                 padding: '28px 22px 24px',
                 boxShadow: '0 20px 50px rgba(0,0,0,0.35)',
                 textAlign: 'center',
                 color: theme.colors.ink,
+                transform: 'translateZ(0)',
               }}
             >
               <p
@@ -349,9 +356,30 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
                   lineHeight: 1.05,
                 }}
               >
-                <em style={{ fontStyle: 'italic' }}>Abeeha</em>
-                <b style={{ color: theme.colors.gold, fontWeight: 500, margin: '0 10px' }}>&</b>
-                <em style={{ fontStyle: 'italic' }}>Zurain</em>
+                <motion.em
+                  style={{ fontStyle: 'italic', display: 'inline-block' }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15, duration: 0.55 }}
+                >
+                  Zurain
+                </motion.em>
+                <motion.b
+                  style={{ color: theme.colors.gold, fontWeight: 500, margin: '0 10px', display: 'inline-block' }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.35, duration: 0.4 }}
+                >
+                  &
+                </motion.b>
+                <motion.em
+                  style={{ fontStyle: 'italic', display: 'inline-block' }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.55 }}
+                >
+                  Abeeha
+                </motion.em>
               </h1>
               <Ornament />
               <p

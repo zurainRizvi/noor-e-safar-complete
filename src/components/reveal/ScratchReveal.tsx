@@ -425,15 +425,35 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                 <>
                   <div className="foil-shimmer" />
                 <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
-                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                    {/* Gold wand — reads clearly on pink foil */}
-                    <circle cx="14" cy="14" r="3.4" fill="#FFF8EE" stroke="#C6A15B" strokeWidth="1.35" />
-                    <path d="M16.4 16.4 L48.6 48.6" stroke="#8A6A2E" strokeWidth="3.4" strokeLinecap="round" />
-                    <path d="M16.4 16.4 L48.6 48.6" stroke="#E0C075" strokeWidth="1.55" strokeLinecap="round" />
-                    <path d="M45.2 45.2 L50.4 50.4" stroke="#5C4A28" strokeWidth="3.6" strokeLinecap="round" />
-                    <path d="M10.6 8.2 L14 14 L8.2 10.8" stroke="#FFF2CE" strokeWidth="1.2" strokeLinecap="round" />
-                    <path d="M19 9 L14 14 L19.6 12.6" stroke="#E0C075" strokeWidth="1.15" strokeLinecap="round" />
-                    <circle cx="14" cy="14" r="1.25" fill="#C6A15B" />
+                  <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+                    {/* Wand shaft pointing toward the heart */}
+                    <path d="M22 22 L46 46" stroke="#8A6A2E" strokeWidth="3.2" strokeLinecap="round" />
+                    <path d="M22 22 L46 46" stroke="#E0C075" strokeWidth="1.5" strokeLinecap="round" />
+                    {/* Soft tip glow on the heart */}
+                    <circle cx="20.5" cy="20.5" r="3.2" fill="#FFF8EE" stroke="#C6A15B" strokeWidth="1.2" />
+                    <circle cx="20.5" cy="20.5" r="1.15" fill="#C6A15B" />
+                    {/* Hand: tucked fingers + index pointing along the wand tip */}
+                    <g transform="translate(44 44) rotate(45)">
+                      {/* Palm */}
+                      <ellipse cx="0" cy="4" rx="5.2" ry="6.2" fill="#F3D2B3" stroke="#C9A07A" strokeWidth="0.7" />
+                      {/* Tucked fingers (curled into fist) */}
+                      <path
+                        d="M-4.2 1.2 C-5.4 -1.2 -3.8 -3.2 -1.6 -2.6 C-0.2 -3.8 1.6 -3.6 2.6 -2.2 C3.8 -3.4 5.6 -2.8 5.4 -0.8 C6.6 0.6 6.2 2.8 4.4 3.6 L-3.6 4.2 C-4.6 3.4 -4.8 2.2 -4.2 1.2 Z"
+                        fill="#EFC4A0"
+                        stroke="#C9A07A"
+                        strokeWidth="0.65"
+                      />
+                      {/* Index finger extended toward wand tip / heart */}
+                      <path
+                        d="M-1.2 -1.6 C-1.6 -4.8 -1.4 -8.6 -0.6 -11.4 C0 -12.4 1.2 -12.5 1.7 -11.5 C2.4 -8.8 2.2 -4.9 1.6 -1.8 C1.3 -0.6 0.2 -0.4 -1.2 -1.6 Z"
+                        fill="#F3D2B3"
+                        stroke="#C9A07A"
+                        strokeWidth="0.7"
+                        strokeLinejoin="round"
+                      />
+                      {/* Knuckle hint */}
+                      <circle cx="0.4" cy="-2.2" r="0.55" fill="#E8B892" opacity="0.8" />
+                    </g>
                   </svg>
                 </div>
                 </>
