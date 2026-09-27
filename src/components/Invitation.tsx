@@ -92,69 +92,13 @@ export default function Invitation() {
       });
     };
     releaseTightScrollers();
-    const layoutTimers = [250, 900].map((ms) => window.setTimeout(releaseTightScrollers, ms));
+    const layoutTimers = [250, 900, 2500].map((ms) => window.setTimeout(releaseTightScrollers, ms));
     window.addEventListener('resize', releaseTightScrollers);
-
-    // If Android eats the click after a still finger, replay it once.
-    let startX = 0;
-    let startY = 0;
-    let armed: HTMLElement | null = null;
-    let replayTimer = 0;
-
-    const tappable = (target: EventTarget | null) => {
-      if (!(target instanceof Element)) return null;
-      if (target.closest('.scratch-surface')) return null;
-      const el = target.closest('button, a, [data-tap]');
-      if (!(el instanceof HTMLElement)) return null;
-      if (el.closest('.scratch-surface')) return null;
-      if (el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true') return null;
-      return el;
-    };
-
-    const onTouchStart = (event: TouchEvent) => {
-      const touch = event.changedTouches[0];
-      if (!touch) return;
-      startX = touch.clientX;
-      startY = touch.clientY;
-      armed = tappable(event.target);
-      window.clearTimeout(replayTimer);
-    };
-
-    const onTouchEnd = (event: TouchEvent) => {
-      const el = armed;
-      armed = null;
-      if (!el || !el.isConnected) return;
-      const touch = event.changedTouches[0];
-      if (!touch) return;
-      if (Math.hypot(touch.clientX - startX, touch.clientY - startY) > 18) return;
-
-      const cancelReplay = () => {
-        window.clearTimeout(replayTimer);
-        main.removeEventListener('click', cancelReplay, true);
-      };
-      main.addEventListener('click', cancelReplay, true);
-      replayTimer = window.setTimeout(() => {
-        main.removeEventListener('click', cancelReplay, true);
-        if (!el.isConnected) return;
-        el.click();
-      }, 480);
-    };
-
-    const onTouchCancel = () => {
-      armed = null;
-    };
-
-    main.addEventListener('touchstart', onTouchStart, { passive: true });
-    main.addEventListener('touchend', onTouchEnd);
-    main.addEventListener('touchcancel', onTouchCancel);
+    void document.fonts?.ready.then(releaseTightScrollers);
 
     return () => {
       layoutTimers.forEach((id) => window.clearTimeout(id));
       window.removeEventListener('resize', releaseTightScrollers);
-      window.clearTimeout(replayTimer);
-      main.removeEventListener('touchstart', onTouchStart);
-      main.removeEventListener('touchend', onTouchEnd);
-      main.removeEventListener('touchcancel', onTouchCancel);
     };
   }, [contentReady, locale]);
 
@@ -238,11 +182,7 @@ export default function Invitation() {
 
       <OpeningStage
         locale={locale}
-        onBegin={() => {
-          startMusic();
-          // Prefetch invitation pages during the curtain so SWIPE DOWN always has somewhere to go.
-          window.setTimeout(() => setContentReady(true), 3500);
-        }}
+        onBegin={startMusic}
         onHeroReady={() => setContentReady(true)}
       />
 
