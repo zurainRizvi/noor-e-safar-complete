@@ -351,16 +351,28 @@ h2 {
   background: #8e2f2f;
 }
 
-.petals.mehndi i:nth-child(odd) {
+.petals.mehndi i:nth-child(3n) {
   background: #B7D0B0;
 }
 
-.petals.baraat i:nth-child(odd) {
+.petals.mehndi i:nth-child(3n + 1) {
+  background: #7BA874;
+}
+
+.petals.baraat i:nth-child(3n) {
   background: #E2B6B6;
 }
 
-.petals.waleema i:nth-child(odd) {
+.petals.baraat i:nth-child(3n + 1) {
+  background: #C48484;
+}
+
+.petals.waleema i:nth-child(3n) {
   background: #B5C7DD;
+}
+
+.petals.waleema i:nth-child(3n + 1) {
+  background: #7E9BC0;
 }
 
 .opening-stage,

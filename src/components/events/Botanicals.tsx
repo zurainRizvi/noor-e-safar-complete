@@ -69,7 +69,11 @@ export function TopCanopyArch({ type }: { type: EventThemeId }) {
         // Center Crest Pair
         { stemX: 205, stemY: 55, lx: 198, ly: 68, angle: -10, s: 1.1 },
         { stemX: 215, stemY: 55, lx: 222, ly: 68, angle: 10, s: 1.1 },
-      ].map((leaf, idx) => (
+      ].map((leaf, idx) => {
+        const tone = idx % 3;
+        const fill = tone === 0 ? '#FFFFFF' : tone === 1 ? flowerColors.secondary : flowerColors.primary;
+        const stroke = tone === 0 ? '#E0D6C3' : tone === 1 ? flowerColors.primary : flowerColors.dark;
+        return (
         <g key={idx}>
           <path
             d={`M ${leaf.stemX} ${leaf.stemY} Q ${(leaf.stemX + leaf.lx) / 2} ${(leaf.stemY + leaf.ly) / 2 - 2} ${leaf.lx} ${leaf.ly}`}
@@ -81,14 +85,16 @@ export function TopCanopyArch({ type }: { type: EventThemeId }) {
           <g transform={`translate(${leaf.lx}, ${leaf.ly}) rotate(${leaf.angle}) scale(${leaf.s})`}>
             <path
               d="M 0 0 C -5 -8 -13 -5 -10 4 C -7 12 0 16 0 16 C 0 16 7 12 10 4 C 13 -5 5 -8 0 0 Z"
-              fill="#FFFFFF"
-              stroke="#E0D6C3"
+              fill={fill}
+              stroke={stroke}
               strokeWidth="0.5"
+              opacity={tone === 0 ? 1 : 0.92}
             />
             <path d="M 0 0 L 0 13" stroke="#C6A15B" strokeWidth="0.5" opacity="0.85" />
           </g>
         </g>
-      ))}
+        );
+      })}
 
       {/* 4. Top Arch Theme Blossoms */}
       {[
@@ -241,7 +247,7 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
       <path d="M 28 200 C 44 195 50 210 40 218 C 32 222 28 212 36 208" fill="none" stroke="#C6A15B" strokeWidth="1" opacity="0.8" />
       <path d="M 36 430 C 50 425 56 440 46 448 C 38 452 34 442 42 438" fill="none" stroke="#C6A15B" strokeWidth="1" opacity="0.8" />
 
-      {/* 4. Physical Branch Stems & Heart-Shaped White Leaves */}
+      {/* 4. Physical Branch Stems & Heart Leaves (white + themed colors mixed) */}
       {[
         // --- TOP ROOT CLUSTER (Dense, lush, directly on root corner) ---
         { stemX: 2, stemY: 4, lx: 14, ly: 12, angle: 35, s: 1.5 },
@@ -264,7 +270,11 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
         { stemX: 24, stemY: 515, lx: 8, ly: 528, angle: -28, s: 1.4 },
         { stemX: 26, stemY: 565, lx: 42, ly: 578, angle: 30, s: 1.2 },
         { stemX: 34, stemY: 615, lx: 18, ly: 628, angle: -25, s: 1.1 },
-      ].map((leaf, idx) => (
+      ].map((leaf, idx) => {
+        const tone = idx % 3;
+        const fill = tone === 0 ? '#FFFFFF' : tone === 1 ? flowerColors.secondary : flowerColors.primary;
+        const stroke = tone === 0 ? '#E0D6C3' : tone === 1 ? flowerColors.primary : flowerColors.dark;
+        return (
         <g key={idx} className="climber-leaf">
           {/* Physical Branch Petiole from Vine directly to Leaf */}
           <path
@@ -278,9 +288,10 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
           <g transform={`translate(${leaf.lx}, ${leaf.ly}) rotate(${leaf.angle}) scale(${leaf.s})`}>
             <path
               d="M 0 0 C -5 -8 -13 -5 -10 4 C -7 12 0 16 0 16 C 0 16 7 12 10 4 C 13 -5 5 -8 0 0 Z"
-              fill="#FFFFFF"
-              stroke="#E0D6C3"
+              fill={fill}
+              stroke={stroke}
               strokeWidth="0.5"
+              opacity={tone === 0 ? 1 : 0.92}
             />
             {/* Gold Central Vein & Side Ribs */}
             <path d="M 0 0 L 0 13" stroke="#C6A15B" strokeWidth="0.5" opacity="0.85" />
@@ -290,7 +301,8 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
             <path d="M 0 8 L 5 6" stroke="#C6A15B" strokeWidth="0.3" opacity="0.6" />
           </g>
         </g>
-      ))}
+        );
+      })}
 
       {/* 5. Theme Blossoms Anchored Along the Vine */}
       {[
