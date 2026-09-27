@@ -464,13 +464,13 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          // Baraat: sit lower so the panel covers from mid-couple down to belly
+          // Baraat: lower so the panel covers from mid-couple down past the belly
           justifyContent: e.id === 'baraat' ? 'flex-start' : 'center',
           padding:
             e.id === 'baraat'
               ? isRtl
-                ? '42% 20px 24px'
-                : '42% 22px 24px'
+                ? '52% 20px 18px'
+                : '52% 22px 18px'
               : isRtl
                 ? '24px 20px'
                 : '24px 22px',

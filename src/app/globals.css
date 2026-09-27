@@ -464,25 +464,25 @@ label,
 }
 
 .petals.waleema i {
-  /* Event card: garden greens only */
-  background: #7BA86F;
-  box-shadow: 0 2px 6px rgba(70, 110, 70, 0.3);
+  /* Event card: white + garden greens */
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(70, 110, 70, 0.28);
 }
 
 .petals.waleema i:nth-child(3n) {
-  background: #5F8A5A;
+  background: #7BA86F;
 }
 
 .petals.waleema i:nth-child(3n + 1) {
-  background: #A3C49A;
+  background: #FFFFFF;
 }
 
 .petals.waleema i:nth-child(5n) {
-  background: #6E9A66;
+  background: #5F8A5A;
 }
 
 .petals.waleema i:nth-child(7n) {
-  background: #8BB580;
+  background: #A3C49A;
 }
 
 .petals.waleema-schedule i {
