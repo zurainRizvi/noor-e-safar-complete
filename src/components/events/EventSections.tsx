@@ -221,51 +221,112 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
     ? date.toLocaleString('ur-PK', { month: 'long' })
     : date.toLocaleString('en-GB', { month: 'long' }).toUpperCase();
   const ev = theme.events[e.id];
+  const freezeLast = ev.freezeLastFrame;
   const videoSrc = mediaUrl(ev.video);
   const posterSrc = mediaUrl(ev.poster);
   const bgSrc = mediaUrl(ev.bgImage);
+  const TEXT_AT = 2.3;
 
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const failSafeRef = useRef<number | null>(null);
+  const textTimerRef = useRef<number | null>(null);
   const startedRef = useRef(false);
-  const [phase, setPhase] = useState<'intro' | 'details'>(() => {
-    if (playedEventIntros.has(e.id)) return 'details';
+  const textRevealedRef = useRef(playedEventIntros.has(e.id));
+
+  const [showText, setShowText] = useState(() => {
+    if (playedEventIntros.has(e.id)) return true;
     if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       playedEventIntros.add(e.id);
-      return 'details';
+      return true;
     }
-    return 'intro';
+    return false;
   });
-  const [videoVisible, setVideoVisible] = useState(() => phase === 'intro');
+  const [videoDone, setVideoDone] = useState(() => playedEventIntros.has(e.id));
+  // Keep video mounted for freeze-last-frame events; others can drop it after fade.
+  const [keepVideo, setKeepVideo] = useState(() => freezeLast || !playedEventIntros.has(e.id));
 
-  const revealDetails = () => {
+  const revealText = () => {
+    if (textRevealedRef.current) return;
+    textRevealedRef.current = true;
+    playedEventIntros.add(e.id);
+    setShowText(true);
+  };
+
+  const finishVideo = () => {
     if (failSafeRef.current != null) {
       window.clearTimeout(failSafeRef.current);
       failSafeRef.current = null;
     }
-    playedEventIntros.add(e.id);
-    setPhase('details');
-    window.setTimeout(() => setVideoVisible(false), 700);
+    if (textTimerRef.current != null) {
+      window.clearTimeout(textTimerRef.current);
+      textTimerRef.current = null;
+    }
+    revealText();
+    setVideoDone(true);
+    const video = videoRef.current;
+    if (freezeLast && video) {
+      try {
+        if (Number.isFinite(video.duration) && video.duration > 0) {
+          video.currentTime = Math.max(0, video.duration - 0.05);
+        }
+      } catch {
+        // ignore seek errors
+      }
+      video.pause();
+      return;
+    }
+    // Soft swap to still background for mehndi / waleema
+    window.setTimeout(() => setKeepVideo(false), 650);
   };
 
   useEffect(() => {
-    if (phase === 'details') return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Revisit: skip intro, park on last frame for Baraat, or drop video for others.
+    if (playedEventIntros.has(e.id) && freezeLast) {
+      const park = () => {
+        try {
+          if (Number.isFinite(video.duration) && video.duration > 0) {
+            video.currentTime = Math.max(0, video.duration - 0.05);
+          }
+        } catch {
+          // ignore
+        }
+        video.pause();
+      };
+      if (video.readyState >= 1) park();
+      else video.addEventListener('loadedmetadata', park, { once: true });
+      return;
+    }
+  }, [e.id, freezeLast]);
+
+  useEffect(() => {
+    if (showText && videoDone) return;
+    if (playedEventIntros.has(e.id) && showText) return;
 
     const root = rootRef.current;
     const video = videoRef.current;
     if (!root || !video) return;
 
-    const armFailSafe = () => {
-      if (failSafeRef.current != null) window.clearTimeout(failSafeRef.current);
-      failSafeRef.current = window.setTimeout(() => {
-        video.pause();
-        revealDetails();
-      }, 8000);
+    const clearTimers = () => {
+      if (failSafeRef.current != null) {
+        window.clearTimeout(failSafeRef.current);
+        failSafeRef.current = null;
+      }
+      if (textTimerRef.current != null) {
+        window.clearTimeout(textTimerRef.current);
+        textTimerRef.current = null;
+      }
+    };
+
+    const onTimeUpdate = () => {
+      if (video.currentTime >= TEXT_AT) revealText();
     };
 
     const tryPlay = () => {
-      if (startedRef.current || playedEventIntros.has(e.id)) return;
+      if (startedRef.current || (playedEventIntros.has(e.id) && showText)) return;
       startedRef.current = true;
       video.muted = true;
       video.defaultMuted = true;
@@ -273,20 +334,26 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
-      armFailSafe();
+
+      textTimerRef.current = window.setTimeout(() => revealText(), Math.round(TEXT_AT * 1000));
+      failSafeRef.current = window.setTimeout(() => finishVideo(), 10000);
+
       const pending = video.play();
       void pending?.catch(() => {
-        revealDetails();
+        revealText();
+        finishVideo();
       });
     };
+
+    video.addEventListener('timeupdate', onTimeUpdate);
+    video.addEventListener('ended', finishVideo);
+    video.addEventListener('error', finishVideo);
 
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         if (!entry) return;
-        if (entry.intersectionRatio >= 0.85) {
-          tryPlay();
-        }
+        if (entry.intersectionRatio >= 0.85) tryPlay();
       },
       { threshold: [0, 0.5, 0.85] }
     );
@@ -294,25 +361,28 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
     observer.observe(root);
     return () => {
       observer.disconnect();
-      if (failSafeRef.current != null) window.clearTimeout(failSafeRef.current);
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      video.removeEventListener('ended', finishVideo);
+      video.removeEventListener('error', finishVideo);
+      clearTimers();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per event card mount
-  }, [e.id, phase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount once per event card
+  }, [e.id]);
 
-  const showDetails = phase === 'details';
+  const showStillBg = videoDone && !freezeLast;
 
   return (
     <Card
       className={`event ${e.id}`}
       style={{
-        backgroundColor: e.id === 'mehndi' ? '#FDF8E7' : e.id === 'baraat' ? '#4A0404' : '#0A2A2A',
-        backgroundImage: showDetails ? `url(${bgSrc})` : undefined,
+        backgroundColor: e.id === 'mehndi' ? '#FDF8E7' : e.id === 'baraat' ? '#2A080C' : '#0A1F24',
+        backgroundImage: showStillBg ? `url(${bgSrc})` : undefined,
         backgroundSize: 'cover',
         backgroundPosition: 'center top',
         backgroundRepeat: 'no-repeat',
         borderTop: `1px solid ${ev.border}`,
         borderBottom: `1px solid ${ev.border}`,
-        color: ev.ink,
+        color: ev.cardInk,
         position: 'relative',
         overflow: 'hidden',
         padding: 0,
@@ -320,8 +390,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
     >
       <div ref={rootRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} aria-hidden />
 
-      {/* Poster under video so the card is never blank while buffering */}
-      {videoVisible && (
+      {keepVideo && (
         <img
           src={posterSrc}
           alt=""
@@ -339,7 +408,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         />
       )}
 
-      {videoVisible && (
+      {keepVideo && (
         <video
           ref={videoRef}
           src={videoSrc}
@@ -349,8 +418,6 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
           preload="auto"
           controls={false}
           disablePictureInPicture
-          onEnded={revealDetails}
-          onError={revealDetails}
           style={{
             position: 'absolute',
             inset: 0,
@@ -360,54 +427,77 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
             objectPosition: 'center top',
             zIndex: 2,
             pointerEvents: 'none',
-            opacity: showDetails ? 0 : 1,
+            opacity: showStillBg ? 0 : 1,
             transition: 'opacity 0.65s ease',
           }}
         />
+      )}
+
+      {/* Soft top scrim so copy sits above the couple, matching the mockups */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 3,
+          background: ev.scrim,
+          opacity: showText ? 1 : 0,
+          transition: 'opacity 0.55s ease',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {showText && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 4, pointerEvents: 'none' }}>
+          <Petals amount={16} tone={e.id} />
+        </div>
       )}
 
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          zIndex: 3,
+          zIndex: 5,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: isRtl ? '120px 24px 88px' : '136px 28px 84px',
+          // Keep copy in the upper safe zone — clear of faces / illustration
+          padding: isRtl ? '72px 24px 88px' : '78px 28px 84px',
           boxSizing: 'border-box',
-          opacity: showDetails ? 1 : 0,
-          transform: showDetails ? 'translateY(0)' : 'translateY(12px)',
-          transition: 'opacity 0.7s ease, transform 0.7s ease',
-          pointerEvents: showDetails ? 'auto' : 'none',
+          opacity: showText ? 1 : 0,
+          transform: showText ? 'translateY(0)' : 'translateY(10px)',
+          transition: 'opacity 0.65s ease, transform 0.65s ease',
+          pointerEvents: showText ? 'auto' : 'none',
         }}
       >
         <p
           className="eyebrow"
           style={{
-            color: ev.accent,
+            color: ev.cardAccent,
             position: 'relative',
             zIndex: 2,
             letterSpacing: isRtl ? '0.1em' : undefined,
+            textShadow: e.id === 'mehndi' ? '0 1px 0 rgba(255,255,255,0.35)' : '0 1px 8px rgba(0,0,0,0.35)',
           }}
         >
           0{i + 1} · {isRtl ? n[1] : n[0].toUpperCase()}
         </p>
         <h2
           style={{
-            color: ev.ink,
+            color: ev.cardInk,
             position: 'relative',
             zIndex: 2,
             margin: '10px 0',
             fontFamily: isRtl ? "'Amiri', serif" : undefined,
             lineHeight: isRtl ? 1.55 : undefined,
+            textShadow: e.id === 'mehndi' ? '0 1px 0 rgba(255,255,255,0.4)' : '0 2px 14px rgba(0,0,0,0.4)',
           }}
         >
           {isRtl ? n[1] : n[0]}
           <em
             style={{
-              color: ev.accent,
+              color: ev.cardAccent,
               display: 'block',
               fontSize: isRtl ? '0.62em' : '0.55em',
               marginTop: 10,
@@ -418,19 +508,27 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
             {isRtl ? s[1] : s[0]}
           </em>
         </h2>
-        <Ornament color={ev.accent} />
-        <div className="date" style={{ position: 'relative', zIndex: 2, margin: '28px 0', justifyContent: 'center' }}>
-          <strong style={{ color: ev.ink, fontFamily: "'Cormorant Garamond', serif", fontSize: 88, lineHeight: 0.85 }}>
+        <Ornament color={ev.cardAccent} />
+        <div className="date" style={{ position: 'relative', zIndex: 2, margin: '22px 0 18px', justifyContent: 'center' }}>
+          <strong
+            style={{
+              color: ev.cardInk,
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 88,
+              lineHeight: 0.85,
+              textShadow: e.id === 'mehndi' ? 'none' : '0 2px 16px rgba(0,0,0,0.4)',
+            }}
+          >
             {date.getDate()}
           </strong>
-          <span style={{ textAlign: isRtl ? 'right' : 'left', color: ev.inkSoft }}>
+          <span style={{ textAlign: isRtl ? 'right' : 'left', color: ev.cardInkSoft }}>
             {dayName}
             <small
               style={{
                 display: 'block',
                 marginTop: 6,
                 letterSpacing: isRtl ? '0.06em' : '0.18em',
-                color: ev.accent,
+                color: ev.cardAccent,
                 fontFamily: isRtl ? "'Amiri', serif" : undefined,
                 fontSize: isRtl ? 13 : undefined,
               }}
@@ -442,7 +540,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         <p
           className="event-time"
           style={{
-            color: ev.accent,
+            color: ev.cardAccent,
             position: 'relative',
             zIndex: 2,
             fontFamily: isRtl ? "'Amiri', serif" : undefined,
@@ -452,8 +550,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         >
           {dayName} · {timeLabel}
         </p>
-        <div className="venue" style={{ color: ev.inkSoft, position: 'relative', zIndex: 2 }}>
-          <MapPin size={16} color={ev.accent} />
+        <div className="venue" style={{ color: ev.cardInkSoft, position: 'relative', zIndex: 2 }}>
+          <MapPin size={16} color={ev.cardAccent} />
           <span>{e.venue}</span>
         </div>
         <div
