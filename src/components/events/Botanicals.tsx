@@ -265,7 +265,7 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
         { stemX: 26, stemY: 565, lx: 42, ly: 578, angle: 30, s: 1.2 },
         { stemX: 34, stemY: 615, lx: 18, ly: 628, angle: -25, s: 1.1 },
       ].map((leaf, idx) => (
-        <g key={idx}>
+        <g key={idx} className="climber-leaf">
           {/* Physical Branch Petiole from Vine directly to Leaf */}
           <path
             d={`M ${leaf.stemX} ${leaf.stemY} Q ${(leaf.stemX + leaf.lx) / 2} ${(leaf.stemY + leaf.ly) / 2 - 2} ${leaf.lx} ${leaf.ly}`}
@@ -303,7 +303,7 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
         { cx: 26, cy: 495, r: 7.5 },
         { cx: 30, cy: 590, r: 7 },
       ].map((fl, i) => (
-        <g key={i} transform={`translate(${fl.cx}, ${fl.cy})`}>
+        <g key={i} className="climber-bloom" transform={`translate(${fl.cx}, ${fl.cy})`}>
           {[0, 72, 144, 216, 288].map((angle, k) => (
             <ellipse
               key={k}
@@ -333,7 +333,7 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
         { cx: 18, cy: 545 },
         { cx: 36, cy: 640 },
       ].map((b, i) => (
-        <g key={i} transform={`translate(${b.cx}, ${b.cy})`}>
+        <g key={i} className="climber-bud" transform={`translate(${b.cx}, ${b.cy})`}>
           <circle cx="0" cy="0" r="3.2" fill="#F7F4EB" stroke="#C6A15B" strokeWidth="0.6" />
           <circle cx="0" cy="0" r="1.6" fill={flowerColors.secondary} />
         </g>
@@ -343,7 +343,7 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
 
   return (
     <div
-      className="botanical-climber-container botanical-sway"
+      className="botanical-climber-container"
       style={{
         position: 'absolute',
         inset: 0,
@@ -356,6 +356,7 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
 
       {/* Left Climber */}
       <div
+        className="climber-side climber-side-left"
         style={{
           position: 'absolute',
           top: 0,
@@ -368,8 +369,9 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
         {renderClimberSide()}
       </div>
 
-      {/* Right Climber (100% Exact Mirror via scaleX(-1)) */}
+      {/* Right Climber (exact mirror via animated scaleX(-1)) */}
       <div
+        className="climber-side climber-side-right"
         style={{
           position: 'absolute',
           top: 0,
@@ -377,7 +379,6 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
           width: '28%',
           height: '88%',
           overflow: 'visible',
-          transform: 'scaleX(-1)',
         }}
       >
         {renderClimberSide()}
