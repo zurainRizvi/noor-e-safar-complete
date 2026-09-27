@@ -13,14 +13,14 @@ import { schedulesData } from '@/components/events/schedulesData';
 
 function calendar(e: WeddingEvent) {
   const d = e.date.replaceAll('-', '');
-  const h = e.time.startsWith('4') ? '110000' : e.time.startsWith('6') ? '130000' : '140000';
   const body = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'BEGIN:VEVENT',
-    `DTSTART:${d}T${h}Z`,
+    `DTSTART:${d}T183000`,
+    `DTEND:${d}T220000`,
     `SUMMARY:${e.name} — Zurain & Abeeha`,
-    `LOCATION:${e.address || e.venue}`,
+    `LOCATION:${e.venue}`,
     'END:VEVENT',
     'END:VCALENDAR',
   ].join('\r\n');
@@ -90,27 +90,76 @@ export function Countdown({ locale }: { locale: Locale }) {
     <Card
       className="count-card"
       style={{
-        background: theme.colors.card,
+        backgroundColor: '#F4EEE6',
+        backgroundImage: 'url(/images/countdown-bg.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundRepeat: 'no-repeat',
         color: theme.colors.ink,
         borderTop: `1px solid ${theme.colors.goldLine}`,
-        padding: '52px 24px',
+        padding: '0',
+        overflow: 'hidden',
       }}
     >
-      <Petals tone="gold-white" amount={36} />
-      <p className="eyebrow" style={{ color: theme.colors.gold }}>
-        {locale === 'ur' ? 'ابدیت تک' : 'UNTIL FOREVER BEGINS'}
-      </p>
-      <h2 style={{ color: theme.colors.ink, margin: '8px 0 18px', fontFamily: "'Cormorant Garamond', serif" }}>
-        {locale === 'ur' ? 'دن گن رہے ہیں۔' : 'Counting the days.'}
-      </h2>
-      <Ornament />
-      <div className="count-grid" style={{ borderColor: theme.colors.goldLine, marginTop: 18 }}>
-        {v.map((n, i) => (
-          <span key={i} style={{ borderColor: theme.colors.goldLine }}>
-            <strong style={{ color: theme.colors.gold }}>{String(n).padStart(2, '0')}</strong>
-            <small style={{ color: theme.colors.muted }}>{labels[i]}</small>
-          </span>
-        ))}
+      <div
+        className="count-overlay"
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          width: '100%',
+          height: '100%',
+          minHeight: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          padding: 'max(52px, 9vh) 22px max(28px, 4vh)',
+          background:
+            'linear-gradient(180deg, rgba(255,252,247,0.55) 0%, rgba(255,252,247,0.28) 28%, rgba(255,252,247,0.08) 48%, transparent 62%)',
+        }}
+      >
+        <p
+          className="eyebrow"
+          style={{
+            color: theme.colors.gold,
+            textShadow: '0 1px 0 rgba(255,252,247,0.8)',
+          }}
+        >
+          {locale === 'ur' ? 'ابدیت تک' : 'UNTIL FOREVER BEGINS'}
+        </p>
+        <h2
+          style={{
+            color: theme.colors.ink,
+            margin: '8px 0 14px',
+            fontFamily: "'Cormorant Garamond', serif",
+            textShadow: '0 1px 0 rgba(255,252,247,0.85)',
+          }}
+        >
+          {locale === 'ur' ? 'دن گن رہے ہیں۔' : 'Counting the days.'}
+        </h2>
+        <Ornament />
+        <div
+          className="count-grid count-grid-merged"
+          style={{
+            marginTop: 16,
+            width: '100%',
+            maxWidth: 340,
+            borderRadius: 18,
+            overflow: 'hidden',
+            border: `1px solid ${theme.colors.goldLine}`,
+            background: 'rgba(255, 252, 247, 0.72)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: '0 12px 28px rgba(61, 52, 41, 0.12)',
+          }}
+        >
+          {v.map((n, i) => (
+            <span key={i} style={{ borderColor: 'rgba(198,161,91,0.28)' }}>
+              <strong style={{ color: theme.colors.gold }}>{String(n).padStart(2, '0')}</strong>
+              <small style={{ color: theme.colors.muted }}>{labels[i]}</small>
+            </span>
+          ))}
+        </div>
       </div>
     </Card>
   );
@@ -173,15 +222,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       </p>
       <div className="venue" style={{ color: theme.colors.inkSoft, position: 'relative', zIndex: 2 }}>
         <MapPin size={16} color={theme.colors.gold} />
-        <span>
-          {e.venue}
-          {e.address ? (
-            <>
-              <br />
-              {e.address}
-            </>
-          ) : null}
-        </span>
+        <span>{e.venue}</span>
       </div>
       <div className="actions" style={{ position: 'relative', zIndex: 2, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 16 }}>
         <a href={e.mapUrl} target="_blank" rel="noreferrer" className="btn soft">
@@ -210,7 +251,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         position: 'relative',
         overflow: 'hidden',
         textAlign: isRtl ? 'right' : 'left',
-        padding: '136px 28px 88px',
+        padding: '136px 28px 120px',
         color: theme.colors.ink,
       }}
     >
@@ -239,6 +280,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
           margin: '0 auto',
           paddingLeft: isRtl ? 0 : 36,
           paddingRight: isRtl ? 36 : 0,
+          paddingBottom: 28,
           zIndex: 2,
         }}
       >
@@ -265,7 +307,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
               onClick={() => setSelectedIdx(selectedIdx === idx ? null : idx)}
               style={{
                 position: 'relative',
-                marginBottom: idx === data.items.length - 1 ? 0 : 20,
+                marginBottom: idx === data.items.length - 1 ? 8 : 20,
                 cursor: 'pointer',
                 padding: '10px 14px',
                 borderRadius: 14,

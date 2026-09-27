@@ -139,9 +139,17 @@ h2 {
   border-block: 1px solid var(--gold-line);
 }
 
+.count-grid-merged {
+  border-block: none;
+}
+
 .count-grid span {
   padding: 22px 3px;
   border-right: 1px solid var(--gold-line);
+}
+
+.count-grid-merged span {
+  padding: 18px 4px;
 }
 
 .count-grid span:last-child {
@@ -154,10 +162,19 @@ h2 {
   color: var(--gold);
 }
 
+.count-grid-merged strong {
+  font-size: 34px;
+  letter-spacing: 0.02em;
+}
+
 .count-grid small {
   font-size: 8px;
   letter-spacing: 0.12em;
   color: var(--muted);
+}
+
+.count-card {
+  background-color: #f4eee6;
 }
 
 .date {
