@@ -8,8 +8,8 @@ import { Card, Ornament } from '@/components/shared/Ornament';
 
 export default function RsvpCard({ locale }: { locale: Locale }) {
   const isRtl = locale === 'ur';
-  const lockedScroll = useRef<number | null>(null);
-  const unlockTimer = useRef<number | null>(null);
+  const savedScroll = useRef<number | null>(null);
+  const resumeTimer = useRef<number | null>(null);
   const [response, setResponse] = useState<'yes' | 'no' | null>(null);
   const [guestCount, setGuestCount] = useState('');
   const [selectedEvents, setSelectedEvents] = useState<string[]>(['mehndi', 'baraat', 'waleema']);
@@ -32,30 +32,20 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     main.classList.toggle('snap-paused', !enabled);
   };
 
-  const holdScroll = () => {
-    const main = getMain();
-    if (!main || lockedScroll.current == null) return;
-    if (Math.abs(main.scrollTop - lockedScroll.current) > 1) {
-      main.scrollTop = lockedScroll.current;
-    }
-  };
-
-  const beginEditing = () => {
+  const pauseSnapForTyping = () => {
     const main = getMain();
     if (!main) return;
-    if (unlockTimer.current != null) {
-      window.clearTimeout(unlockTimer.current);
-      unlockTimer.current = null;
+    if (resumeTimer.current != null) {
+      window.clearTimeout(resumeTimer.current);
+      resumeTimer.current = null;
     }
-    if (lockedScroll.current == null) lockedScroll.current = main.scrollTop;
+    savedScroll.current = main.scrollTop;
     setSnapEnabled(false);
-    holdScroll();
-    requestAnimationFrame(holdScroll);
   };
 
-  const endEditingSoon = () => {
-    if (unlockTimer.current != null) window.clearTimeout(unlockTimer.current);
-    unlockTimer.current = window.setTimeout(() => {
+  const resumeSnapSoon = () => {
+    if (resumeTimer.current != null) window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => {
       const section = document.getElementById('rsvp-section');
       const active = document.activeElement;
       if (
@@ -65,53 +55,68 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
       ) {
         return;
       }
-      lockedScroll.current = null;
+      savedScroll.current = null;
       setSnapEnabled(true);
-      unlockTimer.current = null;
-    }, 800);
+      resumeTimer.current = null;
+    }, 280);
+  };
+
+  /** Autofill can yank scroll; only undo large jumps — never block intentional scrolling. */
+  const correctAutofillJump = () => {
+    const main = getMain();
+    if (!main || savedScroll.current == null) return;
+    const saved = savedScroll.current;
+    const undo = () => {
+      if (Math.abs(main.scrollTop - saved) > 140) main.scrollTop = saved;
+    };
+    undo();
+    requestAnimationFrame(undo);
+    window.setTimeout(undo, 40);
   };
 
   useEffect(() => {
     const section = document.getElementById('rsvp-section');
-    const main = getMain();
-    if (!section || !main) return;
+    if (!section) return;
 
     const onFocusIn = (e: FocusEvent) => {
       const target = e.target;
       if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
-      beginEditing();
+      pauseSnapForTyping();
     };
 
-    const onFocusOut = () => endEditingSoon();
+    const onFocusOut = () => resumeSnapSoon();
 
-    // Autofill often scrolls without a trusted keypress — pin the viewport while editing.
-    const onScroll = () => holdScroll();
     const onAnyEdit = () => {
-      beginEditing();
-      holdScroll();
-      window.setTimeout(holdScroll, 0);
-      window.setTimeout(holdScroll, 50);
-      window.setTimeout(holdScroll, 160);
+      pauseSnapForTyping();
+      correctAutofillJump();
     };
 
     section.addEventListener('focusin', onFocusIn);
     section.addEventListener('focusout', onFocusOut);
     section.addEventListener('input', onAnyEdit, true);
     section.addEventListener('change', onAnyEdit, true);
-    main.addEventListener('scroll', onScroll, { passive: true });
 
     return () => {
       section.removeEventListener('focusin', onFocusIn);
       section.removeEventListener('focusout', onFocusOut);
       section.removeEventListener('input', onAnyEdit, true);
       section.removeEventListener('change', onAnyEdit, true);
-      main.removeEventListener('scroll', onScroll);
-      if (unlockTimer.current != null) window.clearTimeout(unlockTimer.current);
+      if (resumeTimer.current != null) window.clearTimeout(resumeTimer.current);
+      savedScroll.current = null;
       setSnapEnabled(true);
     };
   }, []);
 
+  const chooseAttendance = (val: 'yes' | 'no') => {
+    // Expanding/collapsing the form must never leave scroll frozen.
+    savedScroll.current = null;
+    setSnapEnabled(false);
+    setResponse(val);
+  };
+
   const toggleEvent = (id: string) => {
+    savedScroll.current = null;
+    setSnapEnabled(false);
     if (selectedEvents.includes(id)) {
       if (selectedEvents.length > 1) setSelectedEvents(selectedEvents.filter((e) => e !== id));
     } else {
@@ -154,7 +159,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
     };
     await rsvpService.submit({ ...payload, guests: Number(payload.guests) });
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-    lockedScroll.current = null;
+    savedScroll.current = null;
     setSnapEnabled(true);
     setSubmittedData(payload);
     try {
@@ -170,6 +175,8 @@ _Zurain & Abeeha's Wedding Invitation_`;
     { id: 'baraat', labelEn: 'Baraat (13 Jan)', labelUr: 'بارات — ۱۳ جنوری', color: theme.events.baraat.accent },
     { id: 'waleema', labelEn: 'Waleema (14 Jan)', labelUr: 'ولیمہ — ۱۴ جنوری', color: theme.events.waleema.accent },
   ];
+  const topEvents = eventsList.filter((e) => e.id === 'mehndi' || e.id === 'baraat');
+  const waleemaEvent = eventsList.find((e) => e.id === 'waleema')!;
 
   const fieldStyle: React.CSSProperties = {
     width: '100%',
@@ -194,7 +201,21 @@ _Zurain & Abeeha's Wedding Invitation_`;
     fontWeight: 600,
     fontFamily: isRtl ? "'Amiri', serif" : undefined,
     lineHeight: isRtl ? 1.7 : undefined,
+    textAlign: 'center',
   };
+
+  const eventBtnStyle = (on: boolean, color: string): React.CSSProperties => ({
+    padding: '11px 12px',
+    borderRadius: 12,
+    border: on ? `1.5px solid ${color}` : `1px solid ${theme.colors.goldLine}`,
+    background: on ? `${color}22` : theme.colors.cardSolid,
+    color: theme.colors.ink,
+    textAlign: 'center',
+    cursor: 'pointer',
+    fontSize: isRtl ? 13 : 13,
+    minHeight: 42,
+    fontFamily: isRtl ? "'Amiri', serif" : undefined,
+  });
 
   return (
     <Card
@@ -237,19 +258,13 @@ _Zurain & Abeeha's Wedding Invitation_`;
           <form
             onSubmit={handleSubmit}
             autoComplete="on"
-            onPointerDown={(e) => {
-              const target = e.target;
-              if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-                beginEditing();
-              }
-            }}
             style={{
               width: '100%',
               margin: '12px auto 0',
               display: 'flex',
               flexDirection: 'column',
               gap: 12,
-              textAlign: isRtl ? 'right' : 'left',
+              textAlign: 'center',
               overflowAnchor: 'none',
             }}
           >
@@ -260,11 +275,11 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 autoComplete="name"
                 required
                 value={guestName}
-                onFocus={() => beginEditing()}
+                onFocus={() => pauseSnapForTyping()}
                 onChange={(e) => {
-                  beginEditing();
+                  pauseSnapForTyping();
                   setGuestName(e.target.value);
-                  holdScroll();
+                  correctAutofillJump();
                 }}
                 placeholder={isRtl ? 'اپنا نام...' : 'Enter your name...'}
                 style={fieldStyle}
@@ -278,7 +293,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
                   <button
                     key={val}
                     type="button"
-                    onClick={() => setResponse(val)}
+                    onClick={() => chooseAttendance(val)}
                     style={{
                       padding: '12px 12px',
                       borderRadius: 14,
@@ -309,11 +324,11 @@ _Zurain & Abeeha's Wedding Invitation_`;
                     min={1}
                     max={8}
                     value={guestCount}
-                    onFocus={() => beginEditing()}
+                    onFocus={() => pauseSnapForTyping()}
                     onChange={(e) => {
-                      beginEditing();
+                      pauseSnapForTyping();
                       setGuestCount(e.target.value);
-                      holdScroll();
+                      correctAutofillJump();
                     }}
                     placeholder="1"
                     style={fieldStyle}
@@ -321,30 +336,44 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 </div>
                 <div>
                   <label style={{ ...labelStyle, marginBottom: 8 }}>{isRtl ? 'تقریبات' : 'EVENTS'}</label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {eventsList.map((ev) => {
-                      const on = selectedEvents.includes(ev.id);
-                      return (
-                        <button
-                          key={ev.id}
-                          type="button"
-                          onClick={() => toggleEvent(ev.id)}
-                          style={{
-                            padding: '11px 14px',
-                            borderRadius: 12,
-                            border: on ? `1.5px solid ${ev.color}` : `1px solid ${theme.colors.goldLine}`,
-                            background: on ? `${ev.color}22` : theme.colors.cardSolid,
-                            color: theme.colors.ink,
-                            textAlign: isRtl ? 'right' : 'left',
-                            cursor: 'pointer',
-                            fontSize: 14,
-                            minHeight: 42,
-                          }}
-                        >
-                          {isRtl ? ev.labelUr : ev.labelEn}
-                        </button>
-                      );
-                    })}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 8,
+                      width: '100%',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: 8,
+                        width: '100%',
+                        maxWidth: 340,
+                      }}
+                    >
+                      {topEvents.map((ev) => {
+                        const on = selectedEvents.includes(ev.id);
+                        return (
+                          <button key={ev.id} type="button" onClick={() => toggleEvent(ev.id)} style={eventBtnStyle(on, ev.color)}>
+                            {isRtl ? ev.labelUr : ev.labelEn}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => toggleEvent(waleemaEvent.id)}
+                      style={{
+                        ...eventBtnStyle(selectedEvents.includes(waleemaEvent.id), waleemaEvent.color),
+                        width: '100%',
+                        maxWidth: 168,
+                      }}
+                    >
+                      {isRtl ? waleemaEvent.labelUr : waleemaEvent.labelEn}
+                    </button>
                   </div>
                 </div>
               </>
@@ -356,11 +385,11 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 name="message"
                 autoComplete="off"
                 value={guestMessage}
-                onFocus={() => beginEditing()}
+                onFocus={() => pauseSnapForTyping()}
                 onChange={(e) => {
-                  beginEditing();
+                  pauseSnapForTyping();
                   setGuestMessage(e.target.value);
-                  holdScroll();
+                  correctAutofillJump();
                 }}
                 rows={2}
                 style={{ ...fieldStyle, resize: 'none' }}
