@@ -8,7 +8,6 @@ import { Card, Ornament } from '@/components/shared/Ornament';
 
 export default function RsvpCard({ locale }: { locale: Locale }) {
   const isRtl = locale === 'ur';
-  const sectionRef = useRef<HTMLElement | null>(null);
   const savedMainScroll = useRef<number | null>(null);
   const [response, setResponse] = useState<'yes' | 'no' | null>(null);
   const [guestCount, setGuestCount] = useState('');
@@ -26,6 +25,12 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
 
   const getMain = () => document.querySelector('main');
 
+  const setSnapEnabled = (enabled: boolean) => {
+    const main = getMain();
+    if (!main) return;
+    main.classList.toggle('snap-paused', !enabled);
+  };
+
   const preserveMainScroll = () => {
     const main = getMain();
     if (!main) return;
@@ -38,12 +43,11 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     requestAnimationFrame(restore);
     setTimeout(restore, 0);
     setTimeout(restore, 50);
-    setTimeout(restore, 120);
+    setTimeout(restore, 150);
   };
 
   useEffect(() => {
-    // Autofill can expand fields / shift focus and yank scroll-snap to the next screen.
-    const section = sectionRef.current;
+    const section = document.getElementById('rsvp-section');
     if (!section) return;
 
     const onFocusIn = (e: FocusEvent) => {
@@ -51,11 +55,30 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
       if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
       const main = getMain();
       if (main) savedMainScroll.current = main.scrollTop;
+      setSnapEnabled(false);
       preserveMainScroll();
     };
 
+    const onFocusOut = () => {
+      setTimeout(() => {
+        const active = document.activeElement;
+        if (
+          (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) &&
+          section.contains(active)
+        ) {
+          return;
+        }
+        setSnapEnabled(true);
+      }, 180);
+    };
+
     section.addEventListener('focusin', onFocusIn);
-    return () => section.removeEventListener('focusin', onFocusIn);
+    section.addEventListener('focusout', onFocusOut);
+    return () => {
+      section.removeEventListener('focusin', onFocusIn);
+      section.removeEventListener('focusout', onFocusOut);
+      setSnapEnabled(true);
+    };
   }, []);
 
   const toggleEvent = (id: string) => {
@@ -101,6 +124,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
     };
     await rsvpService.submit({ ...payload, guests: Number(payload.guests) });
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    setSnapEnabled(true);
     setSubmittedData(payload);
     try {
       const confetti = (await import('canvas-confetti')).default;
@@ -147,19 +171,14 @@ _Zurain & Abeeha's Wedding Invitation_`;
         background: theme.colors.card,
         borderTop: `1px solid ${theme.colors.goldLine}`,
         width: '100%',
-        padding: '36px 22px max(56px, calc(env(safe-area-inset-bottom, 0px) + 28px))',
+        padding: '36px 22px max(72px, calc(env(safe-area-inset-bottom, 0px) + 40px))',
         position: 'relative',
         overflow: 'visible',
         color: theme.colors.ink,
         justifyContent: 'flex-start',
       }}
     >
-      <div
-        ref={(node) => {
-          sectionRef.current = node?.closest('section') ?? null;
-        }}
-        style={{ width: '100%', maxWidth: 380, margin: '0 auto' }}
-      >
+      <div style={{ width: '100%', maxWidth: 380, margin: '0 auto' }}>
         <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: '0.28em', marginBottom: 8 }}>
           {isRtl ? 'آپ کی تشریف آوری' : 'R.S.V.P.'}
         </p>
@@ -205,6 +224,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 onFocus={() => {
                   const main = getMain();
                   if (main) savedMainScroll.current = main.scrollTop;
+                  setSnapEnabled(false);
                 }}
                 onChange={(e) => {
                   setGuestName(e.target.value);
@@ -253,6 +273,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
                     min={1}
                     max={8}
                     value={guestCount}
+                    onFocus={() => setSnapEnabled(false)}
                     onChange={(e) => setGuestCount(e.target.value)}
                     placeholder="1"
                     style={fieldStyle}
@@ -294,6 +315,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
               <textarea
                 name="message"
                 value={guestMessage}
+                onFocus={() => setSnapEnabled(false)}
                 onChange={(e) => setGuestMessage(e.target.value)}
                 rows={2}
                 style={{ ...fieldStyle, resize: 'none' }}

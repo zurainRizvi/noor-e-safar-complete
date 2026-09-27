@@ -113,41 +113,59 @@ export function Countdown({ locale }: { locale: Locale }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: 'max(52px, 9vh) 22px max(28px, 4vh)',
+          padding: 'max(22px, 4.2vh) 20px max(20px, 3vh)',
           background:
-            'linear-gradient(180deg, rgba(255,252,247,0.55) 0%, rgba(255,252,247,0.28) 28%, rgba(255,252,247,0.08) 48%, transparent 62%)',
+            'linear-gradient(180deg, rgba(255,252,247,0.42) 0%, rgba(255,252,247,0.12) 14%, transparent 26%)',
         }}
       >
-        <p
-          className="eyebrow"
+        {/* Compact title sits in the floral arch band */}
+        <div style={{ textAlign: 'center', maxWidth: 320 }}>
+          <p
+            className="eyebrow"
+            style={{
+              color: theme.colors.gold,
+              marginBottom: 4,
+              fontSize: 9,
+              textShadow: '0 1px 0 rgba(255,252,247,0.85)',
+            }}
+          >
+            {locale === 'ur' ? 'ابدیت تک' : 'UNTIL FOREVER BEGINS'}
+          </p>
+          <h2
+            style={{
+              color: theme.colors.ink,
+              margin: 0,
+              fontFamily: locale === 'ur' ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+              fontSize: locale === 'ur' ? 'clamp(22px, 5.6vw, 28px)' : 'clamp(24px, 6vw, 30px)',
+              lineHeight: locale === 'ur' ? 1.55 : 1.15,
+              textShadow: '0 1px 0 rgba(255,252,247,0.9)',
+            }}
+          >
+            {locale === 'ur' ? 'دن گن رہے ہیں۔' : 'Counting the days.'}
+          </h2>
+        </div>
+
+        {/* Leave the dove / rings band clear */}
+        <div
+          aria-hidden
+          className="count-dove-gap"
           style={{
-            color: theme.colors.gold,
-            textShadow: '0 1px 0 rgba(255,252,247,0.8)',
+            width: '100%',
+            height: 'clamp(88px, 16.5vh, 128px)',
+            flexShrink: 0,
           }}
-        >
-          {locale === 'ur' ? 'ابدیت تک' : 'UNTIL FOREVER BEGINS'}
-        </p>
-        <h2
-          style={{
-            color: theme.colors.ink,
-            margin: '8px 0 14px',
-            fontFamily: "'Cormorant Garamond', serif",
-            textShadow: '0 1px 0 rgba(255,252,247,0.85)',
-          }}
-        >
-          {locale === 'ur' ? 'دن گن رہے ہیں۔' : 'Counting the days.'}
-        </h2>
-        <Ornament />
+        />
+
+        {/* Counter sits in the open cream space below the pigeons */}
         <div
           className="count-grid count-grid-merged"
           style={{
-            marginTop: 16,
             width: '100%',
-            maxWidth: 340,
+            maxWidth: 320,
             borderRadius: 18,
             overflow: 'hidden',
             border: `1px solid ${theme.colors.goldLine}`,
-            background: 'rgba(255, 252, 247, 0.72)',
+            background: 'rgba(255, 252, 247, 0.78)',
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
             boxShadow: '0 12px 28px rgba(61, 52, 41, 0.12)',
@@ -251,7 +269,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         position: 'relative',
         overflow: 'hidden',
         textAlign: isRtl ? 'right' : 'left',
-        padding: '136px 28px 120px',
+        padding: '120px 28px 168px',
         color: theme.colors.ink,
       }}
     >
@@ -259,7 +277,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
       <Petals amount={14} tone={eventId} />
       <ScheduleBow id={eventId} isRtl={isRtl} />
 
-      <div style={{ width: '100%', textAlign: 'center', marginBottom: 32, position: 'relative', zIndex: 2 }}>
+      <div style={{ width: '100%', textAlign: 'center', marginBottom: 28, position: 'relative', zIndex: 2 }}>
         <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: '0.3em' }}>
           {isRtl ? 'تقریب کا شیڈول' : 'EVENT TIMELINE'}
         </p>
@@ -280,7 +298,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
           margin: '0 auto',
           paddingLeft: isRtl ? 0 : 36,
           paddingRight: isRtl ? 36 : 0,
-          paddingBottom: 28,
+          paddingBottom: 48,
           zIndex: 2,
         }}
       >
@@ -307,7 +325,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
               onClick={() => setSelectedIdx(selectedIdx === idx ? null : idx)}
               style={{
                 position: 'relative',
-                marginBottom: idx === data.items.length - 1 ? 8 : 20,
+                marginBottom: idx === data.items.length - 1 ? 36 : 20,
                 cursor: 'pointer',
                 padding: '10px 14px',
                 borderRadius: 14,

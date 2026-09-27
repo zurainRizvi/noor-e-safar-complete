@@ -78,20 +78,26 @@ main {
   justify-content: safe center;
 }
 
-/* RSVP must grow with the form — never clip the submit button */
+/* RSVP grows with the form, but stays a snap target so it isn't skipped */
 .card.page-snap.rsvp {
   height: auto;
   min-height: 100dvh;
   max-height: none;
   overflow: visible;
   justify-content: flex-start;
-  scroll-snap-align: none;
-  scroll-snap-stop: normal;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   overscroll-behavior-y: contain;
 }
 
+/* Schedules need room under the last Celebration item */
+.card.page-snap.event-schedule {
+  justify-content: flex-start;
+  padding-bottom: max(168px, calc(env(safe-area-inset-bottom, 0px) + 120px));
+}
+
 main.snap-paused {
-  scroll-snap-type: none;
+  scroll-snap-type: none !important;
 }
 
 .rsvp form {
