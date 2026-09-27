@@ -22,6 +22,40 @@ export default function Invitation() {
   const primed = useRef(false);
 
   useEffect(() => {
+    const root = document.documentElement;
+    let typing = false;
+    const apply = () => {
+      if (typing) return;
+      root.style.setProperty('--app-h', `${window.innerHeight}px`);
+    };
+    apply();
+
+    const onFocusIn = (e: FocusEvent) => {
+      const target = e.target;
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) typing = true;
+    };
+    const onFocusOut = () => {
+      window.setTimeout(() => {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) return;
+        typing = false;
+        apply();
+      }, 450);
+    };
+
+    window.addEventListener('resize', apply);
+    window.visualViewport?.addEventListener('resize', apply);
+    document.addEventListener('focusin', onFocusIn);
+    document.addEventListener('focusout', onFocusOut);
+    return () => {
+      window.removeEventListener('resize', apply);
+      window.visualViewport?.removeEventListener('resize', apply);
+      document.removeEventListener('focusin', onFocusIn);
+      document.removeEventListener('focusout', onFocusOut);
+    };
+  }, []);
+
+  useEffect(() => {
     const el = audio.current;
     if (!el) return;
 

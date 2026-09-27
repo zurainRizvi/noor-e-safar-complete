@@ -86,8 +86,8 @@ export function Countdown({ locale }: { locale: Locale }) {
     Math.floor(left / 60000) % 60,
     Math.floor(left / 1000) % 60,
   ];
-  // Matches the illustration backdrop cream
-  const backdrop = '#EDEBE6';
+  // Same gray as the illustration sky, so type sits in the open center.
+  const backdrop = '#E4E5E0';
   const accent = theme.colors.blush;
 
   return (
@@ -105,37 +105,6 @@ export function Countdown({ locale }: { locale: Locale }) {
         overflow: 'hidden',
       }}
     >
-      {/* Full-width cream cover — hides birds/rings in EN and UR */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: '10%',
-          height: isRtl ? '32%' : '26%',
-          background: backdrop,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      />
-      {/* Extra soft edges so nothing peeks around the counter */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '12%',
-          transform: 'translateX(-50%)',
-          width: '94%',
-          height: isRtl ? '30%' : '24%',
-          borderRadius: 24,
-          background: backdrop,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      />
-
       <div
         className="count-overlay"
         style={{
@@ -148,7 +117,7 @@ export function Countdown({ locale }: { locale: Locale }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: isRtl ? 'max(68px, 12vh) 22px max(24px, 3vh)' : 'max(72px, 13vh) 22px max(24px, 3vh)',
+          padding: isRtl ? 'clamp(78px, 15vh, 124px) 22px 18px' : 'clamp(84px, 14.5vh, 128px) 26px 18px',
         }}
       >
         <p
@@ -176,22 +145,16 @@ export function Countdown({ locale }: { locale: Locale }) {
         <div
           className="count-grid count-grid-merged"
           style={{
-            marginTop: 14,
+            marginTop: 4,
             width: '100%',
-            maxWidth: 320,
-            borderRadius: 18,
-            overflow: 'hidden',
-            border: `1px solid ${theme.colors.blushLine}`,
-            background: 'rgba(237, 235, 230, 0.92)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            boxShadow: '0 10px 24px rgba(61, 52, 41, 0.08)',
+            maxWidth: 340,
+            background: 'transparent',
           }}
         >
           {v.map((n, i) => (
-            <span key={i} style={{ borderColor: 'rgba(201,149,158,0.28)' }}>
-              <strong style={{ color: accent }}>{String(n).padStart(2, '0')}</strong>
-              <small style={{ color: theme.colors.muted, letterSpacing: isRtl ? '0.04em' : '0.12em' }}>{labels[i]}</small>
+            <span key={i}>
+              <strong style={{ color: accent, fontVariantNumeric: 'tabular-nums' }}>{String(n).padStart(2, '0')}</strong>
+              <small style={{ color: theme.colors.muted, letterSpacing: isRtl ? '0.04em' : '0.16em' }}>{labels[i]}</small>
             </span>
           ))}
         </div>

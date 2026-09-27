@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { theme } from '@/config/theme';
 import { rsvpService } from '@/services/rsvp';
 import { type Locale } from '@/config/translations';
@@ -8,7 +8,6 @@ import { Card, Ornament } from '@/components/shared/Ornament';
 
 export default function RsvpCard({ locale }: { locale: Locale }) {
   const isRtl = locale === 'ur';
-  const savedMainScroll = useRef<number | null>(null);
   const [response, setResponse] = useState<'yes' | 'no' | null>(null);
   const [guestCount, setGuestCount] = useState('');
   const [selectedEvents, setSelectedEvents] = useState<string[]>(['mehndi', 'baraat', 'waleema']);
@@ -31,21 +30,6 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     main.classList.toggle('snap-paused', !enabled);
   };
 
-  const preserveMainScroll = () => {
-    const main = getMain();
-    if (!main) return;
-    const top = savedMainScroll.current ?? main.scrollTop;
-    savedMainScroll.current = top;
-    const restore = () => {
-      main.scrollTop = top;
-    };
-    restore();
-    requestAnimationFrame(restore);
-    setTimeout(restore, 0);
-    setTimeout(restore, 50);
-    setTimeout(restore, 150);
-  };
-
   useEffect(() => {
     const section = document.getElementById('rsvp-section');
     if (!section) return;
@@ -53,10 +37,7 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     const onFocusIn = (e: FocusEvent) => {
       const target = e.target;
       if (!(target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement)) return;
-      const main = getMain();
-      if (main) savedMainScroll.current = main.scrollTop;
       setSnapEnabled(false);
-      preserveMainScroll();
     };
 
     const onFocusOut = () => {
@@ -206,6 +187,12 @@ _Zurain & Abeeha's Wedding Invitation_`;
           <form
             onSubmit={handleSubmit}
             autoComplete="on"
+            onPointerDown={(e) => {
+              const target = e.target;
+              if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+                setSnapEnabled(false);
+              }
+            }}
             style={{
               width: '100%',
               margin: '12px auto 0',
@@ -223,16 +210,8 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 autoComplete="name"
                 required
                 value={guestName}
-                onFocus={() => {
-                  const main = getMain();
-                  if (main) savedMainScroll.current = main.scrollTop;
-                  setSnapEnabled(false);
-                }}
-                onChange={(e) => {
-                  setGuestName(e.target.value);
-                  preserveMainScroll();
-                }}
-                onInput={() => preserveMainScroll()}
+                onFocus={() => setSnapEnabled(false)}
+                onChange={(e) => setGuestName(e.target.value)}
                 placeholder={isRtl ? 'اپنا نام...' : 'Enter your name...'}
                 style={fieldStyle}
               />
@@ -340,9 +319,6 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 letterSpacing: '0.12em',
                 cursor: !response || !guestName.trim() ? 'not-allowed' : 'pointer',
                 minHeight: 48,
-                position: 'sticky',
-                bottom: 'max(12px, env(safe-area-inset-bottom, 0px))',
-                zIndex: 5,
                 boxShadow: '0 8px 22px rgba(61,52,41,0.14)',
               }}
             >

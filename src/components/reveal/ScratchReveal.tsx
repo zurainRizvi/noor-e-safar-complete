@@ -13,7 +13,8 @@ const pink = {
   line: theme.colors.blushLine,
 };
 
-const backdrop = '#EDEBE6';
+// Matches the dove illustration backdrop so the crop has no visible edge.
+const backdrop = '#E4E5E0';
 
 export default function ScratchReveal({ locale }: { locale: Locale }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -142,19 +143,19 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         borderBottom: `1px solid ${pink.line}`,
         color: theme.colors.ink,
         textAlign: 'center',
-        padding: '0 18px max(20px, 2.5vh)',
+        padding: '0 0 max(20px, 2.5vh)',
         position: 'relative',
         overflow: 'hidden',
         justifyContent: 'flex-start',
       }}
     >
-      {/* Top pink flowers — same arrangement style as counting days */}
+      {/* Full-bleed floral arch. The image is zoomed so the garland reaches both edges. */}
       <div
         aria-hidden
         style={{
           position: 'relative',
           width: '100%',
-          height: 'min(26vh, 190px)',
+          height: 'min(23vh, 176px)',
           overflow: 'hidden',
           flexShrink: 0,
           zIndex: 1,
@@ -165,7 +166,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           alt=""
           style={{
             width: '100%',
-            height: '420%',
+            height: '560%',
             objectFit: 'cover',
             objectPosition: 'center top',
             display: 'block',
@@ -182,6 +183,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           width: '100%',
           maxWidth: 360,
           margin: '0 auto',
+          padding: '0 18px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -227,31 +229,21 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         </h2>
         <Ornament color={pink.main} />
 
-        {/* Birds holding rings — visible between title and scratch box */}
+        {/* Doves and rings only — crop excludes the surrounding flowers. */}
         <div
           aria-hidden
           style={{
-            width: 'min(72%, 270px)',
-            height: 86,
-            margin: '4px auto 10px',
-            overflow: 'hidden',
-            position: 'relative',
+            width: 'min(214px, 58vw)',
+            aspectRatio: '340 / 200',
+            margin: '2px auto 8px',
             flexShrink: 0,
+            backgroundColor: backdrop,
+            backgroundImage: 'url(/images/floral-frame.png)',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '282.35% auto',
+            backgroundPosition: '50% 95.92%',
           }}
-        >
-          <img
-            src="/images/floral-frame.png"
-            alt=""
-            style={{
-              position: 'absolute',
-              left: '50%',
-              width: '115%',
-              maxWidth: 'none',
-              transform: 'translateX(-50%) translateY(-56%)',
-              display: 'block',
-            }}
-          />
-        </div>
+        />
 
         {/* Scratch box below the birds */}
         <div

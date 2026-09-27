@@ -38,7 +38,7 @@ select {
 main {
   width: 100%;
   max-width: 480px;
-  height: 100dvh;
+  height: var(--app-h, 100svh);
   margin: 0 auto;
   background: var(--page);
   box-shadow: 0 0 70px rgba(61, 52, 41, 0.12);
@@ -63,9 +63,9 @@ main {
 }
 
 .page-snap {
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
+  height: var(--app-h, 100svh);
+  min-height: var(--app-h, 100svh);
+  max-height: var(--app-h, 100svh);
   scroll-snap-align: start;
   scroll-snap-stop: always;
   overflow-x: hidden;
@@ -81,13 +81,14 @@ main {
 /* RSVP grows with the form, but stays a snap target so it isn't skipped */
 .card.page-snap.rsvp {
   height: auto;
-  min-height: 100dvh;
+  min-height: var(--app-h, 100svh);
   max-height: none;
   overflow: visible;
   justify-content: flex-start;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   overscroll-behavior-y: contain;
+  transform: none !important;
 }
 
 /* Schedules need room under the last Celebration item; Urdu needs auto height */
@@ -98,7 +99,7 @@ main {
 
 .card.page-snap.event-schedule.is-urdu {
   height: auto;
-  min-height: 100dvh;
+  min-height: var(--app-h, 100svh);
   max-height: none;
   overflow: visible;
   scroll-snap-align: start;
@@ -130,6 +131,7 @@ main {
 
 main.snap-paused {
   scroll-snap-type: none !important;
+  overflow-anchor: none;
 }
 
 .rsvp form {
@@ -213,7 +215,8 @@ h2 {
 }
 
 .count-grid-merged span {
-  padding: 18px 4px;
+  padding: 6px 2px 2px;
+  border-right: none;
 }
 
 .count-grid span:last-child {
@@ -227,8 +230,10 @@ h2 {
 }
 
 .count-grid-merged strong {
-  font-size: 34px;
+  font-size: clamp(36px, 10vw, 44px);
+  font-weight: 500;
   letter-spacing: 0.02em;
+  line-height: 1;
 }
 
 .count-grid small {
@@ -238,7 +243,13 @@ h2 {
 }
 
 .count-card {
-  background-color: #f4eee6;
+  background-color: #e4e5e0;
+}
+
+.count-grid-merged small {
+  display: block;
+  margin-top: 8px;
+  font-size: 9px;
 }
 
 .date {
