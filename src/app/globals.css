@@ -91,19 +91,16 @@ main {
   transform: none !important;
 }
 
-/* Schedules need room under the last Celebration item; Urdu needs auto height */
+/* Schedules need room under the last item — grow past one viewport on all locales */
 .card.page-snap.event-schedule {
-  justify-content: flex-start;
-  padding-bottom: max(168px, calc(env(safe-area-inset-bottom, 0px) + 120px));
-}
-
-.card.page-snap.event-schedule.is-urdu {
   height: auto;
   min-height: var(--app-h, 100svh);
   max-height: none;
   overflow: visible;
+  justify-content: flex-start;
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  padding-bottom: max(168px, calc(env(safe-area-inset-bottom, 0px) + 120px));
 }
 
 [dir='rtl'] .eyebrow {

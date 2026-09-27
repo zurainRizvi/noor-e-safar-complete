@@ -1,14 +1,21 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CalendarDays, MapPin } from 'lucide-react';
-import { wedding, type WeddingEvent } from '@/config/wedding';
+import { wedding, type EventId, type WeddingEvent } from '@/config/wedding';
 import { theme } from '@/config/theme';
 import { t, type Locale } from '@/config/translations';
 import { Card, Ornament } from '@/components/shared/Ornament';
 import { Petals } from '@/components/shared/Petals';
-import { BotanicalClimber, EventCornerOrnament, ScheduleBow, TopCanopyArch } from '@/components/events/Botanicals';
+import { ScheduleBow, TopCanopyArch } from '@/components/events/Botanicals';
 import { schedulesData } from '@/components/events/schedulesData';
+
+/** Play each event intro at most once per page load. */
+const playedEventIntros = new Set<EventId>();
+
+function mediaUrl(path: string) {
+  return `${path}?v=${theme.videos.version}`;
+}
 
 function calendarUrl(e: WeddingEvent) {
   const day = e.date.replaceAll('-', '');
@@ -214,103 +221,280 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
     ? date.toLocaleString('ur-PK', { month: 'long' })
     : date.toLocaleString('en-GB', { month: 'long' }).toUpperCase();
   const ev = theme.events[e.id];
+  const videoSrc = mediaUrl(ev.video);
+  const posterSrc = mediaUrl(ev.poster);
+  const bgSrc = mediaUrl(ev.bgImage);
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const failSafeRef = useRef<number | null>(null);
+  const startedRef = useRef(false);
+  const [phase, setPhase] = useState<'intro' | 'details'>(() => {
+    if (playedEventIntros.has(e.id)) return 'details';
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      playedEventIntros.add(e.id);
+      return 'details';
+    }
+    return 'intro';
+  });
+  const [videoVisible, setVideoVisible] = useState(() => phase === 'intro');
+
+  const revealDetails = () => {
+    if (failSafeRef.current != null) {
+      window.clearTimeout(failSafeRef.current);
+      failSafeRef.current = null;
+    }
+    playedEventIntros.add(e.id);
+    setPhase('details');
+    window.setTimeout(() => setVideoVisible(false), 700);
+  };
+
+  useEffect(() => {
+    if (phase === 'details') return;
+
+    const root = rootRef.current;
+    const video = videoRef.current;
+    if (!root || !video) return;
+
+    const armFailSafe = () => {
+      if (failSafeRef.current != null) window.clearTimeout(failSafeRef.current);
+      failSafeRef.current = window.setTimeout(() => {
+        video.pause();
+        revealDetails();
+      }, 8000);
+    };
+
+    const tryPlay = () => {
+      if (startedRef.current || playedEventIntros.has(e.id)) return;
+      startedRef.current = true;
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      armFailSafe();
+      const pending = video.play();
+      void pending?.catch(() => {
+        revealDetails();
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        if (entry.intersectionRatio >= 0.85) {
+          tryPlay();
+        }
+      },
+      { threshold: [0, 0.5, 0.85] }
+    );
+
+    observer.observe(root);
+    return () => {
+      observer.disconnect();
+      if (failSafeRef.current != null) window.clearTimeout(failSafeRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per event card mount
+  }, [e.id, phase]);
+
+  const showDetails = phase === 'details';
 
   return (
     <Card
       className={`event ${e.id}`}
       style={{
-        background: ev.bg,
+        backgroundColor: e.id === 'mehndi' ? '#FDF8E7' : e.id === 'baraat' ? '#4A0404' : '#0A2A2A',
+        backgroundImage: showDetails ? `url(${bgSrc})` : undefined,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundRepeat: 'no-repeat',
         borderTop: `1px solid ${ev.border}`,
         borderBottom: `1px solid ${ev.border}`,
-        color: theme.colors.ink,
+        color: ev.ink,
         position: 'relative',
         overflow: 'hidden',
-        padding: isRtl ? '120px 24px 88px' : '136px 28px 84px',
+        padding: 0,
       }}
     >
-      <BotanicalClimber type={e.id} />
-      <Petals amount={16} tone={e.id} />
-      <EventCornerOrnament type={e.id} isRtl={isRtl} />
-      <p
-        className="eyebrow"
+      <div ref={rootRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} aria-hidden />
+
+      {/* Poster under video so the card is never blank while buffering */}
+      {videoVisible && (
+        <img
+          src={posterSrc}
+          alt=""
+          aria-hidden
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center top',
+            zIndex: 1,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
+      {videoVisible && (
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          poster={posterSrc}
+          playsInline
+          muted
+          preload="auto"
+          controls={false}
+          disablePictureInPicture
+          onEnded={revealDetails}
+          onError={revealDetails}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center top',
+            zIndex: 2,
+            pointerEvents: 'none',
+            opacity: showDetails ? 0 : 1,
+            transition: 'opacity 0.65s ease',
+          }}
+        />
+      )}
+
+      <div
         style={{
-          color: theme.colors.gold,
-          position: 'relative',
-          zIndex: 2,
-          letterSpacing: isRtl ? '0.1em' : undefined,
+          position: 'absolute',
+          inset: 0,
+          zIndex: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          padding: isRtl ? '120px 24px 88px' : '136px 28px 84px',
+          boxSizing: 'border-box',
+          opacity: showDetails ? 1 : 0,
+          transform: showDetails ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'opacity 0.7s ease, transform 0.7s ease',
+          pointerEvents: showDetails ? 'auto' : 'none',
         }}
       >
-        0{i + 1} · {isRtl ? n[1] : n[0].toUpperCase()}
-      </p>
-      <h2
-        style={{
-          color: theme.colors.ink,
-          position: 'relative',
-          zIndex: 2,
-          margin: '10px 0',
-          fontFamily: isRtl ? "'Amiri', serif" : undefined,
-          lineHeight: isRtl ? 1.55 : undefined,
-        }}
-      >
-        {isRtl ? n[1] : n[0]}
-        <em
+        <p
+          className="eyebrow"
           style={{
             color: ev.accent,
-            display: 'block',
-            fontSize: isRtl ? '0.62em' : '0.55em',
-            marginTop: 10,
-            fontStyle: isRtl ? 'normal' : 'italic',
+            position: 'relative',
+            zIndex: 2,
+            letterSpacing: isRtl ? '0.1em' : undefined,
+          }}
+        >
+          0{i + 1} · {isRtl ? n[1] : n[0].toUpperCase()}
+        </p>
+        <h2
+          style={{
+            color: ev.ink,
+            position: 'relative',
+            zIndex: 2,
+            margin: '10px 0',
+            fontFamily: isRtl ? "'Amiri', serif" : undefined,
+            lineHeight: isRtl ? 1.55 : undefined,
+          }}
+        >
+          {isRtl ? n[1] : n[0]}
+          <em
+            style={{
+              color: ev.accent,
+              display: 'block',
+              fontSize: isRtl ? '0.62em' : '0.55em',
+              marginTop: 10,
+              fontStyle: isRtl ? 'normal' : 'italic',
+              lineHeight: isRtl ? 1.7 : undefined,
+            }}
+          >
+            {isRtl ? s[1] : s[0]}
+          </em>
+        </h2>
+        <Ornament color={ev.accent} />
+        <div className="date" style={{ position: 'relative', zIndex: 2, margin: '28px 0', justifyContent: 'center' }}>
+          <strong style={{ color: ev.ink, fontFamily: "'Cormorant Garamond', serif", fontSize: 88, lineHeight: 0.85 }}>
+            {date.getDate()}
+          </strong>
+          <span style={{ textAlign: isRtl ? 'right' : 'left', color: ev.inkSoft }}>
+            {dayName}
+            <small
+              style={{
+                display: 'block',
+                marginTop: 6,
+                letterSpacing: isRtl ? '0.06em' : '0.18em',
+                color: ev.accent,
+                fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                fontSize: isRtl ? 13 : undefined,
+              }}
+            >
+              {monthLabel} · {date.getFullYear()}
+            </small>
+          </span>
+        </div>
+        <p
+          className="event-time"
+          style={{
+            color: ev.accent,
+            position: 'relative',
+            zIndex: 2,
+            fontFamily: isRtl ? "'Amiri', serif" : undefined,
+            letterSpacing: isRtl ? '0.04em' : undefined,
             lineHeight: isRtl ? 1.7 : undefined,
           }}
         >
-          {isRtl ? s[1] : s[0]}
-        </em>
-      </h2>
-      <Ornament />
-      <div className="date" style={{ position: 'relative', zIndex: 2, margin: '28px 0', justifyContent: 'center' }}>
-        <strong style={{ color: theme.colors.ink, fontFamily: "'Cormorant Garamond', serif", fontSize: 88, lineHeight: 0.85 }}>
-          {date.getDate()}
-        </strong>
-        <span style={{ textAlign: isRtl ? 'right' : 'left', color: theme.colors.inkSoft }}>
-          {dayName}
-          <small
+          {dayName} · {timeLabel}
+        </p>
+        <div className="venue" style={{ color: ev.inkSoft, position: 'relative', zIndex: 2 }}>
+          <MapPin size={16} color={ev.accent} />
+          <span>{e.venue}</span>
+        </div>
+        <div
+          className="actions"
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            display: 'flex',
+            gap: 10,
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            marginTop: 16,
+          }}
+        >
+          <a
+            href={e.mapUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="btn soft"
             style={{
-              display: 'block',
-              marginTop: 6,
-              letterSpacing: isRtl ? '0.06em' : '0.18em',
-              color: theme.colors.gold,
-              fontFamily: isRtl ? "'Amiri', serif" : undefined,
-              fontSize: isRtl ? 13 : undefined,
+              background: ev.buttonBg,
+              borderColor: ev.buttonBorder,
+              color: ev.buttonText,
             }}
           >
-            {monthLabel} · {date.getFullYear()}
-          </small>
-        </span>
-      </div>
-      <p
-        className="event-time"
-        style={{
-          color: theme.colors.gold,
-          position: 'relative',
-          zIndex: 2,
-          fontFamily: isRtl ? "'Amiri', serif" : undefined,
-          letterSpacing: isRtl ? '0.04em' : undefined,
-          lineHeight: isRtl ? 1.7 : undefined,
-        }}
-      >
-        {dayName} · {timeLabel}
-      </p>
-      <div className="venue" style={{ color: theme.colors.inkSoft, position: 'relative', zIndex: 2 }}>
-        <MapPin size={16} color={theme.colors.gold} />
-        <span>{e.venue}</span>
-      </div>
-      <div className="actions" style={{ position: 'relative', zIndex: 2, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 16 }}>
-        <a href={e.mapUrl} target="_blank" rel="noreferrer" className="btn soft">
-          {t(locale, 'maps')}
-        </a>
-        <a href={calendarUrl(e)} target="_blank" rel="noreferrer" className="btn soft">
-          <CalendarDays size={14} /> {t(locale, 'calendar')}
-        </a>
+            {t(locale, 'maps')}
+          </a>
+          <a
+            href={calendarUrl(e)}
+            target="_blank"
+            rel="noreferrer"
+            className="btn soft"
+            style={{
+              background: ev.buttonBg,
+              borderColor: ev.buttonBorder,
+              color: ev.buttonText,
+            }}
+          >
+            <CalendarDays size={14} /> {t(locale, 'calendar')}
+          </a>
+        </div>
       </div>
     </Card>
   );
@@ -324,12 +508,12 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
 
   return (
     <Card
-      className={`event-schedule ${eventId}${isRtl ? ' is-urdu' : ''}`}
+      className={`event-schedule ${eventId}`}
       style={{
         background: ev.bg,
         borderTop: `1px solid ${ev.border}`,
         position: 'relative',
-        overflow: 'hidden',
+        overflow: 'visible',
         textAlign: isRtl ? 'right' : 'left',
         padding: isRtl ? '108px 22px 180px' : '120px 28px 168px',
         color: theme.colors.ink,

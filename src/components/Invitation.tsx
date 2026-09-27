@@ -102,6 +102,53 @@ export default function Invitation() {
     };
   }, [contentReady, locale]);
 
+  // Warm event intro videos one-by-one after opening, so scroll-to-event never hits a cold buffer.
+  useEffect(() => {
+    if (!contentReady) return;
+    let cancelled = false;
+    const ids = ['mehndi', 'baraat', 'waleema'] as const;
+
+    const preloadOne = (id: (typeof ids)[number]) =>
+      new Promise<void>((resolve) => {
+        const video = document.createElement('video');
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = 'auto';
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+        video.src = `${theme.events[id].video}?v=${theme.videos.version}`;
+
+        let settled = false;
+        const done = () => {
+          if (settled) return;
+          settled = true;
+          video.removeAttribute('src');
+          try {
+            video.load();
+          } catch {
+            // ignore
+          }
+          resolve();
+        };
+
+        video.addEventListener('canplaythrough', done, { once: true });
+        video.addEventListener('error', done, { once: true });
+        window.setTimeout(done, 14000);
+        video.load();
+      });
+
+    void (async () => {
+      for (const id of ids) {
+        if (cancelled) return;
+        await preloadOne(id);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [contentReady]);
+
   useEffect(() => {
     const el = audio.current;
     if (!el) return;
