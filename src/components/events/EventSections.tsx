@@ -104,6 +104,7 @@ export function Countdown({ locale }: { locale: Locale }) {
         overflow: 'hidden',
       }}
     >
+      <Petals tone="blush-mix" amount={20} />
       <div
         className="count-overlay"
         style={{

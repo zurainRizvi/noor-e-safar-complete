@@ -368,6 +368,28 @@ h2 {
   background: #8e2f2f;
 }
 
+/* Blush floral mix — matches pink/cream roses on scratch + countdown art */
+.petals.blush-mix i {
+  background: #fff8f9;
+  box-shadow: 0 2px 6px rgba(201, 149, 158, 0.3);
+}
+
+.petals.blush-mix i:nth-child(3n) {
+  background: #e8c4cb;
+}
+
+.petals.blush-mix i:nth-child(3n + 1) {
+  background: #c9959e;
+}
+
+.petals.blush-mix i:nth-child(5n) {
+  background: #ffffff;
+}
+
+.petals.blush-mix i:nth-child(7n) {
+  background: #b07884;
+}
+
 .petals.mehndi i:nth-child(3n) {
   background: #B7D0B0;
 }
@@ -527,15 +549,15 @@ h2 {
 .scratch-hint {
   position: absolute;
   z-index: 4;
-  top: 46%;
+  top: 44%;
   left: 50%;
-  width: 36px;
-  height: 54px;
-  margin-left: -18px;
-  margin-top: -27px;
+  width: 64px;
+  height: 64px;
+  margin-left: -32px;
+  margin-top: -32px;
   pointer-events: none;
-  animation: scratchSwipeLR 1.85s ease-in-out infinite;
-  filter: drop-shadow(0 8px 12px rgba(176, 120, 132, 0.38));
+  animation: scratchSwipeLR 1.9s ease-in-out infinite;
+  filter: drop-shadow(0 8px 12px rgba(176, 120, 132, 0.4));
 }
 
 .scratch-hint.is-rtl {
@@ -564,43 +586,43 @@ h2 {
 
 @keyframes scratchSwipeLR {
   0% {
-    transform: translateX(-36px) translateY(6px) rotate(-18deg) scale(0.94);
-    opacity: 0.25;
+    transform: translateX(-40px) translateY(8px) rotate(-28deg) scale(0.94);
+    opacity: 0.2;
   }
-  12% {
+  14% {
     opacity: 1;
   }
   50% {
-    transform: translateX(36px) translateY(-4px) rotate(10deg) scale(1.02);
+    transform: translateX(40px) translateY(-6px) rotate(18deg) scale(1.04);
     opacity: 1;
   }
-  88% {
+  86% {
     opacity: 1;
   }
   100% {
-    transform: translateX(-36px) translateY(6px) rotate(-18deg) scale(0.94);
-    opacity: 0.25;
+    transform: translateX(-40px) translateY(8px) rotate(-28deg) scale(0.94);
+    opacity: 0.2;
   }
 }
 
 @keyframes scratchSwipeRL {
   0% {
-    transform: translateX(36px) translateY(6px) rotate(18deg) scale(0.94);
-    opacity: 0.25;
+    transform: translateX(40px) translateY(8px) rotate(28deg) scale(0.94);
+    opacity: 0.2;
   }
-  12% {
+  14% {
     opacity: 1;
   }
   50% {
-    transform: translateX(-36px) translateY(-4px) rotate(-10deg) scale(1.02);
+    transform: translateX(-40px) translateY(-6px) rotate(-18deg) scale(1.04);
     opacity: 1;
   }
-  88% {
+  86% {
     opacity: 1;
   }
   100% {
-    transform: translateX(36px) translateY(6px) rotate(18deg) scale(0.94);
-    opacity: 0.25;
+    transform: translateX(40px) translateY(8px) rotate(28deg) scale(0.94);
+    opacity: 0.2;
   }
 }
 
