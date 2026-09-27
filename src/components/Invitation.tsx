@@ -46,6 +46,17 @@ export default function Invitation() {
       }, 450);
     };
 
+    /** Block pinch / gesture zoom (iOS often ignores viewport user-scalable). */
+    const blockZoom = (e: Event) => {
+      e.preventDefault();
+    };
+    let lastTouchEnd = 0;
+    const blockDoubleTapZoom = (e: TouchEvent) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 280) e.preventDefault();
+      lastTouchEnd = now;
+    };
+
     /** Laptop: beige side margins are outside <main>; forward wheel so guests can still scroll. */
     let wheelLockUntil = 0;
     const onWheel = (e: WheelEvent) => {
@@ -68,12 +79,20 @@ export default function Invitation() {
     document.addEventListener('focusin', onFocusIn);
     document.addEventListener('focusout', onFocusOut);
     window.addEventListener('wheel', onWheel, { passive: false });
+    document.addEventListener('gesturestart', blockZoom, { passive: false });
+    document.addEventListener('gesturechange', blockZoom, { passive: false });
+    document.addEventListener('gestureend', blockZoom, { passive: false });
+    document.addEventListener('touchend', blockDoubleTapZoom, { passive: false });
     return () => {
       window.removeEventListener('resize', apply);
       window.visualViewport?.removeEventListener('resize', apply);
       document.removeEventListener('focusin', onFocusIn);
       document.removeEventListener('focusout', onFocusOut);
       window.removeEventListener('wheel', onWheel);
+      document.removeEventListener('gesturestart', blockZoom);
+      document.removeEventListener('gesturechange', blockZoom);
+      document.removeEventListener('gestureend', blockZoom);
+      document.removeEventListener('touchend', blockDoubleTapZoom);
     };
   }, []);
 

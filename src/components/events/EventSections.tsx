@@ -433,14 +433,17 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         />
       )}
 
-      {/* Soft top scrim so copy sits above the couple, matching the mockups */}
+      {/* Soft center vignette — illustration stays visible */}
       <div
         aria-hidden
         style={{
           position: 'absolute',
           inset: 0,
           zIndex: 3,
-          background: ev.scrim,
+          background:
+            e.id === 'mehndi'
+              ? 'radial-gradient(ellipse at center, rgba(255,250,240,0.18) 0%, transparent 70%)'
+              : 'radial-gradient(ellipse at center, rgba(0,0,0,0.22) 0%, transparent 72%)',
           opacity: showText ? 1 : 0,
           transition: 'opacity 0.55s ease',
           pointerEvents: 'none',
@@ -461,9 +464,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'flex-start',
-          // Keep copy in the upper safe zone — clear of faces / illustration
-          padding: isRtl ? '56px 18px 88px' : '60px 20px 84px',
+          justifyContent: 'center',
+          padding: isRtl ? '24px 20px' : '24px 22px',
           boxSizing: 'border-box',
           opacity: showText ? 1 : 0,
           transform: showText ? 'translateY(0)' : 'translateY(10px)',
@@ -472,23 +474,27 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         }}
       >
         <div
+          dir={isRtl ? 'rtl' : 'ltr'}
+          lang={isRtl ? 'ur' : 'en'}
           style={{
             width: '100%',
-            maxWidth: 360,
-            padding: isRtl ? '22px 18px 24px' : '24px 20px 26px',
-            borderRadius: 22,
+            maxWidth: isRtl ? 292 : 300,
+            padding: isRtl ? '16px 14px 18px' : '18px 16px 20px',
+            borderRadius: 18,
             background: ev.panelBg,
             border: `1px solid ${ev.panelBorder}`,
             boxShadow:
               e.id === 'mehndi'
-                ? '0 12px 36px rgba(61, 52, 41, 0.12)'
-                : '0 16px 40px rgba(0, 0, 0, 0.35)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+                ? '0 8px 28px rgba(61, 52, 41, 0.1)'
+                : '0 10px 32px rgba(0, 0, 0, 0.28)',
+            backdropFilter: 'blur(14px) saturate(1.05)',
+            WebkitBackdropFilter: 'blur(14px) saturate(1.05)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             textAlign: 'center',
+            overflowWrap: 'anywhere',
+            wordBreak: 'normal',
           }}
         >
           <p
@@ -497,9 +503,11 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               color: ev.cardAccent,
               position: 'relative',
               zIndex: 2,
-              letterSpacing: isRtl ? '0.1em' : '0.26em',
-              fontSize: isRtl ? 12 : 11,
+              letterSpacing: isRtl ? '0.04em' : '0.22em',
+              fontSize: isRtl ? 11 : 10,
               fontWeight: 700,
+              fontFamily: isRtl ? "'Amiri', serif" : undefined,
+              maxWidth: '100%',
             }}
           >
             0{i + 1} · {isRtl ? n[1] : n[0].toUpperCase()}
@@ -509,12 +517,14 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               color: ev.cardInk,
               position: 'relative',
               zIndex: 2,
-              margin: '10px 0 4px',
+              margin: '8px 0 2px',
               fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
-              fontSize: isRtl ? 'clamp(34px, 9vw, 44px)' : 'clamp(40px, 10vw, 52px)',
+              fontSize: isRtl ? 'clamp(26px, 7vw, 34px)' : 'clamp(32px, 8vw, 42px)',
               fontWeight: 600,
-              lineHeight: isRtl ? 1.45 : 1.05,
-              letterSpacing: isRtl ? undefined : '0.01em',
+              lineHeight: isRtl ? 1.55 : 1.08,
+              letterSpacing: isRtl ? '0' : '0.01em',
+              maxWidth: '100%',
+              overflowWrap: 'anywhere',
             }}
           >
             {isRtl ? n[1] : n[0]}
@@ -522,24 +532,37 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               style={{
                 color: ev.cardAccent,
                 display: 'block',
-                fontSize: isRtl ? '0.52em' : '0.42em',
-                marginTop: 10,
+                fontSize: isRtl ? '0.55em' : '0.42em',
+                marginTop: 8,
                 fontStyle: isRtl ? 'normal' : 'italic',
                 fontWeight: isRtl ? 600 : 500,
-                lineHeight: isRtl ? 1.65 : 1.35,
-                letterSpacing: isRtl ? '0.02em' : '0.04em',
+                lineHeight: isRtl ? 1.7 : 1.35,
+                letterSpacing: isRtl ? '0' : '0.03em',
+                maxWidth: '100%',
+                overflowWrap: 'anywhere',
               }}
             >
               {isRtl ? s[1] : s[0]}
             </em>
           </h2>
           <Ornament color={ev.cardAccent} />
-          <div className="date" style={{ position: 'relative', zIndex: 2, margin: '16px 0 12px', justifyContent: 'center' }}>
+          <div
+            className="date"
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              margin: '12px 0 8px',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              gap: isRtl ? 8 : 10,
+              maxWidth: '100%',
+            }}
+          >
             <strong
               style={{
                 color: ev.cardInk,
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 'clamp(72px, 18vw, 92px)',
+                fontSize: isRtl ? 'clamp(52px, 13vw, 68px)' : 'clamp(64px, 15vw, 80px)',
                 lineHeight: 0.85,
                 fontWeight: 600,
               }}
@@ -550,21 +573,25 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               style={{
                 textAlign: isRtl ? 'right' : 'left',
                 color: ev.cardInkSoft,
-                fontSize: isRtl ? 17 : 16,
+                fontSize: 15,
                 fontWeight: 600,
-                lineHeight: 1.25,
+                lineHeight: isRtl ? 1.55 : 1.25,
+                fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                maxWidth: isRtl ? 140 : undefined,
               }}
             >
               {dayName}
               <small
                 style={{
                   display: 'block',
-                  marginTop: 6,
-                  letterSpacing: isRtl ? '0.06em' : '0.16em',
+                  marginTop: 4,
+                  letterSpacing: isRtl ? '0.02em' : '0.12em',
                   color: ev.cardAccent,
                   fontFamily: isRtl ? "'Amiri', serif" : undefined,
-                  fontSize: isRtl ? 14 : 12,
+                  fontSize: isRtl ? 12 : 11,
                   fontWeight: 700,
+                  lineHeight: isRtl ? 1.6 : 1.3,
+                  overflowWrap: 'anywhere',
                 }}
               >
                 {monthLabel} · {date.getFullYear()}
@@ -578,11 +605,13 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               position: 'relative',
               zIndex: 2,
               fontFamily: isRtl ? "'Amiri', serif" : "'DM Sans', sans-serif",
-              letterSpacing: isRtl ? '0.04em' : '0.06em',
-              lineHeight: isRtl ? 1.7 : 1.4,
-              fontSize: isRtl ? 16 : 14,
+              letterSpacing: isRtl ? '0' : '0.04em',
+              lineHeight: isRtl ? 1.75 : 1.4,
+              fontSize: isRtl ? 14 : 13,
               fontWeight: 600,
-              margin: '4px 0 0',
+              margin: '2px 0 0',
+              maxWidth: '100%',
+              overflowWrap: 'anywhere',
             }}
           >
             {dayName} · {timeLabel}
@@ -593,12 +622,16 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               color: ev.cardInk,
               position: 'relative',
               zIndex: 2,
-              fontSize: isRtl ? 16 : 15,
+              fontSize: 14,
               fontWeight: 600,
-              marginTop: 8,
+              marginTop: 6,
+              fontFamily: isRtl ? "'Amiri', serif" : undefined,
+              lineHeight: isRtl ? 1.7 : 1.4,
+              maxWidth: '100%',
+              overflowWrap: 'anywhere',
             }}
           >
-            <MapPin size={16} color={ev.cardAccent} />
+            <MapPin size={15} color={ev.cardAccent} />
             <span>{e.venue}</span>
           </div>
           <div
@@ -607,10 +640,11 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               position: 'relative',
               zIndex: 2,
               display: 'flex',
-              gap: 10,
+              gap: 8,
               justifyContent: 'center',
               flexWrap: 'wrap',
-              marginTop: 16,
+              marginTop: 12,
+              width: '100%',
             }}
           >
             <a
@@ -623,6 +657,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 borderColor: ev.buttonBorder,
                 color: ev.buttonText,
                 fontWeight: 600,
+                fontSize: isRtl ? 12 : 11,
+                fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                minHeight: 38,
+                padding: '8px 12px',
               }}
             >
               {t(locale, 'maps')}
@@ -637,9 +675,13 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 borderColor: ev.buttonBorder,
                 color: ev.buttonText,
                 fontWeight: 600,
+                fontSize: isRtl ? 12 : 11,
+                fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                minHeight: 38,
+                padding: '8px 12px',
               }}
             >
-              <CalendarDays size={14} /> {t(locale, 'calendar')}
+              <CalendarDays size={13} /> {t(locale, 'calendar')}
             </a>
           </div>
         </div>

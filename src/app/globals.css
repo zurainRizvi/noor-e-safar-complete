@@ -25,8 +25,10 @@ body {
   font-family: 'DM Sans', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
+  /* pan only — blocks pinch / double-tap zoom on supporting browsers */
   touch-action: pan-y;
   -ms-touch-action: pan-y;
+  overscroll-behavior: none;
 }
 
 input,
