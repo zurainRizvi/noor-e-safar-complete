@@ -1,99 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
-
 :root {
-  --ivory: #faf7ef;
-  --ink: #30291f;
-  --gold: #b99a56;
+  --page: #F7F1E8;
+  --page-deep: #EFE6D8;
+  --card: #FFFCF7;
+  --sand: #F3EADF;
+  --ink: #2C261F;
+  --ink-soft: #4A4138;
+  --muted: #7A6F63;
+  --gold: #C6A15B;
+  --gold-soft: #E0C075;
+  --gold-line: rgba(198, 161, 91, 0.45);
 }
 
 * {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  position: relative;
-  background: #101410;
-  scroll-behavior: smooth;
-  touch-action: pan-y;
-  overscroll-behavior-x: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-body {
+  height: 100%;
+  background: var(--page);
   color: var(--ink);
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-button, input, textarea {
-  font: inherit;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
 main {
   width: 100%;
   max-width: 480px;
+  height: 100dvh;
   margin: 0 auto;
-  background: transparent;
-  box-shadow: 0 0 70px #000;
+  background: var(--page);
+  box-shadow: 0 0 70px rgba(61, 52, 41, 0.12);
   overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
   touch-action: pan-y;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.card, .cover {
+.card {
   position: relative;
-  min-height: 100svh;
-  padding: 70px 26px;
+  min-height: auto;
+  padding: 56px 26px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: safe center;
   text-align: center;
   overflow: hidden;
 }
 
-.cover {
-  position: fixed;
-  z-index: 30;
-  inset: 0;
-  margin: auto;
-  width: min(100%, 480px);
-  background: transparent;
-  color: white;
+.page-snap {
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
+  flex-shrink: 0;
 }
 
-.eyebrow {
-  font-size: 10px;
-  letter-spacing: .3em;
-  text-transform: uppercase;
+.card.page-snap {
+  justify-content: safe center;
 }
 
-.painted {
-  background: rgba(20, 25, 20, 0.85);
-}
-
-.card > * {
+.page-snap > :not(.petals):not(.botanical-climber-container):not(.hero-birds) {
   position: relative;
   z-index: 2;
 }
 
-h1, h2 {
-  margin: 34px 0;
-  font: 400 clamp(52px, 16vw, 78px)/.8 'Cormorant Garamond', serif;
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
-h1 em, h2 em {
-  display: block;
-  font-weight: 400;
+h1,
+h2,
+h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  margin: 0;
 }
 
-h1 b {
-  display: block;
-  font: 28px 'Cormorant Garamond', serif;
+h1 {
+  font-size: clamp(40px, 11vw, 54px);
+}
+
+h2 {
+  font-size: clamp(28px, 7vw, 36px);
 }
 
 .ornament {
@@ -112,19 +114,9 @@ h1 b {
 
 .ornament .ornament-diamond {
   border: none;
-  border-top: none;
   width: auto;
   font-style: normal;
   line-height: 1;
-}
-
-.ivory {
-  background: rgba(245, 240, 227, 0.92);
-  color: #2b2319;
-}
-
-.arabic {
-  font: 28px/1.9 'Noto Nastaliq Urdu', serif;
 }
 
 .copy {
@@ -132,30 +124,16 @@ h1 b {
   font: 18px/1.7 'Cormorant Garamond', serif;
 }
 
-.ivory blockquote {
-  font: 19px/2 'Noto Nastaliq Urdu', serif;
-}
-
-.ivory small {
-  display: block;
-  font: 9px 'Manrope', sans-serif;
-}
-
-.count-card {
-  background: rgba(22, 28, 22, 0.88);
-  color: #fff;
-}
-
 .count-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   width: 100%;
-  border-block: 1px solid rgba(212, 175, 87, 0.4);
+  border-block: 1px solid var(--gold-line);
 }
 
 .count-grid span {
   padding: 22px 3px;
-  border-right: 1px solid rgba(212, 175, 87, 0.4);
+  border-right: 1px solid var(--gold-line);
 }
 
 .count-grid span:last-child {
@@ -164,23 +142,14 @@ h1 b {
 
 .count-grid strong {
   display: block;
-  font: 38px 'Cormorant Garamond', serif;
-  color: #d4af57;
+  font: 36px 'Cormorant Garamond', serif;
+  color: var(--gold);
 }
 
 .count-grid small {
-  font-size: 7px;
-  color: #e2d8b2;
-}
-
-.event {
-  background: rgba(20, 25, 20, 0.88);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
-}
-
-.event h2 em {
-  font-size: .45em;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
 }
 
 .date {
@@ -189,160 +158,285 @@ h1 b {
   gap: 18px;
 }
 
-.date strong {
-  font: 92px 'Cormorant Garamond', serif;
-}
-
-.date span {
-  font: 20px 'Cormorant Garamond', serif;
-  text-align: left;
-}
-
-.date small {
-  display: block;
-}
-
 .venue {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 22px 0 16px;
+  margin: 18px 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-.venue svg, .actions svg {
-  width: 16px;
-  color: var(--gold);
-}
-
-.actions {
-  display: flex;
-  gap: 8px;
-}
-
-.actions a, .actions button {
-  display: flex;
+.actions .btn,
+.btn.soft {
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 12px 18px;
-  border: 1px solid rgba(212, 175, 87, 0.4);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--gold-line);
+  background: rgba(255, 252, 247, 0.9);
+  color: var(--ink);
   text-decoration: none;
-}
-
-.petals {
-  position: absolute !important;
-  inset: 0;
-  z-index: 1 !important;
-}
-
-.petals i {
-  position: absolute;
-  width: 9px;
-  height: 13px;
-  background: white;
-  border-radius: 70% 0;
-}
-
-/* Quran verse page: Red and White petals */
-.petals.quran-verse i {
-  background: #ffffff;
-  box-shadow: 0 2px 7px rgba(185, 28, 28, 0.4);
-}
-.petals.quran-verse i:nth-child(odd) {
-  background: #b91c1c;
-}
-.petals.quran-verse i:nth-child(3n) {
-  background: #dc2626;
-}
-.petals.quran-verse i:nth-child(4n) {
-  background: #ffffff;
-}
-.petals.quran-verse i:nth-child(5n) {
-  background: #991b1b;
-}
-
-/* Scratch to Reveal & Countdown: Golden and White petals */
-.petals.gold-white i {
-  background: #ffffff;
-  box-shadow: 0 2px 7px rgba(212, 175, 87, 0.45);
-}
-.petals.gold-white i:nth-child(odd) {
-  background: #d4af57;
-}
-.petals.gold-white i:nth-child(3n) {
-  background: #f59e0b;
-}
-.petals.gold-white i:nth-child(4n) {
-  background: #fff4d6;
-}
-.petals.gold-white i:nth-child(5n) {
-  background: #ffffff;
-}
-
-.rsvp {
-  background: rgba(22, 28, 22, 0.9);
-  color: white;
-}
-
-.rsvp form {
-  width: 100%;
-  display: grid;
-  gap: 11px;
-}
-
-.rsvp input, .rsvp textarea, .choice button {
-  padding: 14px;
-  border: 1px solid rgba(212, 175, 87, 0.4);
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
-}
-
-.choice {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.choice .selected {
-  background: var(--gold);
-  color: #121612;
-}
-
-.gold {
-  padding: 14px;
-  border: 0;
-  background: var(--gold);
-  color: #121612;
-  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  min-height: 42px;
 }
 
 .controls {
-  position: fixed;
-  z-index: 20;
-  top: calc(env(safe-area-inset-top, 0px) + 14px);
-  left: 50%;
-  width: min(calc(100% - 28px), 452px);
-  transform: translateX(-50%);
+  position: sticky;
+  top: 12px;
+  z-index: 40;
   display: flex;
   justify-content: space-between;
+  height: 0;
+  margin: 0;
+  padding: 0 16px;
+  overflow: visible;
   pointer-events: none;
 }
 
 .controls button {
   pointer-events: auto;
-  width: 42px;
-  height: 42px;
-  border: 1px solid #fff6;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #30362cbb;
-  color: white;
+  border: 1px solid var(--gold-line);
+  background: rgba(255, 252, 247, 0.92);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(61, 52, 41, 0.1);
+  backdrop-filter: blur(8px);
 }
 
-@media(prefers-reduced-motion: reduce) {
-  .petals {
-    display: none;
+.controls button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.petals {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.petals i {
+  position: absolute;
+  top: -20px;
+  width: 9px;
+  height: 14px;
+  border-radius: 40% 60% 55% 45%;
+  background: #fff;
+  opacity: 0.7;
+}
+
+.petals.gold-white i {
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(198, 161, 91, 0.35);
+}
+
+.petals.gold-white i:nth-child(odd) {
+  background: #e0c075;
+}
+
+.petals.gold-white i:nth-child(4n) {
+  background: #fff8e8;
+}
+
+.petals.red-white i {
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(168, 64, 64, 0.28);
+}
+
+.petals.red-white i:nth-child(odd) {
+  background: #c45c5c;
+}
+
+.petals.red-white i:nth-child(4n) {
+  background: #8e2f2f;
+}
+
+.petals.mehndi i:nth-child(odd) {
+  background: #B7D0B0;
+}
+
+.petals.baraat i:nth-child(odd) {
+  background: #E2B6B6;
+}
+
+.petals.waleema i:nth-child(odd) {
+  background: #B5C7DD;
+}
+
+.opening-stage,
+.closing-stage {
+  isolation: isolate;
+}
+
+.opening-stage.page-snap,
+.closing-stage.page-snap {
+  overflow: hidden;
+}
+
+.tap-begin {
+  animation: tapPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes tapPulse {
+  0%,
+  100% {
+    opacity: 0.82;
+    transform: scale(0.99);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+}
+
+.hero-birds {
+  position: absolute;
+  inset: 0 0 42% 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 72%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 72%, transparent 100%);
+}
+
+.bird-fly-right {
+  animation-name: flyRight;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.bird-fly-left {
+  animation-name: flyLeft;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.bird-flap {
+  transform-origin: center center;
+  animation-name: wingBeat;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes flyRight {
+  from {
+    transform: translateX(-22%);
+  }
+  to {
+    transform: translateX(108%);
+  }
+}
+
+@keyframes flyLeft {
+  from {
+    transform: translateX(108%);
+  }
+  to {
+    transform: translateX(-22%);
+  }
+}
+
+@keyframes wingBeat {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.42);
+  }
+}
+
+.foil-live {
+  animation: foilGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes foilGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 16px 40px rgba(61, 52, 41, 0.14),
+      0 0 0 1.5px #c6a15b,
+      0 0 10px rgba(198, 161, 91, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 16px 40px rgba(61, 52, 41, 0.14),
+      0 0 0 2px #e0c075,
+      0 0 28px rgba(224, 192, 117, 0.85);
+  }
+}
+
+.foil-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 36%, rgba(255, 255, 255, 0.55) 50%, transparent 64%);
+  background-size: 220% 100%;
+  animation: foilShimmer 2.6s ease-in-out infinite;
+}
+
+.scratch-finger {
+  position: absolute;
+  z-index: 4;
+  top: 46%;
+  width: 34px;
+  height: 46px;
+  pointer-events: none;
+  animation: scratchSwipe 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 6px 8px rgba(61, 52, 41, 0.25));
+}
+
+@keyframes foilShimmer {
+  0% {
+    background-position: 130% 0;
+  }
+  100% {
+    background-position: -130% 0;
+  }
+}
+
+@keyframes scratchSwipe {
+  0% {
+    left: 16%;
+    opacity: 0;
+    transform: rotate(-18deg);
+  }
+  12% {
+    opacity: 1;
+  }
+  72% {
+    left: 62%;
+    opacity: 1;
+    transform: rotate(8deg);
+  }
+  100% {
+    left: 70%;
+    opacity: 0;
+    transform: rotate(12deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tap-begin,
+  .garland-svg-strand,
+  .botanical-sway,
+  .bird-flap,
+  .bird-fly-right,
+  .bird-fly-left,
+  .foil-live,
+  .foil-shimmer,
+  .scratch-finger {
+    animation: none !important;
   }
 }

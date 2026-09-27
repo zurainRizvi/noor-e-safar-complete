@@ -1,11 +1,61 @@
 export const theme = {
-  colors: { midnight:'#081f38', ivory:'#faf7ed', gold:'#d4af57', ink:'#1f2937' },
-  events: {
-    mehndi:{ background:'#0f5132', accent:'#d97706', soft:'#db9ca8' },
-    baraat:{ background:'#7a1e26', accent:'#d4af57', soft:'#faf7ed' },
-    waleema:{ background:'#0b2948', accent:'#93a7c6', soft:'#f3f4f6' }
+  colors: {
+    page: '#F7F1E8',
+    pageDeep: '#EFE6D8',
+    card: 'rgba(255, 252, 247, 0.94)',
+    cardSolid: '#FFFCF7',
+    sand: '#F3EADF',
+    ink: '#2C261F',
+    inkSoft: '#4A4138',
+    muted: '#7A6F63',
+    gold: '#C6A15B',
+    goldSoft: '#E0C075',
+    goldLine: 'rgba(198, 161, 91, 0.45)',
+    creamGlass: 'rgba(255, 248, 238, 0.82)',
+    white: '#FFFFFF',
   },
-  fonts:{ display:'Cormorant Garamond', body:'DM Sans', rtl:'Amiri' },
-  motion:{ intensity:1, particleDensity:18, reducedMotion:'minimal' },
-  radius:'1.5rem', shadow:'0 24px 80px rgba(0,0,0,.2)'
+  events: {
+    mehndi: {
+      bg: 'linear-gradient(180deg, #F4F8F1 0%, #E8F0E4 100%)',
+      border: 'rgba(106, 140, 98, 0.35)',
+      accent: '#6A8C62',
+      soft: '#D8E6D2',
+      flower: { primary: '#7BA874', secondary: '#B7D0B0', dark: '#4F7350' },
+    },
+    baraat: {
+      bg: 'linear-gradient(180deg, #FBF3F1 0%, #F4E6E3 100%)',
+      border: 'rgba(184, 116, 116, 0.35)',
+      accent: '#B87474',
+      soft: '#EFD9D5',
+      flower: { primary: '#C48484', secondary: '#E2B6B6', dark: '#9A5555' },
+    },
+    waleema: {
+      bg: 'linear-gradient(180deg, #F2F5F9 0%, #E5EBF3 100%)',
+      border: 'rgba(110, 140, 176, 0.35)',
+      accent: '#6E8CB0',
+      soft: '#D5DEEA',
+      flower: { primary: '#7E9BC0', secondary: '#B5C7DD', dark: '#4F6F96' },
+    },
+  },
+  fonts: {
+    display: 'Cormorant Garamond',
+    body: 'DM Sans',
+    rtl: 'Amiri',
+  },
+  motion: {
+    intensity: 1,
+    particleDensity: 14,
+    reducedMotion: 'minimal',
+  },
+  radius: '1.25rem',
+  shadow: '0 18px 48px rgba(61, 52, 41, 0.10)',
+  videos: {
+    opening: '/videos/opening.mp4',
+    openingPoster: '/videos/opening-poster.jpg',
+    closing: '/videos/closing.mp4',
+    closingPoster: '/videos/closing-poster.jpg',
+    version: '20260927a',
+  },
 } as const;
+
+export type EventThemeId = keyof typeof theme.events;

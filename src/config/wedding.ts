@@ -9,6 +9,6 @@ export const wedding={
   {id:'waleema',name:'Waleema',subtitle:'The Moonlit Celebration',date:'2027-01-15',day:'Friday',time:'7:00 PM',venue:'Allure',address:'Lahore, Pakistan',dressCode:'Elegant & Modest',message:'A graceful evening beneath the moon, shared with those we cherish.',mapUrl:'https://www.google.com/maps/search/?api=1&query=Allure+Lahore',calendarDescription:'Zurain and Abeeha — Waleema celebration'}
  ] satisfies WeddingEvent[],story:[],gallery:[],
  whatsapp:{contactNumber:'923333409401',shareMessage:"You are warmly invited to Zurain and Abeeha's wedding celebrations in Lahore, January 2027."},
- rsvp:{deadline:'2026-12-20',maxGuests:8},musicPath:'/audio/chaap-tilak.m4a',social:{title:'Noor-e-Safar — Zurain & Abeeha',description:'A journey illuminated by light. Lahore · January 2027.',image:'/social-preview.svg',themeColor:'#081f38'},
+ rsvp:{deadline:'2026-12-20',maxGuests:8},musicPath:'/audio/chaap-tilak.m4a',social:{title:'Noor-e-Safar — Zurain & Abeeha',description:'A journey illuminated by light. Lahore · January 2027.',image:'/social-preview.svg',themeColor:'#F7F1E8'},
  sections:{story:false,gallery:false,rsvp:true}
 } as const;
