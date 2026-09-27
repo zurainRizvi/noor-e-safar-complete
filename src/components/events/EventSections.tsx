@@ -9,24 +9,13 @@ import { Card, Ornament } from '@/components/shared/Ornament';
 import { Petals } from '@/components/shared/Petals';
 import { ScheduleBow, TopCanopyArch } from '@/components/events/Botanicals';
 import { schedulesData } from '@/components/events/schedulesData';
+import { addEventToNativeCalendar } from '@/utils/calendar';
 
 /** Play each event intro at most once per page load. */
 const playedEventIntros = new Set<EventId>();
 
 function mediaUrl(path: string) {
   return `${path}?v=${theme.videos.version}`;
-}
-
-function calendarUrl(e: WeddingEvent) {
-  const day = e.date.replaceAll('-', '');
-  const params = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: `${e.name} — Zurain & Abeeha`,
-    dates: `${day}T183000/${day}T220000`,
-    location: e.venue,
-    details: `${e.name} — Zurain & Abeeha`,
-  });
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
 export function Blessing({ locale }: { locale: Locale }) {
@@ -669,10 +658,19 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               lineHeight: isRtl ? 1.7 : 1.4,
               maxWidth: '100%',
               overflowWrap: 'anywhere',
+              flexDirection: 'column',
+              gap: 2,
             }}
           >
-            <MapPin size={15} color={ev.cardAccent} />
-            <span>{e.venue}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+              <MapPin size={15} color={ev.cardAccent} />
+              <span>{e.venue}</span>
+            </span>
+            {e.address ? (
+              <span style={{ display: 'block', fontSize: 12, fontWeight: 500, color: ev.cardInkSoft, marginTop: 2 }}>
+                {e.address}
+              </span>
+            ) : null}
           </div>
           <div
             className="actions"
@@ -705,11 +703,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
             >
               {t(locale, 'maps')}
             </a>
-            <a
-              href={calendarUrl(e)}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
               className="btn soft"
+              onClick={() => addEventToNativeCalendar(e)}
               style={{
                 background: ev.buttonBg,
                 borderColor: ev.buttonBorder,
@@ -722,7 +719,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               }}
             >
               <CalendarDays size={13} /> {t(locale, 'calendar')}
-            </a>
+            </button>
           </div>
         </div>
       </div>

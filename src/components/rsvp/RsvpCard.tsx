@@ -2,9 +2,17 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { theme } from '@/config/theme';
+import { wedding } from '@/config/wedding';
 import { rsvpService } from '@/services/rsvp';
 import { type Locale } from '@/config/translations';
 import { Card, Ornament } from '@/components/shared/Ornament';
+import { openWhatsAppChat } from '@/utils/whatsapp';
+
+const RSVP_BG = 'linear-gradient(180deg, #1A0A0E 0%, #14060a 55%, #0E0508 100%)';
+const RSVP_INK = '#F7F1E8';
+const RSVP_MUTED = 'rgba(247, 241, 232, 0.72)';
+const RSVP_LINE = 'rgba(212, 175, 87, 0.35)';
+const RSVP_FIELD = 'rgba(255, 248, 238, 0.08)';
 
 export default function RsvpCard({ locale }: { locale: Locale }) {
   const isRtl = locale === 'ur';
@@ -143,7 +151,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
 
   const sendToWhatsApp = (data: typeof submittedData) => {
     if (!data) return;
-    window.open(`https://wa.me/923053333409?text=${encodeURIComponent(getWhatsAppMessage(data))}`, '_blank');
+    openWhatsAppChat(wedding.whatsapp.contactNumber, getWhatsAppMessage(data));
   };
 
   async function handleSubmit(ev: React.FormEvent<HTMLFormElement>) {
@@ -157,14 +165,25 @@ _Zurain & Abeeha's Wedding Invitation_`;
       message: guestMessage.trim(),
       submittedAt: new Date().toISOString(),
     };
-    await rsvpService.submit({ ...payload, guests: Number(payload.guests) });
+    // Open WhatsApp before any await — Android (Redmi) drops the gesture after async work.
+    openWhatsAppChat(wedding.whatsapp.contactNumber, getWhatsAppMessage(payload));
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     savedScroll.current = null;
     setSnapEnabled(true);
     setSubmittedData(payload);
     try {
+      await rsvpService.submit({ ...payload, guests: Number(payload.guests) });
+    } catch {
+      // Local save failure should not block WhatsApp.
+    }
+    try {
       const confetti = (await import('canvas-confetti')).default;
-      confetti({ particleCount: 100, spread: 75, origin: { y: 0.65 }, colors: [theme.colors.gold, '#FFF2CE', theme.colors.goldSoft] });
+      confetti({
+        particleCount: 100,
+        spread: 75,
+        origin: { y: 0.65 },
+        colors: [theme.colors.gold, '#FFF2CE', theme.colors.goldSoft],
+      });
     } catch {
       // ignore
     }
@@ -182,9 +201,9 @@ _Zurain & Abeeha's Wedding Invitation_`;
     width: '100%',
     padding: '12px 16px',
     borderRadius: 14,
-    border: `1px solid ${theme.colors.goldLine}`,
-    background: theme.colors.cardSolid,
-    color: theme.colors.ink,
+    border: `1px solid ${RSVP_LINE}`,
+    background: RSVP_FIELD,
+    color: RSVP_INK,
     textAlign: 'center',
     fontSize: 16,
     outline: 'none',
@@ -196,7 +215,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
     fontSize: isRtl ? 13 : 11,
     letterSpacing: isRtl ? '0.04em' : '0.14em',
     textTransform: isRtl ? 'none' : 'uppercase',
-    color: theme.colors.gold,
+    color: theme.colors.goldSoft,
     marginBottom: 6,
     fontWeight: 600,
     fontFamily: isRtl ? "'Amiri', serif" : undefined,
@@ -207,9 +226,9 @@ _Zurain & Abeeha's Wedding Invitation_`;
   const eventBtnStyle = (on: boolean, color: string): React.CSSProperties => ({
     padding: '11px 12px',
     borderRadius: 12,
-    border: on ? `1.5px solid ${color}` : `1px solid ${theme.colors.goldLine}`,
-    background: on ? `${color}22` : theme.colors.cardSolid,
-    color: theme.colors.ink,
+    border: on ? `1.5px solid ${color}` : `1px solid ${RSVP_LINE}`,
+    background: on ? `${color}33` : RSVP_FIELD,
+    color: RSVP_INK,
     textAlign: 'center',
     cursor: 'pointer',
     fontSize: isRtl ? 13 : 13,
@@ -222,23 +241,31 @@ _Zurain & Abeeha's Wedding Invitation_`;
       className="rsvp"
       id="rsvp-section"
       style={{
-        background: theme.colors.card,
-        borderTop: `1px solid ${theme.colors.goldLine}`,
+        background: RSVP_BG,
+        borderTop: `1px solid ${RSVP_LINE}`,
         width: '100%',
-        padding: '36px 22px max(72px, calc(env(safe-area-inset-bottom, 0px) + 40px))',
+        padding: '40px 22px max(72px, calc(env(safe-area-inset-bottom, 0px) + 40px))',
         position: 'relative',
         overflow: 'visible',
-        color: theme.colors.ink,
+        color: RSVP_INK,
         justifyContent: 'flex-start',
       }}
     >
       <div style={{ width: '100%', maxWidth: 380, margin: '0 auto' }}>
-        <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: '0.28em', marginBottom: 8 }}>
+        <p
+          className="eyebrow"
+          style={{
+            color: theme.colors.goldSoft,
+            letterSpacing: isRtl ? '0.1em' : '0.28em',
+            marginBottom: 8,
+            fontFamily: isRtl ? "'Amiri', serif" : undefined,
+          }}
+        >
           {isRtl ? 'آپ کی تشریف آوری' : 'R.S.V.P.'}
         </p>
         <h2
           style={{
-            color: theme.colors.ink,
+            color: RSVP_INK,
             margin: '6px 0 10px',
             lineHeight: isRtl ? 1.7 : 1.15,
             fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
@@ -246,13 +273,41 @@ _Zurain & Abeeha's Wedding Invitation_`;
         >
           {submittedData
             ? isRtl
-              ? <>آپ کا شکریہ!<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'normal', fontSize: '0.8em', marginTop: 6 }}>ہمیں آپ کی آمد کا انتظار رہے گا</em></>
-              : <>Thank You!<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>Your response has been recorded</em></>
+              ? (
+                <>
+                  شکریہ، عزیز مہمان
+                  <em style={{ color: theme.colors.goldSoft, display: 'block', fontStyle: 'normal', fontSize: '0.78em', marginTop: 6 }}>
+                    آپ کا جواب محفوظ ہو گیا
+                  </em>
+                </>
+              )
+              : (
+                <>
+                  Thank you, dear guest
+                  <em style={{ color: theme.colors.goldSoft, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>
+                    Your response is saved — WhatsApp is ready to send
+                  </em>
+                </>
+              )
             : isRtl
-              ? <>آپ کی شرکت<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'normal', fontSize: '0.8em', marginTop: 6 }}>ہماری خوشیوں کو دوبالا کرے گی</em></>
-              : <>Will You Attend?<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>Kindly let us know by your response</em></>}
+              ? (
+                <>
+                  کیا آپ تشریف لائیں گے؟
+                  <em style={{ color: theme.colors.goldSoft, display: 'block', fontStyle: 'normal', fontSize: '0.78em', marginTop: 6 }}>
+                    براہِ کرم اپنا جواب بھیجیں
+                  </em>
+                </>
+              )
+              : (
+                <>
+                  Will you join us?
+                  <em style={{ color: theme.colors.goldSoft, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>
+                    A moment to confirm your presence
+                  </em>
+                </>
+              )}
         </h2>
-        <Ornament />
+        <Ornament color={theme.colors.goldSoft} />
 
         {!submittedData ? (
           <form
@@ -269,7 +324,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
             }}
           >
             <div>
-              <label style={labelStyle}>{isRtl ? 'نام یا خاندانی نام' : 'FULL NAME OR FAMILY NAME'} *</label>
+              <label style={labelStyle}>{isRtl ? 'نام یا خاندانی نام' : 'YOUR NAME'} *</label>
               <input
                 name="name"
                 autoComplete="name"
@@ -287,7 +342,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
             </div>
 
             <div>
-              <label style={labelStyle}>{isRtl ? 'شرکت کی تصدیق' : 'ATTENDANCE CONFIRMATION'} *</label>
+              <label style={labelStyle}>{isRtl ? 'شرکت کی تصدیق' : 'WILL YOU ATTEND?'} *</label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 {(['yes', 'no'] as const).map((val) => (
                   <button
@@ -297,16 +352,31 @@ _Zurain & Abeeha's Wedding Invitation_`;
                     style={{
                       padding: '12px 12px',
                       borderRadius: 14,
-                      border: response === val ? `1.5px solid ${theme.colors.gold}` : `1px solid ${theme.colors.goldLine}`,
-                      background: response === val ? (val === 'yes' ? 'linear-gradient(135deg, #E0C075, #C6A15B)' : 'rgba(184,116,116,0.18)') : theme.colors.cardSolid,
-                      color: response === val && val === 'yes' ? '#fff' : theme.colors.ink,
+                      border:
+                        response === val
+                          ? `1.5px solid ${theme.colors.gold}`
+                          : `1px solid ${RSVP_LINE}`,
+                      background:
+                        response === val
+                          ? val === 'yes'
+                            ? 'linear-gradient(135deg, #E0C075, #C6A15B)'
+                            : 'rgba(184,116,116,0.28)'
+                          : RSVP_FIELD,
+                      color: response === val && val === 'yes' ? '#1A0A0E' : RSVP_INK,
                       fontWeight: 600,
                       fontSize: 12,
                       cursor: 'pointer',
                       minHeight: 46,
+                      fontFamily: isRtl ? "'Amiri', serif" : undefined,
                     }}
                   >
-                    {val === 'yes' ? (isRtl ? '✓ خوشی سے شرکت' : '✓ Joyfully Attend') : isRtl ? '✕ معذرت' : '✕ Regretfully Decline'}
+                    {val === 'yes'
+                      ? isRtl
+                        ? '✓ خوشی سے شرکت'
+                        : '✓ Joyfully Attend'
+                      : isRtl
+                        ? '✕ معذرت'
+                        : '✕ Regretfully Decline'}
                   </button>
                 ))}
               </div>
@@ -335,7 +405,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
                   />
                 </div>
                 <div>
-                  <label style={{ ...labelStyle, marginBottom: 8 }}>{isRtl ? 'تقریبات' : 'EVENTS'}</label>
+                  <label style={{ ...labelStyle, marginBottom: 8 }}>{isRtl ? 'تقریبات' : 'WHICH EVENTS?'}</label>
                   <div
                     style={{
                       display: 'flex',
@@ -380,7 +450,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
             )}
 
             <div>
-              <label style={labelStyle}>{isRtl ? 'پیغام (اختیاری)' : 'OPTIONAL MESSAGE'}</label>
+              <label style={labelStyle}>{isRtl ? 'پیغام (اختیاری)' : 'A NOTE FOR THE COUPLE'}</label>
               <textarea
                 name="message"
                 autoComplete="off"
@@ -392,9 +462,16 @@ _Zurain & Abeeha's Wedding Invitation_`;
                   correctAutofillJump();
                 }}
                 rows={2}
+                placeholder={isRtl ? 'دعائیں یا پیغام...' : 'Optional dua or wishes...'}
                 style={{ ...fieldStyle, resize: 'none' }}
               />
             </div>
+
+            <p style={{ margin: '2px 0 0', color: RSVP_MUTED, fontSize: 12, lineHeight: 1.5 }}>
+              {isRtl
+                ? 'تصدیق پر واٹس ایپ کھل جائے گا — صرف بھیجیں دبائیں'
+                : 'On confirm, WhatsApp opens with your RSVP — just tap Send'}
+            </p>
 
             <button
               type="submit"
@@ -406,22 +483,28 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 padding: '14px 20px',
                 borderRadius: 999,
                 border: 'none',
-                background: !response || !guestName.trim() ? theme.colors.sand : `linear-gradient(135deg, ${theme.colors.goldSoft}, ${theme.colors.gold})`,
-                color: !response || !guestName.trim() ? theme.colors.muted : '#fff',
+                background:
+                  !response || !guestName.trim()
+                    ? 'rgba(255,248,238,0.12)'
+                    : `linear-gradient(135deg, ${theme.colors.goldSoft}, ${theme.colors.gold})`,
+                color: !response || !guestName.trim() ? RSVP_MUTED : '#1A0A0E',
                 fontWeight: 700,
                 letterSpacing: '0.12em',
                 cursor: !response || !guestName.trim() ? 'not-allowed' : 'pointer',
                 minHeight: 48,
-                boxShadow: '0 8px 22px rgba(61,52,41,0.14)',
+                boxShadow: '0 8px 22px rgba(0,0,0,0.28)',
+                fontFamily: isRtl ? "'Amiri', serif" : undefined,
               }}
             >
-              {isRtl ? 'جواب بھیجیں' : 'Confirm RSVP'}
+              {isRtl ? 'تصدیق کریں اور واٹس ایپ کھولیں' : 'Confirm & Open WhatsApp'}
             </button>
           </form>
         ) : (
           <div style={{ margin: '14px auto 0', textAlign: 'center' }}>
-            <p style={{ color: theme.colors.inkSoft, fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>
-              {isRtl ? 'واٹس ایپ پر بھی بھیجنا چاہیں گے؟' : 'Would you also like to send via WhatsApp?'}
+            <p style={{ color: RSVP_MUTED, fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>
+              {isRtl
+                ? 'اگر واٹس ایپ نہ کھلا ہو تو دوبارہ کوشش کریں'
+                : 'If WhatsApp did not open, tap below to try again'}
             </p>
             <button
               type="button"
@@ -439,14 +522,23 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 minHeight: 48,
               }}
             >
-              {isRtl ? 'واٹس ایپ پر بھیجیں' : 'Send via WhatsApp'}
+              {isRtl ? 'واٹس ایپ پر بھیجیں' : 'Open WhatsApp to Send'}
             </button>
             <button
               type="button"
               onClick={() => setSubmittedData(null)}
-              style={{ background: 'transparent', border: 'none', color: theme.colors.gold, fontSize: 11, letterSpacing: '0.12em', textDecoration: 'underline', cursor: 'pointer', marginTop: 12 }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: theme.colors.goldSoft,
+                fontSize: 11,
+                letterSpacing: '0.12em',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+                marginTop: 12,
+              }}
             >
-              {isRtl ? 'جواب میں تبدیلی کریں' : 'Change / Update Response'}
+              {isRtl ? 'جواب میں تبدیلی کریں' : 'Edit response'}
             </button>
           </div>
         )}
