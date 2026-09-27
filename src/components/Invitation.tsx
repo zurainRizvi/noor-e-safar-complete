@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Music2, VolumeX } from 'lucide-react';
 import { wedding } from '@/config/wedding';
 import { theme } from '@/config/theme';
@@ -11,30 +11,66 @@ import { Blessing, Countdown, EventCard, EventSchedule } from '@/components/even
 import RsvpCard from '@/components/rsvp/RsvpCard';
 import ClosingStage from '@/components/closing/ClosingStage';
 
+const MUSIC_START = 65;
+const MUSIC_END = 85;
+
 export default function Invitation() {
   const [locale, setLocale] = useState<Locale>('en');
   const [playing, setPlaying] = useState(false);
   const [contentReady, setContentReady] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
+  const primed = useRef(false);
+
+  useEffect(() => {
+    const el = audio.current;
+    if (!el) return;
+
+    const prime = () => {
+      if (primed.current) return;
+      try {
+        if (Math.abs(el.currentTime - MUSIC_START) > 0.35) {
+          el.currentTime = MUSIC_START;
+        }
+        primed.current = true;
+      } catch {
+        // ignore seek until more data is available
+      }
+    };
+
+    el.preload = 'auto';
+    el.load();
+    el.addEventListener('loadedmetadata', prime);
+    el.addEventListener('canplay', prime);
+    if (el.readyState >= 1) prime();
+
+    return () => {
+      el.removeEventListener('loadedmetadata', prime);
+      el.removeEventListener('canplay', prime);
+    };
+  }, []);
 
   const startMusic = () => {
-    if (!audio.current) return;
-    audio.current.currentTime = 65;
-    audio.current.play().then(() => setPlaying(true)).catch(() => {});
+    const el = audio.current;
+    if (!el) return;
+    if (!primed.current || Math.abs(el.currentTime - MUSIC_START) > 1) {
+      el.currentTime = MUSIC_START;
+      primed.current = true;
+    }
+    el.play().then(() => setPlaying(true)).catch(() => {});
   };
 
   const handleAudioTimeUpdate = () => {
     if (!audio.current) return;
-    if (audio.current.currentTime >= 85 || audio.current.currentTime < 65) {
-      audio.current.currentTime = 65;
+    if (audio.current.currentTime >= MUSIC_END || audio.current.currentTime < MUSIC_START) {
+      audio.current.currentTime = MUSIC_START;
     }
   };
 
   const music = () => {
     if (!audio.current) return;
     if (audio.current.paused) {
-      if (audio.current.currentTime < 65 || audio.current.currentTime >= 85) {
-        audio.current.currentTime = 65;
+      if (audio.current.currentTime < MUSIC_START || audio.current.currentTime >= MUSIC_END) {
+        audio.current.currentTime = MUSIC_START;
       }
       audio.current.play().then(() => setPlaying(true)).catch(() => {});
     } else {
@@ -45,7 +81,7 @@ export default function Invitation() {
 
   return (
     <main dir={locale === 'ur' ? 'rtl' : 'ltr'} style={{ background: theme.colors.page, color: theme.colors.ink }}>
-      <audio ref={audio} src={wedding.musicPath} onTimeUpdate={handleAudioTimeUpdate} preload="metadata" />
+      <audio ref={audio} src={wedding.musicPath} onTimeUpdate={handleAudioTimeUpdate} preload="auto" />
 
       <OpeningStage
         locale={locale}

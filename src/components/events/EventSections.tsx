@@ -20,7 +20,7 @@ function calendar(e: WeddingEvent) {
     'BEGIN:VEVENT',
     `DTSTART:${d}T${h}Z`,
     `SUMMARY:${e.name} — Zurain & Abeeha`,
-    `LOCATION:${e.address}`,
+    `LOCATION:${e.address || e.venue}`,
     'END:VEVENT',
     'END:VCALENDAR',
   ].join('\r\n');
@@ -96,7 +96,7 @@ export function Countdown({ locale }: { locale: Locale }) {
         padding: '52px 24px',
       }}
     >
-      <Petals tone="gold-white" amount={18} />
+      <Petals tone="gold-white" amount={36} />
       <p className="eyebrow" style={{ color: theme.colors.gold }}>
         {locale === 'ur' ? 'ابدیت تک' : 'UNTIL FOREVER BEGINS'}
       </p>
@@ -125,7 +125,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
     waleema: ['a moonlit gathering', 'چاندنی محفل'],
   }[e.id];
   const date = new Date(e.date + 'T12:00:00');
-  const dayName = locale === 'ur' ? ({ Tuesday: 'منگل', Thursday: 'جمعرات', Friday: 'جمعہ' } as const)[e.day as 'Tuesday'] : e.day;
+  const dayName =
+    locale === 'ur'
+      ? ({ Tuesday: 'منگل', Wednesday: 'بدھ', Thursday: 'جمعرات', Friday: 'جمعہ' } as const)[e.day as 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday']
+      : e.day;
   const ev = theme.events[e.id];
 
   return (
@@ -172,8 +175,12 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         <MapPin size={16} color={theme.colors.gold} />
         <span>
           {e.venue}
-          <br />
-          {e.address}
+          {e.address ? (
+            <>
+              <br />
+              {e.address}
+            </>
+          ) : null}
         </span>
       </div>
       <div className="actions" style={{ position: 'relative', zIndex: 2, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 16 }}>

@@ -138,7 +138,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         overflow: 'hidden',
       }}
     >
-      <Petals tone="gold-white" amount={20} />
+      <Petals tone="gold-white" amount={38} />
 
       <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: '0.28em', marginBottom: 8 }}>
         {isRtl ? 'محبت و مسرت کا خاص دن' : 'SAVE THE AUSPICIOUS DATE'}
@@ -247,14 +247,44 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           <>
             <div className="foil-shimmer" />
             <div className="scratch-finger" aria-hidden>
-              <svg width="34" height="46" viewBox="0 0 34 46" fill="none">
+              <svg width="56" height="64" viewBox="0 0 56 64" fill="none">
+                {/* pointing index finger hand */}
                 <path
-                  d="M17 44C11 44 8.5 38 8.5 32.5V16.5C8.5 13.5 11 11.8 13.6 12.6V8.2C13.6 5.4 16.8 4.2 18.6 6.4V14.2L21.4 12.4C24.2 10.6 27.4 13 26.2 16.2L22.4 28.5C21.2 35.5 20.2 44 17 44Z"
-                  fill="rgba(255,248,232,0.94)"
+                  d="M22.5 28.5V10.8c0-2.7 1.7-4.5 4-4.5s4 1.8 4 4.5v17.2"
+                  fill="#FFF8E8"
                   stroke="#C6A15B"
-                  strokeWidth="1.3"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
                 />
-                <path d="M14.2 18.5 V32" stroke="#E0C075" strokeWidth="0.8" strokeLinecap="round" />
+                <path
+                  d="M30.5 28.2V14.2c0-2.15 1.45-3.6 3.35-3.6 1.9 0 3.35 1.45 3.35 3.6v15.4"
+                  fill="#FFF8E8"
+                  stroke="#C6A15B"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M37.2 30.2V18.4c0-1.95 1.35-3.25 3.1-3.25 1.75 0 3.1 1.3 3.1 3.25v14.1"
+                  fill="#FFF8E8"
+                  stroke="#C6A15B"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M14.8 29.8V20.6c0-2.1 1.4-3.5 3.3-3.5 1.85 0 3.25 1.4 3.25 3.5v10.5"
+                  fill="#FFF8E8"
+                  stroke="#C6A15B"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M14.6 31.2c-3.4 1.1-5.7 3.9-5.7 7.5 0 6.4 5.4 14.8 14.8 18.2 9.2 3.3 18.6-0.2 22.4-6.6 2.6-4.4 1.5-9.2-2.4-11.6-1.4-0.9-3.1-1.1-4.8-0.7"
+                  fill="#FFF8E8"
+                  stroke="#C6A15B"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
+                />
+                <circle cx="26.5" cy="7.2" r="1.35" fill="#E0C075" />
               </svg>
             </div>
           </>

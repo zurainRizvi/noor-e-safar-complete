@@ -34,8 +34,8 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
     const isAttending = data.response === 'yes';
     const eventMap: Record<string, string> = {
       mehndi: 'Mehndi (12th Jan)',
-      baraat: 'Baraat & Nikkah (14th Jan)',
-      waleema: 'Waleema (15th Jan)',
+      baraat: 'Baraat (13th Jan)',
+      waleema: 'Waleema (14th Jan)',
     };
     const eventList = isAttending ? data.events.map((e) => `  • ${eventMap[e] || e}`).join('\n') : '  • None';
     return `✨ *NOOR-E-SAFAR — WEDDING RSVP* ✨
@@ -76,8 +76,8 @@ _Zurain & Abeeha's Wedding Invitation_`;
 
   const eventsList = [
     { id: 'mehndi', labelEn: 'Mehndi (12 Jan)', labelUr: 'مہندی (۱۲ جنوری)', color: theme.events.mehndi.accent },
-    { id: 'baraat', labelEn: 'Baraat (14 Jan)', labelUr: 'بارات و نکاح (۱۴ جنوری)', color: theme.events.baraat.accent },
-    { id: 'waleema', labelEn: 'Waleema (15 Jan)', labelUr: 'ولیمہ (۱۵ جنوری)', color: theme.events.waleema.accent },
+    { id: 'baraat', labelEn: 'Baraat (13 Jan)', labelUr: 'بارات (۱۳ جنوری)', color: theme.events.baraat.accent },
+    { id: 'waleema', labelEn: 'Waleema (14 Jan)', labelUr: 'ولیمہ (۱۴ جنوری)', color: theme.events.waleema.accent },
   ];
 
   const fieldStyle: React.CSSProperties = {
@@ -88,7 +88,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
     background: theme.colors.cardSolid,
     color: theme.colors.ink,
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 16,
     outline: 'none',
   };
 
@@ -125,7 +125,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
             ? <>آپ کی شرکت<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'normal', fontSize: '0.8em', marginTop: 6 }}>ہماری خوشیوں کو دوبالا کرے گی</em></>
             : <>Will You Attend?<em style={{ color: theme.colors.gold, display: 'block', fontStyle: 'italic', fontSize: '0.78em', marginTop: 4 }}>Kindly let us know by your response</em></>}
       </h2>
-      <Ornament />
+      {!submittedData && <Ornament />}
 
       {!submittedData ? (
         <form
@@ -237,7 +237,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
       ) : (
         <div style={{ maxWidth: 380, margin: '18px auto 0', textAlign: 'center' }}>
           <Ornament />
-          <p style={{ color: theme.colors.inkSoft, fontSize: 14, lineHeight: 1.6 }}>
+          <p style={{ color: theme.colors.inkSoft, fontSize: 14, lineHeight: 1.6, marginTop: 8 }}>
             {isRtl ? 'واٹس ایپ پر بھی بھیجنا چاہیں گے؟' : 'Would you also like to send via WhatsApp?'}
           </p>
           <button

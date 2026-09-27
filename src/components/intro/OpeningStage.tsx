@@ -149,7 +149,7 @@ export default function OpeningStage({ locale, onBegin }: Props) {
             transition={{ duration: 0.8 }}
             style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none' }}
           >
-            <Petals tone="gold-white" amount={22} />
+            <Petals tone="red-white" amount={28} />
             <Birds />
           </motion.div>
         )}
@@ -159,19 +159,20 @@ export default function OpeningStage({ locale, onBegin }: Props) {
         {showHero && (
           <motion.div
             key="hero"
-            initial={{ opacity: 0, y: 40, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: '48%' }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
             style={{
               position: 'absolute',
-              inset: 0,
+              left: 0,
+              right: 0,
+              bottom: 'max(88px, calc(env(safe-area-inset-bottom, 0px) + 14vh))',
               zIndex: 4,
               display: 'flex',
               alignItems: 'flex-end',
               justifyContent: 'center',
-              padding: '0 22px max(36px, env(safe-area-inset-bottom, 0px))',
+              padding: '0 22px',
               pointerEvents: 'none',
-              background: 'linear-gradient(180deg, transparent 35%, rgba(20, 10, 12, 0.45) 100%)',
             }}
           >
             <div
@@ -227,6 +228,36 @@ export default function OpeningStage({ locale, onBegin }: Props) {
                 {locale === 'ur' ? 'شادی کر رہے ہیں' : 'Are Getting Married'}
               </p>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showHero && (
+          <motion.div
+            key="scroll-hint"
+            className="scroll-hint"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1, duration: 0.6 }}
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 'max(18px, calc(env(safe-area-inset-bottom, 0px) + 10px))',
+              zIndex: 5,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 6,
+              pointerEvents: 'none',
+            }}
+          >
+            <span className="scroll-hint-label">
+              {locale === 'ur' ? 'نیچے سوائپ کریں' : 'SWIPE DOWN'}
+            </span>
+            <span className="scroll-hint-chevron" />
           </motion.div>
         )}
       </AnimatePresence>
