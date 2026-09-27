@@ -155,6 +155,48 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     >
       <Petals tone="red-white" amount={16} />
 
+      {/* Soft side washes — hide mid-arch green foliage only; top pink flowers stay open. */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: '34%',
+          width: '28%',
+          height: '48%',
+          background: `linear-gradient(90deg, ${backdrop} 0%, ${backdrop} 42%, rgba(228,229,224,0.72) 72%, transparent 100%)`,
+          zIndex: 1,
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: '34%',
+          width: '28%',
+          height: '48%',
+          background: `linear-gradient(270deg, ${backdrop} 0%, ${backdrop} 42%, rgba(228,229,224,0.72) 72%, transparent 100%)`,
+          zIndex: 1,
+          pointerEvents: 'none',
+        }}
+      />
+      {/* Soften the arch start under the rings without covering the dove crop or top blooms. */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: '18%',
+          right: '18%',
+          top: '36%',
+          height: '14%',
+          background: `linear-gradient(180deg, transparent 0%, rgba(228,229,224,0.55) 40%, rgba(228,229,224,0.2) 100%)`,
+          zIndex: 1,
+          pointerEvents: 'none',
+        }}
+      />
+
       <svg width="0" height="0" aria-hidden style={{ position: 'absolute' }}>
         <defs>
           <clipPath id="scratch-heart-clip" clipPathUnits="objectBoundingBox">
@@ -175,7 +217,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: isRtl ? 'clamp(78px, 15vh, 124px) 22px 16px' : 'clamp(84px, 14.5vh, 128px) 26px 16px',
+          padding: isRtl ? 'clamp(72px, 13vh, 112px) 22px max(18px, 3vh)' : 'clamp(76px, 12.5vh, 116px) 26px max(18px, 3vh)',
         }}
       >
         <p
@@ -191,7 +233,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         <h2
           style={{
             color: theme.colors.ink,
-            margin: '6px 0 10px',
+            margin: '4px 0 8px',
             fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
             lineHeight: isRtl ? 1.65 : 1.12,
             fontSize: isRtl ? 'clamp(22px, 6vw, 28px)' : 'clamp(24px, 6.5vw, 30px)',
@@ -220,9 +262,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         <div
           aria-hidden
           style={{
-            width: 'min(200px, 52vw)',
+            width: 'min(190px, 50vw)',
             aspectRatio: '340 / 200',
-            margin: '2px auto 8px',
+            margin: '0 auto 4px',
             flexShrink: 0,
             backgroundColor: 'transparent',
             backgroundImage: 'url(/images/floral-frame.png)',
@@ -232,147 +274,166 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           }}
         />
 
-        {/* Pink heart foil */}
+        {/* Push heart + CTA into the lower-middle without pinning them to the bottom. */}
+        <div style={{ flex: '1 1 auto', minHeight: 18, maxHeight: 72, width: '100%' }} aria-hidden />
+
         <div
-          className={showHint ? 'scratch-heart-live' : undefined}
           style={{
-            position: 'relative',
-            width: 'min(210px, 56vw)',
-            height: 'min(200px, 54vw)',
-            margin: '0 auto 8px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             flexShrink: 0,
-            filter: `drop-shadow(0 12px 22px rgba(176,120,132,0.28))`,
+            marginBottom: 'clamp(12px, 3vh, 28px)',
+            width: '100%',
           }}
         >
+          {/* Pink heart foil */}
           <div
+            className={showHint ? 'scratch-heart-live' : undefined}
             style={{
-              position: 'absolute',
-              inset: 0,
-              clipPath: 'url(#scratch-heart-clip)',
-              WebkitClipPath: 'url(#scratch-heart-clip)',
-              overflow: 'hidden',
-              touchAction: 'none',
-              userSelect: 'none',
-              background: `linear-gradient(165deg, #FFF8F9 0%, ${pink.soft} 42%, ${pink.main} 100%)`,
+              position: 'relative',
+              width: 'min(210px, 56vw)',
+              height: 'min(200px, 54vw)',
+              margin: '0 auto 10px',
+              flexShrink: 0,
+              filter: `drop-shadow(0 12px 22px rgba(176,120,132,0.28))`,
+              zIndex: 3,
             }}
           >
             <div
               style={{
                 position: 'absolute',
                 inset: 0,
-                zIndex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '36px 22px 28px',
-                gap: 2,
+                clipPath: 'url(#scratch-heart-clip)',
+                WebkitClipPath: 'url(#scratch-heart-clip)',
+                overflow: 'hidden',
+                touchAction: 'none',
+                userSelect: 'none',
+                background: `linear-gradient(165deg, #FFF8F9 0%, ${pink.soft} 42%, ${pink.main} 100%)`,
               }}
             >
-              <p style={{ margin: 0, fontSize: 10, letterSpacing: '0.24em', color: pink.deep, fontWeight: 600 }}>
-                {isRtl ? 'منگل' : 'TUESDAY'}
-              </p>
-              <div style={{ textAlign: 'center', marginTop: 4 }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 5, color: theme.colors.ink }}>
-                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 46, lineHeight: 1 }}>12</span>
-                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18 }}>·</span>
-                  <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, letterSpacing: '0.08em' }}>JAN</span>
-                </div>
-                <p style={{ margin: '4px 0 0', color: theme.colors.inkSoft, letterSpacing: '0.18em', fontSize: 11 }}>2027</p>
-              </div>
-              <p style={{ margin: '6px 0 0', color: theme.colors.muted, fontSize: 10, letterSpacing: '0.14em' }}>
-                {isRtl ? 'لاہور' : 'LAHORE'}
-              </p>
-            </div>
-
-            {!isRevealed && (
-              <canvas
-                ref={canvasRef}
-                onPointerDown={(e) => {
-                  isDrawing.current = true;
-                  setShowHint(false);
-                  (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-                  scratchAt(e.clientX, e.clientY);
-                }}
-                onPointerMove={(e) => {
-                  if (!isDrawing.current) return;
-                  scratchAt(e.clientX, e.clientY);
-                }}
-                onPointerUp={() => {
-                  isDrawing.current = false;
-                }}
-                onPointerCancel={() => {
-                  isDrawing.current = false;
-                }}
+              <div
                 style={{
                   position: 'absolute',
                   inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  zIndex: 2,
-                  cursor: 'pointer',
-                  touchAction: 'none',
+                  zIndex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '36px 22px 28px',
+                  gap: 2,
+                  pointerEvents: 'none',
                 }}
-              />
-            )}
-
-            {showHint && !isRevealed && (
-              <>
-                <div className="foil-shimmer" />
-                <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
-                  <svg width="36" height="54" viewBox="0 0 36 54" fill="none">
-                    {/* One pointing index finger + simple palm */}
-                    <path
-                      d="M15.4 24.5V6.8c0-2.55 1.7-4.3 3.85-4.3S23.1 4.25 23.1 6.8v17.7"
-                      fill="#FFF5F6"
-                      stroke={pink.main}
-                      strokeWidth="1.6"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M11.2 26.2c-2.85 1-4.8 3.5-4.8 6.6 0 5.55 4.7 12.8 12.85 15.7 8 2.85 16.15-.2 19.4-5.7 2.25-3.8 1.25-8-2.15-10.1-1.2-.75-2.7-.95-4.15-.55l-1.2.4"
-                      fill="#FFF5F6"
-                      stroke={pink.main}
-                      strokeWidth="1.6"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M11.5 26.8c0-1.85 1.25-3.15 2.95-3.15h8.5c1.55 0 2.8 1.15 2.8 2.7v3.35"
-                      fill="#FFF5F6"
-                      stroke={pink.main}
-                      strokeWidth="1.6"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="19.25" cy="3.85" r="1.2" fill={pink.soft} />
-                  </svg>
+              >
+                <p style={{ margin: 0, fontSize: 10, letterSpacing: '0.24em', color: pink.deep, fontWeight: 600 }}>
+                  {isRtl ? 'منگل' : 'TUESDAY'}
+                </p>
+                <div style={{ textAlign: 'center', marginTop: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 5, color: theme.colors.ink }}>
+                    <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 46, lineHeight: 1 }}>12</span>
+                    <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18 }}>·</span>
+                    <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 18, letterSpacing: '0.08em' }}>JAN</span>
+                  </div>
+                  <p style={{ margin: '4px 0 0', color: theme.colors.inkSoft, letterSpacing: '0.18em', fontSize: 11 }}>2027</p>
                 </div>
-              </>
-            )}
-          </div>
-        </div>
+                <p style={{ margin: '6px 0 0', color: theme.colors.muted, fontSize: 10, letterSpacing: '0.14em' }}>
+                  {isRtl ? 'لاہور' : 'LAHORE'}
+                </p>
+              </div>
 
-        {!isRevealed && (
-          <button
-            type="button"
-            onClick={() => celebrate()}
-            style={{
-              marginTop: 2,
-              padding: '11px 20px',
-              borderRadius: 999,
-              border: `1px solid ${pink.line}`,
-              background: 'rgba(255, 245, 246, 0.92)',
-              color: theme.colors.ink,
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '0.16em',
-              cursor: 'pointer',
-              minHeight: 42,
-              flexShrink: 0,
-            }}
-          >
-            {isRtl ? '✨ فوری طور پر ظاہر کریں' : '✨ Tap to reveal instantly'}
-          </button>
-        )}
+              {!isRevealed && (
+                <canvas
+                  ref={canvasRef}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    isDrawing.current = true;
+                    setShowHint(false);
+                    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+                    scratchAt(e.clientX, e.clientY);
+                  }}
+                  onPointerMove={(e) => {
+                    if (!isDrawing.current) return;
+                    scratchAt(e.clientX, e.clientY);
+                  }}
+                  onPointerUp={() => {
+                    isDrawing.current = false;
+                  }}
+                  onPointerCancel={() => {
+                    isDrawing.current = false;
+                  }}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 2,
+                    cursor: 'pointer',
+                    touchAction: 'none',
+                  }}
+                />
+              )}
+
+              {showHint && !isRevealed && (
+                <>
+                  <div className="foil-shimmer" />
+                  <div className={`scratch-hint${isRtl ? ' is-rtl' : ''}`} aria-hidden>
+                    <svg width="36" height="54" viewBox="0 0 36 54" fill="none">
+                      {/* One pointing index finger + simple palm */}
+                      <path
+                        d="M15.4 24.5V6.8c0-2.55 1.7-4.3 3.85-4.3S23.1 4.25 23.1 6.8v17.7"
+                        fill="#FFF5F6"
+                        stroke={pink.main}
+                        strokeWidth="1.6"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M11.2 26.2c-2.85 1-4.8 3.5-4.8 6.6 0 5.55 4.7 12.8 12.85 15.7 8 2.85 16.15-.2 19.4-5.7 2.25-3.8 1.25-8-2.15-10.1-1.2-.75-2.7-.95-4.15-.55l-1.2.4"
+                        fill="#FFF5F6"
+                        stroke={pink.main}
+                        strokeWidth="1.6"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M11.5 26.8c0-1.85 1.25-3.15 2.95-3.15h8.5c1.55 0 2.8 1.15 2.8 2.7v3.35"
+                        fill="#FFF5F6"
+                        stroke={pink.main}
+                        strokeWidth="1.6"
+                        strokeLinejoin="round"
+                      />
+                      <circle cx="19.25" cy="3.85" r="1.2" fill={pink.soft} />
+                    </svg>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {!isRevealed && (
+            <button
+              type="button"
+              onClick={() => celebrate()}
+              style={{
+                marginTop: 2,
+                padding: '11px 20px',
+                borderRadius: 999,
+                border: `1px solid ${pink.line}`,
+                background: 'rgba(255, 245, 246, 0.92)',
+                color: theme.colors.ink,
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: '0.16em',
+                cursor: 'pointer',
+                minHeight: 42,
+                flexShrink: 0,
+                position: 'relative',
+                zIndex: 3,
+              }}
+            >
+              {isRtl ? '✨ فوری طور پر ظاہر کریں' : '✨ Tap to reveal instantly'}
+            </button>
+          )}
+        </div>
       </div>
     </Card>
   );
