@@ -242,9 +242,27 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
     }
     return false;
   });
+  const [panelIn, setPanelIn] = useState(() => playedEventIntros.has(e.id));
   const [videoDone, setVideoDone] = useState(() => playedEventIntros.has(e.id));
   // Keep video mounted for freeze-last-frame events; others can drop it after fade.
   const [keepVideo, setKeepVideo] = useState(() => freezeLast || !playedEventIntros.has(e.id));
+
+  // Slide glass up from bottom without touching opacity (keeps blur stable).
+  useEffect(() => {
+    if (!showText) {
+      setPanelIn(false);
+      return;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPanelIn(true);
+      return;
+    }
+    setPanelIn(false);
+    const id = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setPanelIn(true));
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [showText]);
 
   const revealText = () => {
     if (textRevealedRef.current) return;
@@ -477,8 +495,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
             }}
           >
             {/*
-              Mount glass at full opacity with no opacity transition.
-              Animating opacity on backdrop-filter causes clear→blur glitches.
+              Full-opacity glass + transform-only slide (bottom → rest).
+              Never animate opacity on backdrop-filter — that causes blur glitches.
             */}
             <div
               dir={isRtl ? 'rtl' : 'ltr'}
@@ -496,10 +514,11 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                     : '0 10px 32px rgba(0, 0, 0, 0.28)',
                 backdropFilter: 'blur(22px) saturate(1.08)',
                 WebkitBackdropFilter: 'blur(22px) saturate(1.08)',
-                // Stable compositor layer so blur is applied once and stays on
-                transform: 'translateZ(0)',
                 isolation: 'isolate',
-                willChange: 'backdrop-filter',
+                opacity: 1,
+                transform: panelIn ? 'translate3d(0, 0, 0)' : 'translate3d(0, 72px, 0)',
+                transition: 'transform 0.75s cubic-bezier(0.22, 1, 0.36, 1)',
+                willChange: 'transform',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
