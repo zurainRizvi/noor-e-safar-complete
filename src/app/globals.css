@@ -80,7 +80,7 @@ main {
   justify-content: safe center;
 }
 
-/* Farewell note page — full viewport, centered cream card on dark silk */
+/* Farewell note page — open typography on soft silk, no glass card */
 .card.page-snap.farewell {
   height: var(--app-h, 100svh);
   min-height: var(--app-h, 100svh);

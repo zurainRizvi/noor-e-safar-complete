@@ -52,37 +52,46 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
       >
         <div
           style={{
-            maxWidth: 340,
+            maxWidth: 320,
             width: '100%',
             textAlign: 'center',
-            padding: isRtl ? '26px 20px 28px' : '28px 22px 26px',
-            borderRadius: 20,
-            background: theme.colors.creamGlass,
-            border: `1px solid ${theme.colors.blushLine}`,
-            boxShadow: '0 24px 60px rgba(0,0,0,0.4)',
-            color: theme.colors.ink,
           }}
         >
           <p
+            className="eyebrow"
+            style={{
+              color: ACCENT,
+              letterSpacing: isRtl ? '0.1em' : '0.32em',
+              marginBottom: 14,
+              fontFamily: isRtl ? "'Amiri', serif" : undefined,
+            }}
+          >
+            {isRtl ? 'دعائے خیر' : 'WITH GRATITUDE'}
+          </p>
+
+          <p
             className="arabic"
             style={{
-              fontSize: 'clamp(20px, 5.4vw, 24px)',
-              lineHeight: 2,
+              fontSize: 'clamp(22px, 5.6vw, 26px)',
+              lineHeight: 2.05,
               color: theme.colors.ink,
-              margin: '0 0 8px',
+              margin: '0 0 6px',
               fontFamily: "'Amiri', serif",
             }}
           >
             بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
           </p>
+
           <Ornament color={ACCENT} />
+
           <h2
             style={{
-              fontSize: isRtl ? 'clamp(24px, 6.5vw, 30px)' : 'clamp(26px, 7vw, 32px)',
-              lineHeight: isRtl ? 1.55 : 1.2,
-              margin: '10px 0 0',
+              fontSize: isRtl ? 'clamp(26px, 7vw, 34px)' : 'clamp(30px, 8vw, 38px)',
+              lineHeight: isRtl ? 1.55 : 1.18,
+              margin: '14px 0 0',
               fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
               fontWeight: 500,
+              letterSpacing: isRtl ? 0 : '0.01em',
             }}
           >
             {isRtl ? (
@@ -106,7 +115,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
                   style={{
                     color: ACCENT_DEEP,
                     fontStyle: 'italic',
-                    fontWeight: 700,
+                    fontWeight: 600,
                     whiteSpace: 'nowrap',
                   }}
                 >
@@ -115,15 +124,29 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
               </>
             )}
           </h2>
+
+          <div
+            aria-hidden
+            style={{
+              width: 48,
+              height: 1,
+              margin: isRtl ? '18px auto 16px' : '20px auto 16px',
+              background: `linear-gradient(90deg, transparent, ${theme.colors.gold}, transparent)`,
+              opacity: 0.85,
+            }}
+          />
+
           <p
             style={{
-              margin: isRtl ? '12px 0 0' : '14px 0 0',
-              fontSize: isRtl ? 15 : 14,
-              lineHeight: isRtl ? 1.85 : 1.55,
+              margin: 0,
+              fontSize: isRtl ? 16 : 15,
+              lineHeight: isRtl ? 1.9 : 1.65,
               color: theme.colors.inkSoft,
-              fontFamily: isRtl ? "'Amiri', serif" : "'DM Sans', sans-serif",
+              fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
               fontWeight: isRtl ? 400 : 500,
-              maxWidth: 300,
+              fontStyle: isRtl ? 'normal' : 'italic',
+              letterSpacing: isRtl ? 0 : '0.02em',
+              maxWidth: 290,
               marginLeft: 'auto',
               marginRight: 'auto',
             }}
