@@ -7,7 +7,7 @@ import { Petals } from '@/components/shared/Petals';
 import { BotanicalClimber } from '@/components/events/Botanicals';
 import type { Locale } from '@/config/translations';
 
-const PAGE_BG = 'linear-gradient(180deg, #1A0A0E 0%, #14060a 55%, #0E0508 100%)';
+const PAGE_BG = '#E4E5E0';
 const ACCENT = theme.colors.blush;
 const ACCENT_DEEP = theme.colors.blushDeep;
 
