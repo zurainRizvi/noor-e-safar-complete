@@ -92,6 +92,18 @@ main {
   transform: none !important;
 }
 
+/* Event intros: never nest a scrollport; zoom stays inside the media stage. */
+.card.page-snap.event {
+  overflow: hidden !important;
+  touch-action: pan-y;
+}
+
+.card.page-snap.event .event-media-stage {
+  overflow: hidden;
+  pointer-events: none;
+  touch-action: pan-y;
+}
+
 /* Legacy RSVP page rule kept for overlay form inside closing */
 .card.page-snap.rsvp {
   height: auto;

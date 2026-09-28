@@ -469,57 +469,75 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         position: 'relative',
         overflow: 'hidden',
         padding: 0,
+        // Keep vertical swipe on the invitation scroller — never pinch/page-zoom.
+        touchAction: 'pan-y',
       }}
     >
       <div ref={rootRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} aria-hidden />
 
       {keepVideo && (
-        <img
-          src={posterSrc}
-          alt=""
+        <div
           aria-hidden
+          className="event-media-stage"
           style={{
             position: 'absolute',
             inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: e.id === 'waleema' ? 'center center' : 'center top',
             zIndex: 1,
+            overflow: 'hidden',
             pointerEvents: 'none',
-            transform: `scale(${mediaScale})`,
-            transformOrigin: 'center center',
-            transition: mediaTransition,
-            willChange: hasZoom ? 'transform' : undefined,
+            touchAction: 'pan-y',
           }}
-        />
-      )}
-
-      {keepVideo && (
-        <video
-          ref={videoRef}
-          src={videoSrc}
-          poster={posterSrc}
-          playsInline
-          muted
-          preload="auto"
-          controls={false}
-          disablePictureInPicture
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: e.id === 'waleema' ? 'center center' : 'center top',
-            zIndex: 2,
-            pointerEvents: 'none',
-            transform: `scale(${mediaScale})`,
-            transformOrigin: 'center center',
-            transition: mediaTransition,
-            willChange: hasZoom ? 'transform' : undefined,
-          }}
-        />
+        >
+          {/*
+            Zoom only the picture frame inside a clipped stage.
+            Never scale the <video> node or the browser viewport.
+          */}
+          <div
+            className="event-media-frame"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              transform: `scale(${mediaScale})`,
+              transformOrigin: 'center center',
+              transition: mediaTransition,
+              pointerEvents: 'none',
+            }}
+          >
+            <img
+              src={posterSrc}
+              alt=""
+              draggable={false}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: e.id === 'waleema' ? 'center center' : 'center top',
+                pointerEvents: 'none',
+              }}
+            />
+            <video
+              ref={videoRef}
+              src={videoSrc}
+              poster={posterSrc}
+              playsInline
+              muted
+              preload="auto"
+              controls={false}
+              disablePictureInPicture
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: e.id === 'waleema' ? 'center center' : 'center top',
+                pointerEvents: 'none',
+              }}
+            />
+          </div>
+        </div>
       )}
 
       {showText && (
@@ -562,7 +580,9 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                     ? '24px 20px'
                     : '24px 22px',
               boxSizing: 'border-box',
-              pointerEvents: 'auto',
+              // Pass swipes through empty chrome; only the glass panel is interactive.
+              pointerEvents: 'none',
+              touchAction: 'pan-y',
             }}
           >
             {/*
@@ -596,6 +616,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 textAlign: 'center',
                 overflowWrap: 'anywhere',
                 wordBreak: 'normal',
+                pointerEvents: 'auto',
               }}
             >
           <p

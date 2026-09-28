@@ -80,9 +80,9 @@ export const theme = {
       poster: '/videos/waleema-poster.jpg',
       freezeLastFrame: true,
       trimStart: 0,
-      // Crop the side green walls and ease in toward the couple.
-      zoomFrom: 1.18,
-      zoomTo: 1.42,
+      // Crop the side green walls and ease in toward the couple (clip-path zoom, not CSS scale).
+      zoomFrom: 1.16,
+      zoomTo: 1.34,
       cardInk: '#FFFFFF',
       cardInkSoft: 'rgba(255, 255, 255, 0.92)',
       cardAccent: '#F0D78A',
@@ -111,7 +111,7 @@ export const theme = {
     openingPoster: '/videos/opening-poster.jpg',
     closing: '/videos/closing.mp4',
     closingPoster: '/videos/closing-poster.jpg',
-    version: '20260928e',
+    version: '20260928g',
   },
 } as const;
 
