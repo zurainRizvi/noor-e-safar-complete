@@ -28,7 +28,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
         justifyContent: 'center',
       }}
     >
-      <Petals tone="farewell-white" amount={22} />
+      <Petals tone="farewell-white" amount={24} />
       <div
         style={{
           position: 'relative',
