@@ -103,13 +103,16 @@ export const theme = {
       panelBorder: 'rgba(232, 213, 163, 0.28)',
     },
   },
-  // Closing farewell note — soft teal like the classic Waleema schedule
+  // Closing farewell note — soft teal / light green silk
   farewell: {
-    bg: '#F7F1E8',
-    border: 'rgba(201, 149, 158, 0.48)',
-    accent: '#C9959E',
-    accentDeep: '#8E2F2F',
-    // Same red-and-white florals as the ayah page petals.
+    bg: 'linear-gradient(180deg, #EAF4F4 0%, #C5D9D9 100%)',
+    border: 'rgba(92, 143, 143, 0.42)',
+    accent: '#5C8F8F',
+    accentDeep: '#3A6868',
+    flower: { primary: '#5C8F8F', secondary: '#FFFFFF', dark: '#3A6868' },
+  },
+  // Ayah / blessing page climbers — red & white florals
+  blessing: {
     flower: { primary: '#C45C5C', secondary: '#FFFFFF', dark: '#8E2F2F' },
   },
   fonts: {

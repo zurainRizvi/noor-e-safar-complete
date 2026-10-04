@@ -33,8 +33,8 @@ export function Blessing({ locale }: { locale: Locale }) {
         justifyContent: 'flex-start',
       }}
     >
-      {/* Same lively climbers + top canopy as the closing note — red & white florals. */}
-      <BotanicalClimber type="farewell" />
+      {/* Lively climbers + top canopy — red & white florals for the ayah page. */}
+      <BotanicalClimber type="blessing" />
       <Petals tone="red-white" amount={22} />
       <ScheduleBow id="blessing" isRtl={isRtl} />
 

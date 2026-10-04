@@ -3,10 +3,12 @@
 import React from 'react';
 import { theme, type EventThemeId } from '@/config/theme';
 
-type BotanicalPaletteId = EventThemeId | 'farewell';
+type BotanicalPaletteId = EventThemeId | 'farewell' | 'blessing';
 
 function flowerPalette(type: BotanicalPaletteId) {
-  return type === 'farewell' ? theme.farewell.flower : theme.events[type].flower;
+  if (type === 'farewell') return theme.farewell.flower;
+  if (type === 'blessing') return theme.blessing.flower;
+  return theme.events[type].flower;
 }
 
 /* Reusable Top Floral Arch Canopy (Spanning across top corners & center) */

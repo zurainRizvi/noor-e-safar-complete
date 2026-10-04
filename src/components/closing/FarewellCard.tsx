@@ -30,7 +30,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
       }}
     >
       <BotanicalClimber type="farewell" />
-      <Petals tone="red-white" amount={24} />
+      <Petals tone="farewell" amount={24} />
       <ScheduleBow id="farewell" isRtl={isRtl} />
 
       <div
