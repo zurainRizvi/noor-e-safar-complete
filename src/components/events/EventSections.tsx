@@ -7,7 +7,7 @@ import { theme } from '@/config/theme';
 import { t, type Locale } from '@/config/translations';
 import { Card, Ornament } from '@/components/shared/Ornament';
 import { Petals } from '@/components/shared/Petals';
-import { ScheduleBow, TopCanopyArch } from '@/components/events/Botanicals';
+import { BotanicalClimber, ScheduleBow, TopCanopyArch } from '@/components/events/Botanicals';
 import { schedulesData } from '@/components/events/schedulesData';
 import { addEventToNativeCalendar } from '@/utils/calendar';
 
@@ -27,73 +27,99 @@ export function Blessing({ locale }: { locale: Locale }) {
         background: theme.colors.card,
         color: theme.colors.ink,
         borderTop: `1px solid ${theme.colors.goldLine}`,
-        padding: '56px 26px',
+        padding: 0,
+        position: 'relative',
+        overflow: 'hidden',
+        justifyContent: 'flex-start',
       }}
     >
+      {/* Same lively climbers + top canopy as the closing note — red & white florals. */}
+      <BotanicalClimber type="farewell" />
       <Petals tone="red-white" amount={22} />
-      <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: isRtl ? '0.1em' : undefined }}>
-        {isRtl ? 'اللہ کے نام سے' : 'IN THE NAME OF ALLAH'}
-      </p>
-      <p className="arabic" style={{ color: theme.colors.ink, margin: '12px 0', fontSize: 28, lineHeight: 1.9, fontFamily: "'Amiri', serif" }}>
-        {wedding.invitation.arabic}
-      </p>
-      <Ornament />
-      <h2 style={{ color: theme.colors.ink, margin: '14px 0 10px', fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif", lineHeight: isRtl ? 1.65 : undefined }}>
-        {isRtl ? 'محبت سے آغاز' : 'With love, we begin.'}
-      </h2>
-      <p className="copy" style={{ color: theme.colors.inkSoft, maxWidth: 330, margin: '0 auto', fontSize: isRtl ? 16 : 17, lineHeight: isRtl ? 1.9 : 1.7, fontFamily: isRtl ? "'Amiri', serif" : undefined }}>
-        {isRtl
-          ? 'اللہ کے نام سے ہم ایک حسین سفر کا آغاز کرتے ہیں اور آپ کو اس لمحے میں شریک ہونے کی دعوت دیتے ہیں۔'
-          : 'In the name of Allah, we begin a beautiful journey and invite you to share this precious moment with us.'}
-      </p>
-      <blockquote
-        dir="rtl"
-        lang="ar"
+      <ScheduleBow id="blessing" isRtl={isRtl} />
+
+      <div
         style={{
-          marginTop: 28,
-          fontFamily: "'Amiri', serif",
-          fontSize: isRtl ? 22 : 20,
-          lineHeight: 2.05,
-          color: theme.colors.ink,
-          maxWidth: 340,
-          marginLeft: 'auto',
-          marginRight: 'auto',
-        }}
-      >
-        {wedding.invitation.verseArabic}
-      </blockquote>
-      <p
-        dir={isRtl ? 'rtl' : 'ltr'}
-        lang={isRtl ? 'ur' : 'en'}
-        style={{
-          margin: '12px auto 0',
-          maxWidth: 340,
-          color: theme.colors.inkSoft,
-          fontSize: isRtl ? 16 : 15,
-          lineHeight: isRtl ? 1.95 : 1.7,
-          fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
-          fontStyle: isRtl ? 'normal' : 'italic',
+          position: 'relative',
+          zIndex: 2,
+          width: '100%',
+          height: '100%',
+          minHeight: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: isRtl
+            ? 'clamp(100px, 15vh, 128px) 28px max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px))'
+            : 'clamp(104px, 14.5vh, 132px) 30px max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px))',
+          boxSizing: 'border-box',
           textAlign: 'center',
-          overflowWrap: 'break-word',
-          wordBreak: 'normal',
         }}
       >
-        {isRtl ? wedding.invitation.verseMeaningUr : wedding.invitation.verseMeaningEn}
-      </p>
-      <small
-        dir={isRtl ? 'rtl' : 'ltr'}
-        style={{
-          display: 'block',
-          marginTop: 12,
-          color: theme.colors.muted,
-          letterSpacing: isRtl ? '0.04em' : '0.12em',
-          fontSize: isRtl ? 12 : 10,
-          fontFamily: isRtl ? "'Amiri', serif" : undefined,
-          lineHeight: isRtl ? 1.7 : undefined,
-        }}
-      >
-        {isRtl ? wedding.invitation.verseReferenceUr : wedding.invitation.verseReferenceEn}
-      </small>
+        <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: isRtl ? '0.1em' : undefined }}>
+          {isRtl ? 'اللہ کے نام سے' : 'IN THE NAME OF ALLAH'}
+        </p>
+        <p className="arabic" style={{ color: theme.colors.ink, margin: '12px 0', fontSize: 28, lineHeight: 1.9, fontFamily: "'Amiri', serif" }}>
+          {wedding.invitation.arabic}
+        </p>
+        <Ornament />
+        <h2 style={{ color: theme.colors.ink, margin: '14px 0 10px', fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif", lineHeight: isRtl ? 1.65 : undefined }}>
+          {isRtl ? 'محبت سے آغاز' : 'With love, we begin.'}
+        </h2>
+        <p className="copy" style={{ color: theme.colors.inkSoft, maxWidth: 300, margin: '0 auto', fontSize: isRtl ? 16 : 17, lineHeight: isRtl ? 1.9 : 1.7, fontFamily: isRtl ? "'Amiri', serif" : undefined }}>
+          {isRtl
+            ? 'اللہ کے نام سے ہم ایک حسین سفر کا آغاز کرتے ہیں اور آپ کو اس لمحے میں شریک ہونے کی دعوت دیتے ہیں۔'
+            : 'In the name of Allah, we begin a beautiful journey and invite you to share this precious moment with us.'}
+        </p>
+        <blockquote
+          dir="rtl"
+          lang="ar"
+          style={{
+            marginTop: 28,
+            fontFamily: "'Amiri', serif",
+            fontSize: isRtl ? 22 : 20,
+            lineHeight: 2.05,
+            color: theme.colors.ink,
+            maxWidth: 300,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          {wedding.invitation.verseArabic}
+        </blockquote>
+        <p
+          dir={isRtl ? 'rtl' : 'ltr'}
+          lang={isRtl ? 'ur' : 'en'}
+          style={{
+            margin: '12px auto 0',
+            maxWidth: 300,
+            color: theme.colors.inkSoft,
+            fontSize: isRtl ? 16 : 15,
+            lineHeight: isRtl ? 1.95 : 1.7,
+            fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+            fontStyle: isRtl ? 'normal' : 'italic',
+            textAlign: 'center',
+            overflowWrap: 'break-word',
+            wordBreak: 'normal',
+          }}
+        >
+          {isRtl ? wedding.invitation.verseMeaningUr : wedding.invitation.verseMeaningEn}
+        </p>
+        <small
+          dir={isRtl ? 'rtl' : 'ltr'}
+          style={{
+            display: 'block',
+            marginTop: 12,
+            color: theme.colors.muted,
+            letterSpacing: isRtl ? '0.04em' : '0.12em',
+            fontSize: isRtl ? 12 : 10,
+            fontFamily: isRtl ? "'Amiri', serif" : undefined,
+            lineHeight: isRtl ? 1.7 : undefined,
+          }}
+        >
+          {isRtl ? wedding.invitation.verseReferenceUr : wedding.invitation.verseReferenceEn}
+        </small>
+      </div>
     </Card>
   );
 }
