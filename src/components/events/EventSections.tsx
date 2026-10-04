@@ -704,8 +704,9 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
             style={{
               position: 'relative',
               zIndex: 2,
-              margin: '12px 0 8px',
+              margin: '12px 0 0',
               justifyContent: 'center',
+              alignItems: 'center',
               flexWrap: 'wrap',
               gap: isRtl ? 8 : 10,
               maxWidth: '100%',
@@ -716,8 +717,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 color: ev.cardInk,
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: isRtl ? 'clamp(52px, 13vw, 68px)' : 'clamp(64px, 15vw, 80px)',
-                lineHeight: 0.85,
+                lineHeight: 1,
                 fontWeight: 600,
+                display: 'block',
+                paddingBottom: 2,
               }}
             >
               {date.getDate()}
@@ -762,7 +765,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               lineHeight: isRtl ? 1.75 : 1.4,
               fontSize: isRtl ? 14 : 13,
               fontWeight: 600,
-              margin: '2px 0 0',
+              margin: '12px 0 0',
               maxWidth: '100%',
               overflowWrap: 'anywhere',
               textAlign: 'center',

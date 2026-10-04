@@ -391,8 +391,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: isRtl ? '48px 26px 36px' : '52px 28px 34px',
+                  justifyContent: isRtl ? 'flex-start' : 'center',
+                  padding: isRtl ? '42px 22px 22px' : '52px 28px 34px',
+                  boxSizing: 'border-box',
                   pointerEvents: 'none',
                 }}
               >
@@ -404,6 +405,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                     color: pink.main,
                     fontWeight: 700,
                     fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                    flexShrink: 0,
                   }}
                 >
                   {isRtl ? 'جنوری ۲۰۲۷' : 'JANUARY 2027'}
@@ -413,8 +415,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                   style={{
                     width: 48,
                     height: 1,
-                    margin: '8px 0 10px',
+                    margin: isRtl ? '6px 0 8px' : '8px 0 10px',
                     background: `linear-gradient(90deg, transparent, ${pink.main}, transparent)`,
+                    flexShrink: 0,
                   }}
                 />
 
@@ -424,7 +427,10 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                     maxWidth: 210,
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: isRtl ? 8 : 7,
+                    gap: isRtl ? 6 : 7,
+                    flex: isRtl ? '1 1 auto' : undefined,
+                    minHeight: 0,
+                    justifyContent: 'center',
                   }}
                 >
                   {wedding.events.map((event, index) => {
@@ -449,8 +455,8 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                           style={{
                             display: 'grid',
                             gridTemplateColumns: isRtl ? 'auto 1fr' : '1fr auto',
-                            alignItems: 'baseline',
-                            gap: 10,
+                            alignItems: 'center',
+                            gap: isRtl ? 12 : 10,
                             textAlign: isRtl ? 'right' : 'left',
                             direction: isRtl ? 'rtl' : 'ltr',
                           }}
@@ -460,7 +466,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                               style={{
                                 margin: 0,
                                 fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
-                                fontSize: isRtl ? 18 : 20,
+                                fontSize: isRtl ? 17 : 20,
                                 lineHeight: 1.15,
                                 fontWeight: 600,
                                 color: theme.colors.ink,
@@ -486,23 +492,26 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                             style={{
                               margin: 0,
                               fontFamily: "'Cormorant Garamond', serif",
-                              fontSize: 28,
+                              fontSize: isRtl ? 24 : 28,
                               lineHeight: 1,
                               fontWeight: 600,
                               color: theme.colors.ink,
                               letterSpacing: '0.02em',
                               whiteSpace: 'nowrap',
+                              display: 'inline-flex',
+                              alignItems: 'baseline',
+                              gap: 6,
                             }}
                           >
                             {isRtl ? (
                               <>
-                                <span style={{ fontSize: 15, marginInlineStart: 4, color: theme.colors.inkSoft }}>جنوری</span>
-                                {dayNum}
+                                <span style={{ fontSize: 14, color: theme.colors.inkSoft }}>جنوری</span>
+                                <span>{dayNum}</span>
                               </>
                             ) : (
                               <>
                                 {dayNum}
-                                <span style={{ fontSize: 13, marginLeft: 4, letterSpacing: '0.1em', color: theme.colors.inkSoft }}>
+                                <span style={{ fontSize: 13, letterSpacing: '0.1em', color: theme.colors.inkSoft }}>
                                   JAN
                                 </span>
                               </>
@@ -519,8 +528,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                   style={{
                     width: 48,
                     height: 1,
-                    margin: '12px 0 8px',
+                    margin: isRtl ? '8px 0 6px' : '12px 0 8px',
                     background: `linear-gradient(90deg, transparent, ${pink.main}, transparent)`,
+                    flexShrink: 0,
                   }}
                 />
                 <p
@@ -531,6 +541,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                     letterSpacing: isRtl ? '0.04em' : '0.18em',
                     fontFamily: isRtl ? "'Amiri', serif" : undefined,
                     fontWeight: 600,
+                    flexShrink: 0,
                   }}
                 >
                   {isRtl ? 'لاہور' : 'LAHORE'}

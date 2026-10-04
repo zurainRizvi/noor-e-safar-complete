@@ -284,10 +284,10 @@ _Zurain & Abeeha's Wedding Invitation_`;
     letterSpacing: isRtl ? '0.04em' : '0.14em',
     textTransform: isRtl ? 'none' : 'uppercase',
     color: theme.colors.goldSoft,
-    marginBottom: 6,
+    marginBottom: isRtl ? 4 : 6,
     fontWeight: 600,
     fontFamily: isRtl ? "'Amiri', serif" : undefined,
-    lineHeight: isRtl ? 1.7 : undefined,
+    lineHeight: isRtl ? 1.35 : undefined,
     textAlign: 'center',
   };
 
@@ -525,7 +525,9 @@ _Zurain & Abeeha's Wedding Invitation_`;
             )}
 
             <div>
-              <label style={labelStyle}>{isRtl ? 'پیغام (اختیاری)' : 'A NOTE FOR THE COUPLE'}</label>
+              <label style={{ ...labelStyle, marginBottom: isRtl ? 2 : 4 }}>
+                {isRtl ? 'پیغام (اختیاری)' : 'A NOTE FOR THE COUPLE'}
+              </label>
               <textarea
                 name="message"
                 autoComplete="off"
@@ -537,7 +539,7 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 }}
                 rows={2}
                 placeholder={isRtl ? 'دعائیں یا پیغام...' : 'Optional dua or wishes...'}
-                style={{ ...fieldStyle, resize: 'none' }}
+                style={{ ...fieldStyle, resize: 'none', margin: 0, marginTop: 0 }}
               />
             </div>
 
