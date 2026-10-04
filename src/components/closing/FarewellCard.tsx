@@ -7,8 +7,8 @@ import { Petals } from '@/components/shared/Petals';
 import { BotanicalClimber, ScheduleBow } from '@/components/events/Botanicals';
 import type { Locale } from '@/config/translations';
 
-const PAGE_BG = '#F7F1E8';
-const ACCENT = theme.colors.blush;
+const PAGE_BG = theme.farewell.bg;
+const ACCENT = theme.farewell.accent;
 
 /** Closing farewell note — sits before the final video + RSVP. */
 export default function FarewellCard({ locale }: { locale: Locale }) {
@@ -20,7 +20,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
       id="farewell-section"
       style={{
         background: PAGE_BG,
-        borderTop: `1px solid ${theme.colors.blushLine}`,
+        borderTop: `1px solid ${theme.farewell.border}`,
         width: '100%',
         padding: 0,
         position: 'relative',
@@ -29,7 +29,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
         justifyContent: 'flex-start',
       }}
     >
-      <BotanicalClimber type="baraat" />
+      <BotanicalClimber type="farewell" />
       <Petals tone="red-white" amount={24} />
       <ScheduleBow id="farewell" isRtl={isRtl} />
 

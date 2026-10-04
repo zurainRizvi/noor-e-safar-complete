@@ -537,9 +537,16 @@ _Zurain & Abeeha's Wedding Invitation_`;
                   pauseSnapForTyping();
                   setGuestMessage(e.target.value);
                 }}
-                rows={2}
+                rows={1}
                 placeholder={isRtl ? 'دعائیں یا پیغام...' : 'Optional dua or wishes...'}
-                style={{ ...fieldStyle, resize: 'none', margin: 0, marginTop: 0 }}
+                style={{
+                  ...fieldStyle,
+                  resize: 'none',
+                  margin: 0,
+                  lineHeight: isRtl ? 1.45 : 1.35,
+                  minHeight: 0,
+                  padding: '10px 16px',
+                }}
               />
             </div>
 

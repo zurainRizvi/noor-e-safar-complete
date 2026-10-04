@@ -391,8 +391,8 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  justifyContent: isRtl ? 'flex-start' : 'center',
-                  padding: isRtl ? '42px 22px 22px' : '52px 28px 34px',
+                  justifyContent: 'center',
+                  padding: isRtl ? '36px 22px 28px' : '52px 28px 34px',
                   boxSizing: 'border-box',
                   pointerEvents: 'none',
                 }}
@@ -428,8 +428,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                     display: 'flex',
                     flexDirection: 'column',
                     gap: isRtl ? 6 : 7,
-                    flex: isRtl ? '1 1 auto' : undefined,
-                    minHeight: 0,
+                    flex: '0 0 auto',
                     justifyContent: 'center',
                   }}
                 >

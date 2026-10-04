@@ -707,8 +707,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               margin: '12px 0 0',
               justifyContent: 'center',
               alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: isRtl ? 8 : 10,
+              flexWrap: 'nowrap',
+              gap: isRtl ? 16 : 12,
               maxWidth: '100%',
             }}
           >
