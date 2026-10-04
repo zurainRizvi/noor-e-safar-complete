@@ -399,7 +399,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
 
+      let kickedOff = false;
       const kickoff = () => {
+        if (kickedOff) return;
+        kickedOff = true;
         if (trimStart <= 0) {
           beginPlayback();
           return;
@@ -422,6 +425,24 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         // If already parked near trimStart, seeked may not fire.
         window.setTimeout(afterSeek, 280);
       };
+
+      // Waleema buffers only after the guest lands here.
+      if (e.id === 'waleema') {
+        video.preload = 'auto';
+        if (video.readyState >= 1) {
+          kickoff();
+        } else {
+          video.addEventListener('loadedmetadata', kickoff, { once: true });
+          video.addEventListener('canplay', kickoff, { once: true });
+          try {
+            video.load();
+          } catch {
+            // ignore
+          }
+          window.setTimeout(kickoff, 1600);
+        }
+        return;
+      }
 
       if (video.readyState >= 1) kickoff();
       else video.addEventListener('loadedmetadata', kickoff, { once: true });
@@ -462,7 +483,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
     <Card
       className={`event ${e.id}`}
       style={{
-        backgroundColor: e.id === 'mehndi' ? '#FDF8E7' : e.id === 'baraat' ? '#2A080C' : '#0A1F24',
+        backgroundColor: e.id === 'mehndi' ? '#F0E2A8' : e.id === 'baraat' ? '#2A080C' : '#0B1426',
         borderTop: `1px solid ${ev.border}`,
         borderBottom: `1px solid ${ev.border}`,
         color: ev.cardInk,
@@ -513,7 +534,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                objectPosition: e.id === 'waleema' ? 'center center' : 'center top',
+                objectPosition: 'center center',
                 pointerEvents: 'none',
               }}
             />
@@ -523,7 +544,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               poster={posterSrc}
               playsInline
               muted
-              preload="auto"
+              // Waleema waits until the guest lands on this page before buffering/playing.
+              preload={e.id === 'waleema' ? 'metadata' : 'auto'}
               controls={false}
               disablePictureInPicture
               style={{
@@ -532,7 +554,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                objectPosition: e.id === 'waleema' ? 'center center' : 'center top',
+                objectPosition: 'center center',
                 pointerEvents: 'none',
               }}
             />
@@ -552,7 +574,9 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               background:
                 e.id === 'mehndi'
                   ? 'radial-gradient(ellipse at center, rgba(255,250,240,0.18) 0%, transparent 70%)'
-                  : 'radial-gradient(ellipse at center, rgba(0,0,0,0.22) 0%, transparent 72%)',
+                  : e.id === 'waleema'
+                    ? 'radial-gradient(ellipse at 50% 42%, rgba(8,14,28,0.18) 0%, rgba(8,14,28,0.08) 45%, transparent 72%)'
+                    : 'radial-gradient(ellipse at center, rgba(0,0,0,0.22) 0%, transparent 72%)',
               pointerEvents: 'none',
             }}
           />
@@ -569,16 +593,20 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              // Baraat: lower so the panel covers from mid-couple down past the belly
-              justifyContent: e.id === 'baraat' ? 'flex-start' : 'center',
+              // Baraat / Waleema: lower panel so faces + sky / moon stay clear
+              justifyContent: e.id === 'baraat' || e.id === 'waleema' ? 'flex-start' : 'center',
               padding:
                 e.id === 'baraat'
                   ? isRtl
                     ? '52% 20px 18px'
                     : '52% 22px 18px'
-                  : isRtl
-                    ? '24px 20px'
-                    : '24px 22px',
+                  : e.id === 'waleema'
+                    ? isRtl
+                      ? '54% 20px 16px'
+                      : '54% 22px 16px'
+                    : isRtl
+                      ? '24px 20px'
+                      : '24px 22px',
               boxSizing: 'border-box',
               // Pass swipes through empty chrome; only the glass panel is interactive.
               pointerEvents: 'none',
@@ -831,6 +859,15 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
   const isRtl = locale === 'ur';
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const ev = theme.events[eventId];
+  const scheduleInk = ev.scheduleInk;
+  const scheduleInkSoft = ev.scheduleInkSoft;
+  const scheduleAccent = ev.scheduleAccent;
+  const selectedBg =
+    eventId === 'waleema' ? 'rgba(122, 145, 168, 0.14)' : 'rgba(198,161,91,0.12)';
+  const selectedBorder =
+    eventId === 'waleema' ? 'rgba(184, 149, 106, 0.45)' : theme.colors.goldLine;
+  const railFade =
+    eventId === 'waleema' ? 'rgba(184, 149, 106, 0.18)' : 'rgba(198,161,91,0.2)';
 
   return (
     <Card
@@ -842,7 +879,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         overflow: 'visible',
         textAlign: isRtl ? 'right' : 'left',
         padding: isRtl ? '108px 22px 180px' : '120px 28px 168px',
-        color: theme.colors.ink,
+        color: scheduleInk,
       }}
     >
       <TopCanopyArch type={eventId} />
@@ -858,7 +895,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         <p
           className="eyebrow"
           style={{
-            color: theme.colors.gold,
+            color: scheduleAccent,
             letterSpacing: isRtl ? '0.12em' : '0.3em',
             fontFamily: isRtl ? "'Amiri', serif" : undefined,
           }}
@@ -867,7 +904,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         </p>
         <h2
           style={{
-            color: theme.colors.ink,
+            color: scheduleInk,
             margin: '8px 0 14px',
             fontFamily: isRtl ? "'Amiri', serif" : undefined,
             lineHeight: isRtl ? 1.6 : undefined,
@@ -876,7 +913,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
           {isRtl ? data.nameUr : data.nameEn}
           <em
             style={{
-              color: theme.colors.gold,
+              color: scheduleAccent,
               fontStyle: isRtl ? 'normal' : 'italic',
               display: 'block',
               fontSize: isRtl ? '0.72em' : '0.65em',
@@ -887,7 +924,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
             {isRtl ? 'تفصیلی شیڈول' : 'Schedule'}
           </em>
         </h2>
-        <Ornament />
+        <Ornament color={scheduleAccent} />
       </div>
 
       <div
@@ -910,7 +947,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
             left: isRtl ? 'auto' : 10,
             right: isRtl ? 10 : 'auto',
             width: 2,
-            background: `linear-gradient(180deg, ${theme.colors.gold} 0%, rgba(198,161,91,0.2) 100%)`,
+            background: `linear-gradient(180deg, ${scheduleAccent} 0%, ${railFade} 100%)`,
           }}
         />
         {data.items.map((item, idx) => {
@@ -928,8 +965,8 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                 cursor: 'pointer',
                 padding: isRtl ? '12px 14px 14px' : '10px 14px',
                 borderRadius: 14,
-                background: isSelected ? 'rgba(198,161,91,0.12)' : 'transparent',
-                border: isSelected ? `1px solid ${theme.colors.goldLine}` : '1px solid transparent',
+                background: isSelected ? selectedBg : 'transparent',
+                border: isSelected ? `1px solid ${selectedBorder}` : '1px solid transparent',
                 transition: 'background 0.25s ease, border-color 0.25s ease',
                 font: 'inherit',
                 color: 'inherit',
@@ -946,8 +983,8 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                   width: 16,
                   height: 16,
                   borderRadius: '50%',
-                  background: isSelected ? theme.colors.gold : theme.colors.cardSolid,
-                  border: `2px solid ${theme.colors.gold}`,
+                  background: isSelected ? scheduleAccent : theme.colors.cardSolid,
+                  border: `2px solid ${scheduleAccent}`,
                 }}
               />
               <span
@@ -956,7 +993,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                   fontSize: isRtl ? 13 : 11,
                   fontWeight: 600,
                   letterSpacing: isRtl ? '0.02em' : '0.14em',
-                  color: theme.colors.gold,
+                  color: scheduleAccent,
                   marginBottom: 4,
                   fontFamily: isRtl ? "'Amiri', serif" : undefined,
                   lineHeight: isRtl ? 1.7 : undefined,
@@ -968,7 +1005,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                 style={{
                   margin: '0 0 6px',
                   fontSize: isRtl ? 20 : 24,
-                  color: theme.colors.ink,
+                  color: scheduleInk,
                   fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
                   lineHeight: isRtl ? 1.7 : 1.2,
                   overflowWrap: 'break-word',
@@ -981,7 +1018,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                 style={{
                   margin: 0,
                   fontSize: isRtl ? 14 : 13,
-                  color: theme.colors.inkSoft,
+                  color: scheduleInkSoft,
                   lineHeight: isRtl ? 1.85 : 1.45,
                   fontFamily: isRtl ? "'Amiri', serif" : undefined,
                   overflowWrap: 'break-word',

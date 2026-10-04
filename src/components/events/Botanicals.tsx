@@ -3,9 +3,15 @@
 import React from 'react';
 import { theme, type EventThemeId } from '@/config/theme';
 
+type BotanicalPaletteId = EventThemeId | 'farewell';
+
+function flowerPalette(type: BotanicalPaletteId) {
+  return type === 'farewell' ? theme.farewell.flower : theme.events[type].flower;
+}
+
 /* Reusable Top Floral Arch Canopy (Spanning across top corners & center) */
-export function TopCanopyArch({ type }: { type: EventThemeId }) {
-  const flowerColors = theme.events[type].flower;
+export function TopCanopyArch({ type }: { type: BotanicalPaletteId }) {
+  const flowerColors = flowerPalette(type);
 
   return (
     <svg
@@ -208,8 +214,8 @@ export function EventCornerOrnament({ type, isRtl }: { type: EventThemeId; isRtl
 }
 
 /* Luxury Botanical Climbing Creeper Vines with Top Canopy Arch & Mirrored Symmetry */
-export function BotanicalClimber({ type }: { type: EventThemeId }) {
-  const flowerColors = theme.events[type].flower;
+export function BotanicalClimber({ type }: { type: BotanicalPaletteId }) {
+  const flowerColors = flowerPalette(type);
 
   // A single side's climber SVG (Left-oriented, right side will scaleX(-1))
   const renderClimberSide = () => (
@@ -399,7 +405,15 @@ export function BotanicalClimber({ type }: { type: EventThemeId }) {
   );
 }
 
-export function ScheduleBow({ id, isRtl }: { id: string; isRtl: boolean }) {
+export function ScheduleBow({
+  id,
+  isRtl,
+  style,
+}: {
+  id: string;
+  isRtl: boolean;
+  style?: React.CSSProperties;
+}) {
   const left = `bow-left-${id}`;
   const right = `bow-right-${id}`;
 
@@ -416,6 +430,7 @@ export function ScheduleBow({ id, isRtl }: { id: string; isRtl: boolean }) {
         opacity: 0.92,
         pointerEvents: 'none',
         zIndex: 3,
+        ...style,
       }}
     >
       <svg width="52" height="46" viewBox="0 0 80 70" fill="none">

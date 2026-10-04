@@ -4,12 +4,11 @@ import React from 'react';
 import { theme } from '@/config/theme';
 import { Card, Ornament } from '@/components/shared/Ornament';
 import { Petals } from '@/components/shared/Petals';
-import { BotanicalClimber } from '@/components/events/Botanicals';
+import { BotanicalClimber, ScheduleBow } from '@/components/events/Botanicals';
 import type { Locale } from '@/config/translations';
 
-const PAGE_BG = '#E4E5E0';
-const ACCENT = theme.colors.blush;
-const ACCENT_DEEP = theme.colors.blushDeep;
+const PAGE_BG = theme.farewell.bg;
+const ACCENT = theme.farewell.accent;
 
 /** Closing farewell note — sits before the final video + RSVP. */
 export default function FarewellCard({ locale }: { locale: Locale }) {
@@ -21,7 +20,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
       id="farewell-section"
       style={{
         background: PAGE_BG,
-        borderTop: `1px solid ${theme.colors.blushLine}`,
+        borderTop: `1px solid ${theme.farewell.border}`,
         width: '100%',
         padding: 0,
         position: 'relative',
@@ -30,8 +29,9 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
         justifyContent: 'flex-start',
       }}
     >
-      <BotanicalClimber type="baraat" />
-      <Petals tone="red-white" amount={24} />
+      <BotanicalClimber type="farewell" />
+      <Petals tone="farewell" amount={24} />
+      <ScheduleBow id="farewell" isRtl={isRtl} />
 
       <div
         style={{
@@ -99,7 +99,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
                 <span>آپ کی آمد، </span>
                 <em
                   style={{
-                    color: ACCENT_DEEP,
+                    color: ACCENT,
                     fontStyle: 'normal',
                     fontWeight: 700,
                     fontFamily: "'Amiri', serif",
@@ -113,7 +113,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
                 <span>Your presence, </span>
                 <em
                   style={{
-                    color: ACCENT_DEEP,
+                    color: ACCENT,
                     fontStyle: 'italic',
                     fontWeight: 600,
                     whiteSpace: 'nowrap',
@@ -131,7 +131,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
               width: 48,
               height: 1,
               margin: isRtl ? '18px auto 16px' : '20px auto 16px',
-              background: `linear-gradient(90deg, transparent, ${theme.colors.gold}, transparent)`,
+              background: `linear-gradient(90deg, transparent, ${ACCENT}, transparent)`,
               opacity: 0.85,
             }}
           />

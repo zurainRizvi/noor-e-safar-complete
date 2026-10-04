@@ -540,13 +540,13 @@ label,
 }
 
 .petals.waleema i {
-  /* Event card: white + soft teal */
+  /* Event card: white + dusty moonlight blue */
   background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(58, 104, 104, 0.28);
+  box-shadow: 0 2px 6px rgba(36, 48, 64, 0.28);
 }
 
 .petals.waleema i:nth-child(3n) {
-  background: #7AA3A3;
+  background: #7A91A8;
 }
 
 .petals.waleema i:nth-child(3n + 1) {
@@ -554,11 +554,11 @@ label,
 }
 
 .petals.waleema i:nth-child(5n) {
-  background: #5C8F8F;
+  background: #B8C6D6;
 }
 
 .petals.waleema i:nth-child(7n) {
-  background: #A8C4C4;
+  background: #5C7A96;
 }
 
 .petals.baraat-schedule i {
@@ -584,13 +584,13 @@ label,
 }
 
 .petals.waleema-schedule i {
-  /* Schedule: white + soft teal */
+  /* Schedule: white + dusty blue */
   background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(58, 104, 104, 0.28);
+  box-shadow: 0 2px 6px rgba(74, 95, 120, 0.26);
 }
 
 .petals.waleema-schedule i:nth-child(3n) {
-  background: #7AA3A3;
+  background: #7A91A8;
 }
 
 .petals.waleema-schedule i:nth-child(3n + 1) {
@@ -598,10 +598,32 @@ label,
 }
 
 .petals.waleema-schedule i:nth-child(5n) {
-  background: #A8C4C4;
+  background: #C9D4E3;
 }
 
 .petals.waleema-schedule i:nth-child(7n) {
+  background: #5C7A96;
+}
+
+.petals.farewell i {
+  /* Closing note: white + soft teal (classic waleema green) */
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(58, 104, 104, 0.28);
+}
+
+.petals.farewell i:nth-child(3n) {
+  background: #7AA3A3;
+}
+
+.petals.farewell i:nth-child(3n + 1) {
+  background: #FFFFFF;
+}
+
+.petals.farewell i:nth-child(5n) {
+  background: #A8C4C4;
+}
+
+.petals.farewell i:nth-child(7n) {
   background: #5C8F8F;
 }
 

@@ -143,7 +143,8 @@ export default function Invitation() {
   useEffect(() => {
     if (!contentReady) return;
     let cancelled = false;
-    const ids = ['mehndi', 'baraat', 'waleema'] as const;
+    // Waleema buffers only when the guest arrives on that page.
+    const ids = ['mehndi', 'baraat'] as const;
 
     const preloadOne = (id: (typeof ids)[number]) =>
       new Promise<void>((resolve) => {
