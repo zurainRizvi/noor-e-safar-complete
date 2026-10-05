@@ -151,15 +151,14 @@ export default function Invitation() {
     };
   }, [contentReady, locale]);
 
-  // Warm event intro videos one-by-one after opening, so scroll-to-event never hits a cold buffer.
+  // Warm event intro videos after opening so scroll-to-event rarely hits a cold buffer.
+  // Keep the elements alive (don't tear down src) — that preserves the HTTP cache warm.
   useEffect(() => {
     if (!contentReady) return;
-    let cancelled = false;
-    // Waleema buffers only when the guest arrives on that page.
-    const ids = ['mehndi', 'baraat'] as const;
-
-    const preloadOne = (id: (typeof ids)[number]) =>
-      new Promise<void>((resolve) => {
+    const ids = ['mehndi', 'baraat', 'waleema'] as const;
+    const warmers: HTMLVideoElement[] = [];
+    const timers = ids.map((id, index) =>
+      window.setTimeout(() => {
         const video = document.createElement('video');
         video.muted = true;
         video.playsInline = true;
@@ -167,35 +166,21 @@ export default function Invitation() {
         video.setAttribute('muted', '');
         video.setAttribute('playsinline', '');
         video.src = `${theme.events[id].video}?v=${theme.videos.version}`;
-
-        let settled = false;
-        const done = () => {
-          if (settled) return;
-          settled = true;
-          video.removeAttribute('src');
-          try {
-            video.load();
-          } catch {
-            // ignore
-          }
-          resolve();
-        };
-
-        video.addEventListener('canplaythrough', done, { once: true });
-        video.addEventListener('error', done, { once: true });
-        window.setTimeout(done, 14000);
         video.load();
-      });
-
-    void (async () => {
-      for (const id of ids) {
-        if (cancelled) return;
-        await preloadOne(id);
-      }
-    })();
+        warmers.push(video);
+      }, index * 900),
+    );
 
     return () => {
-      cancelled = true;
+      timers.forEach((id) => window.clearTimeout(id));
+      warmers.forEach((video) => {
+        video.removeAttribute('src');
+        try {
+          video.load();
+        } catch {
+          // ignore
+        }
+      });
     };
   }, [contentReady]);
 

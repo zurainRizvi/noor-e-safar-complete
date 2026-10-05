@@ -48,13 +48,14 @@ export const theme = {
       panelBorder: 'rgba(198, 161, 91, 0.28)',
     },
     baraat: {
-      bg: 'linear-gradient(180deg, #FFF0ED 0%, #F6D5D0 100%)',
-      border: 'rgba(184, 116, 116, 0.42)',
-      accent: '#B87474',
-      soft: '#F3D4CF',
-      flower: { primary: '#C48484', secondary: '#E2B6B6', dark: '#9A5555' },
-      scheduleInk: '#2C261F',
-      scheduleInkSoft: '#4A4138',
+      // Schedule — soft rose cream (same cream→tint recipe as Mehndi)
+      bg: 'linear-gradient(180deg, #FFF8F6 0%, #FFE4DF 55%, #F7CEC8 100%)',
+      border: 'rgba(196, 92, 92, 0.4)',
+      accent: '#C45C5C',
+      soft: '#FFE8E4',
+      flower: { primary: '#C48484', secondary: '#FFFFFF', dark: '#9A5555' },
+      scheduleInk: '#3A1E1E',
+      scheduleInkSoft: '#6A4545',
       scheduleAccent: '#C45C5C',
       video: '/videos/baraat.mp4',
       poster: '/videos/baraat-poster.jpg',
@@ -73,11 +74,11 @@ export const theme = {
       panelBorder: 'rgba(255, 255, 255, 0.22)',
     },
     waleema: {
-      // Schedule — soft light green silk
-      bg: 'linear-gradient(180deg, #EAF4F4 0%, #C5D9D9 100%)',
-      border: 'rgba(92, 143, 143, 0.42)',
+      // Schedule — soft sage cream (same cream→tint recipe as Mehndi)
+      bg: 'linear-gradient(180deg, #F7FBFA 0%, #E3F0EE 55%, #C8E0DD 100%)',
+      border: 'rgba(92, 143, 143, 0.4)',
       accent: '#5C8F8F',
-      soft: '#D5E4E4',
+      soft: '#E8F3F1',
       flower: { primary: '#5C8F8F', secondary: '#FFFFFF', dark: '#3A6868' },
       scheduleInk: '#243830',
       scheduleInkSoft: '#4A5F58',
@@ -131,7 +132,7 @@ export const theme = {
     openingPoster: '/videos/opening-poster.jpg',
     closing: '/videos/closing.mp4',
     closingPoster: '/videos/closing-poster.jpg',
-    version: '20261004e',
+    version: '20261005a',
   },
 } as const;
 

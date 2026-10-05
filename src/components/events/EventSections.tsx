@@ -51,81 +51,96 @@ export function Blessing({ locale }: { locale: Locale }) {
           alignItems: 'center',
           justifyContent: 'center',
           padding: isRtl
-            ? 'clamp(100px, 15vh, 128px) 28px max(58px, calc(env(safe-area-inset-bottom, 0px) + 48px))'
-            : 'clamp(104px, 14.5vh, 132px) 30px max(58px, calc(env(safe-area-inset-bottom, 0px) + 48px))',
+            ? 'clamp(92px, 13vh, 120px) 28px max(16px, env(safe-area-inset-bottom, 0px))'
+            : 'clamp(104px, 14.5vh, 132px) 30px max(16px, env(safe-area-inset-bottom, 0px))',
           boxSizing: 'border-box',
           textAlign: 'center',
         }}
       >
-        <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: isRtl ? '0.1em' : undefined }}>
-          {isRtl ? 'اللہ کے نام سے' : 'IN THE NAME OF ALLAH'}
-        </p>
-        <p className="arabic" style={{ color: theme.colors.ink, margin: '12px 0', fontSize: 28, lineHeight: 1.9, fontFamily: "'Amiri', serif" }}>
-          {wedding.invitation.arabic}
-        </p>
-        <Ornament />
-        <h2 style={{ color: theme.colors.ink, margin: '14px 0 10px', fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif", lineHeight: isRtl ? 1.65 : undefined }}>
-          {isRtl ? 'محبت سے آغاز' : 'With love, we begin.'}
-        </h2>
-        <p className="copy" style={{ color: theme.colors.inkSoft, maxWidth: 300, margin: '0 auto', fontSize: isRtl ? 16 : 17, lineHeight: isRtl ? 1.9 : 1.7, fontFamily: isRtl ? "'Amiri', serif" : undefined }}>
-          {isRtl
-            ? 'اللہ کے نام سے ہم ایک حسین سفر کا آغاز کرتے ہیں اور آپ کو اس لمحے میں شریک ہونے کی دعوت دیتے ہیں۔'
-            : 'In the name of Allah, we begin a beautiful journey and invite you to share this precious moment with us.'}
-        </p>
-        <blockquote
-          dir="rtl"
-          lang="ar"
+        <div
           style={{
-            marginTop: 28,
-            fontFamily: "'Amiri', serif",
-            fontSize: isRtl ? 22 : 20,
-            lineHeight: 2.05,
-            color: theme.colors.ink,
-            maxWidth: 300,
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            flex: '1 1 auto',
+            justifyContent: 'center',
+            minHeight: 0,
           }}
         >
-          {wedding.invitation.verseArabic}
-        </blockquote>
-        <p
-          dir={isRtl ? 'rtl' : 'ltr'}
-          lang={isRtl ? 'ur' : 'en'}
-          style={{
-            margin: '12px auto 0',
-            maxWidth: 300,
-            color: theme.colors.inkSoft,
-            fontSize: isRtl ? 16 : 15,
-            lineHeight: isRtl ? 1.95 : 1.7,
-            fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
-            fontStyle: isRtl ? 'normal' : 'italic',
-            textAlign: 'center',
-            overflowWrap: 'break-word',
-            wordBreak: 'normal',
-          }}
-        >
-          {isRtl ? wedding.invitation.verseMeaningUr : wedding.invitation.verseMeaningEn}
-        </p>
-        <small
-          dir={isRtl ? 'rtl' : 'ltr'}
-          style={{
-            display: 'block',
-            marginTop: 12,
-            color: theme.colors.muted,
-            letterSpacing: isRtl ? '0.04em' : '0.12em',
-            fontSize: isRtl ? 12 : 10,
-            fontFamily: isRtl ? "'Amiri', serif" : undefined,
-            lineHeight: isRtl ? 1.7 : undefined,
-          }}
-        >
-          {isRtl ? wedding.invitation.verseReferenceUr : wedding.invitation.verseReferenceEn}
-        </small>
+          <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: isRtl ? '0.1em' : undefined }}>
+            {isRtl ? 'اللہ کے نام سے' : 'IN THE NAME OF ALLAH'}
+          </p>
+          <p className="arabic" style={{ color: theme.colors.ink, margin: '12px 0', fontSize: 28, lineHeight: 1.9, fontFamily: "'Amiri', serif" }}>
+            {wedding.invitation.arabic}
+          </p>
+          <Ornament />
+          <h2 style={{ color: theme.colors.ink, margin: '14px 0 10px', fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif", lineHeight: isRtl ? 1.65 : undefined }}>
+            {isRtl ? 'محبت سے آغاز' : 'With love, we begin.'}
+          </h2>
+          <p className="copy" style={{ color: theme.colors.inkSoft, maxWidth: 300, margin: '0 auto', fontSize: isRtl ? 16 : 17, lineHeight: isRtl ? 1.9 : 1.7, fontFamily: isRtl ? "'Amiri', serif" : undefined }}>
+            {isRtl
+              ? 'اللہ کے نام سے ہم ایک حسین سفر کا آغاز کرتے ہیں اور آپ کو اس لمحے میں شریک ہونے کی دعوت دیتے ہیں۔'
+              : 'In the name of Allah, we begin a beautiful journey and invite you to share this precious moment with us.'}
+          </p>
+          <blockquote
+            dir="rtl"
+            lang="ar"
+            style={{
+              marginTop: 28,
+              fontFamily: "'Amiri', serif",
+              fontSize: isRtl ? 22 : 20,
+              lineHeight: 2.05,
+              color: theme.colors.ink,
+              maxWidth: 300,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            {wedding.invitation.verseArabic}
+          </blockquote>
+          <p
+            dir={isRtl ? 'rtl' : 'ltr'}
+            lang={isRtl ? 'ur' : 'en'}
+            style={{
+              margin: '12px auto 0',
+              maxWidth: 300,
+              color: theme.colors.inkSoft,
+              fontSize: isRtl ? 16 : 15,
+              lineHeight: isRtl ? 1.95 : 1.7,
+              fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+              fontStyle: isRtl ? 'normal' : 'italic',
+              textAlign: 'center',
+              overflowWrap: 'break-word',
+              wordBreak: 'normal',
+            }}
+          >
+            {isRtl ? wedding.invitation.verseMeaningUr : wedding.invitation.verseMeaningEn}
+          </p>
+          <small
+            dir={isRtl ? 'rtl' : 'ltr'}
+            style={{
+              display: 'block',
+              marginTop: 12,
+              marginBottom: 8,
+              color: theme.colors.muted,
+              letterSpacing: isRtl ? '0.04em' : '0.12em',
+              fontSize: isRtl ? 12 : 10,
+              fontFamily: isRtl ? "'Amiri', serif" : undefined,
+              lineHeight: isRtl ? 1.7 : undefined,
+            }}
+          >
+            {isRtl ? wedding.invitation.verseReferenceUr : wedding.invitation.verseReferenceEn}
+          </small>
+        </div>
+        <ScrollDownHint
+          locale={locale}
+          placement="afterContent"
+          color={theme.colors.gold}
+          glow="rgba(198, 161, 91, 0.55)"
+          style={{ flexShrink: 0, marginTop: 4 }}
+        />
       </div>
-      <ScrollDownHint
-        locale={locale}
-        color={theme.colors.gold}
-        glow="rgba(198, 161, 91, 0.55)"
-      />
     </Card>
   );
 }
@@ -430,12 +445,27 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       failSafeRef.current = window.setTimeout(() => finishVideo(false), playWindowMs);
 
       startZoom();
-      const pending = video.play();
-      void pending?.catch(() => {
-        revealText();
-        finishVideo(false);
-        setShowScrollCue(true);
-      });
+
+      const attemptPlay = (retriesLeft: number) => {
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+        const pending = video.play();
+        void pending?.catch(() => {
+          if (retriesLeft <= 0) {
+            // Only give up after retries — early NotAllowed/Abort must not kill intro.
+            revealText();
+            finishVideo(false);
+            setShowScrollCue(true);
+            return;
+          }
+          const retry = () => attemptPlay(retriesLeft - 1);
+          video.addEventListener('canplay', retry, { once: true });
+          video.addEventListener('loadeddata', retry, { once: true });
+          window.setTimeout(retry, 400);
+        });
+      };
+      attemptPlay(4);
     };
 
     const tryPlay = () => {
@@ -447,6 +477,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
+      video.preload = 'auto';
 
       let kickedOff = false;
       const kickoff = () => {
@@ -456,7 +487,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
           beginPlayback();
           return;
         }
-        // Seek first, then play — avoids the 0→trim jump stutter on Baraat.
+        // Seek first, then play — avoids the 0→trim jump stutter.
         let started = false;
         const afterSeek = () => {
           if (started) return;
@@ -475,26 +506,18 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         window.setTimeout(afterSeek, 280);
       };
 
-      // Waleema buffers only after the guest lands here.
-      if (e.id === 'waleema') {
-        video.preload = 'auto';
-        if (video.readyState >= 1) {
-          kickoff();
-        } else {
-          video.addEventListener('loadedmetadata', kickoff, { once: true });
-          video.addEventListener('canplay', kickoff, { once: true });
-          try {
-            video.load();
-          } catch {
-            // ignore
-          }
-          window.setTimeout(kickoff, 1600);
+      if (video.readyState >= 2) {
+        kickoff();
+      } else {
+        video.addEventListener('loadedmetadata', kickoff, { once: true });
+        video.addEventListener('canplay', kickoff, { once: true });
+        try {
+          video.load();
+        } catch {
+          // ignore
         }
-        return;
+        window.setTimeout(kickoff, 1800);
       }
-
-      if (video.readyState >= 1) kickoff();
-      else video.addEventListener('loadedmetadata', kickoff, { once: true });
     };
 
     video.addEventListener('timeupdate', onTimeUpdate);
@@ -506,9 +529,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       (entries) => {
         const entry = entries[0];
         if (!entry) return;
-        if (entry.intersectionRatio >= 0.85) tryPlay();
+        // Start once a majority of the card is visible (0.85 was too strict on short viewports).
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.55) tryPlay();
       },
-      { threshold: [0, 0.5, 0.85] }
+      { threshold: [0, 0.35, 0.55, 0.75] }
     );
 
     observer.observe(root);
@@ -594,7 +618,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               playsInline
               muted
               // Waleema waits until the guest lands on this page before buffering/playing.
-              preload={e.id === 'waleema' ? 'metadata' : 'auto'}
+              preload="auto"
               controls={false}
               disablePictureInPicture
               style={{
@@ -647,15 +671,15 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               padding:
                 e.id === 'baraat'
                   ? isRtl
-                    ? '52% 20px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
-                    : '52% 22px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
+                    ? '50% 20px max(10px, env(safe-area-inset-bottom, 0px))'
+                    : '50% 22px max(10px, env(safe-area-inset-bottom, 0px))'
                   : e.id === 'waleema'
                     ? isRtl
-                      ? '54% 20px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
-                      : '54% 22px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
+                      ? '52% 20px max(10px, env(safe-area-inset-bottom, 0px))'
+                      : '52% 22px max(10px, env(safe-area-inset-bottom, 0px))'
                     : isRtl
-                      ? '24px 20px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
-                      : '24px 22px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))',
+                      ? '24px 20px max(10px, env(safe-area-inset-bottom, 0px))'
+                      : '24px 22px max(10px, env(safe-area-inset-bottom, 0px))',
               boxSizing: 'border-box',
               // Pass swipes through empty chrome; only the glass panel is interactive.
               pointerEvents: 'none',
@@ -694,6 +718,9 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 overflowWrap: 'anywhere',
                 wordBreak: 'normal',
                 pointerEvents: 'auto',
+                flexShrink: 1,
+                minHeight: 0,
+                marginBottom: 4,
               }}
             >
           <p
@@ -899,15 +926,30 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
             </button>
           </div>
         </div>
+            <div
+              style={{
+                marginTop: 'auto',
+                flexShrink: 0,
+                minHeight: 44,
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'flex-end',
+                pointerEvents: showScrollCue ? 'auto' : 'none',
+              }}
+            >
+              {showScrollCue && (
+                <ScrollDownHint
+                  locale={locale}
+                  placement="afterContent"
+                  color={ev.cardAccent}
+                  glow={e.id === 'mehndi' ? 'rgba(122, 90, 40, 0.45)' : 'rgba(240, 215, 138, 0.55)'}
+                  style={{ marginTop: 0, paddingBottom: 2 }}
+                />
+              )}
+            </div>
       </div>
         </>
-      )}
-      {showScrollCue && (
-        <ScrollDownHint
-          locale={locale}
-          color={ev.cardAccent}
-          glow={e.id === 'mehndi' ? 'rgba(122, 90, 40, 0.45)' : 'rgba(240, 215, 138, 0.55)'}
-        />
       )}
     </Card>
   );

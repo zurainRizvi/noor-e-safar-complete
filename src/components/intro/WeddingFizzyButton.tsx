@@ -19,8 +19,10 @@ export default function WeddingFizzyButton({ locale = 'en', onTapGesture, onBegi
   const [active, setActive] = useState(false);
   const timerRef = useRef<number | null>(null);
   const activeRef = useRef(false);
+  const usedTouchRef = useRef(false);
   const onTapGestureRef = useRef(onTapGesture);
   const onBeginRef = useRef(onBegin);
+  const buttonCleanupRef = useRef<(() => void) | null>(null);
   const isRtl = locale === 'ur';
 
   useEffect(() => {
@@ -31,12 +33,11 @@ export default function WeddingFizzyButton({ locale = 'en', onTapGesture, onBegi
   useEffect(() => {
     return () => {
       if (timerRef.current != null) window.clearTimeout(timerRef.current);
+      buttonCleanupRef.current?.();
     };
   }, []);
 
-  const runFromGestureRef = useRef<() => void>(() => {});
-
-  runFromGestureRef.current = () => {
+  const runFromGesture = useCallback(() => {
     if (activeRef.current) return;
     activeRef.current = true;
     setActive(true);
@@ -44,48 +45,45 @@ export default function WeddingFizzyButton({ locale = 'en', onTapGesture, onBegi
     if (timerRef.current != null) window.clearTimeout(timerRef.current);
     timerRef.current = window.setTimeout(() => {
       const after = onBeginRef.current;
-      if (after) {
-        after();
-      } else {
-        window.dispatchEvent(new CustomEvent('wedding:start'));
-      }
+      if (after) after();
+      else window.dispatchEvent(new CustomEvent('wedding:start'));
     }, FIZZ_MS);
-  };
-
-  const buttonCleanupRef = useRef<(() => void) | null>(null);
-
-  const attachBeginButton = useCallback((node: HTMLButtonElement | null) => {
-    buttonCleanupRef.current?.();
-    buttonCleanupRef.current = null;
-    if (!node) return;
-
-    let startX = 0;
-    let startY = 0;
-    const onTouchStart = (e: TouchEvent) => {
-      const touch = e.changedTouches[0];
-      if (!touch) return;
-      startX = touch.clientX;
-      startY = touch.clientY;
-    };
-    const onTouchEnd = (e: TouchEvent) => {
-      const touch = e.changedTouches[0];
-      if (!touch) return;
-      if (Math.hypot(touch.clientX - startX, touch.clientY - startY) > 18) return;
-      runFromGestureRef.current();
-    };
-    node.addEventListener('touchstart', onTouchStart, { passive: true });
-    node.addEventListener('touchend', onTouchEnd);
-    buttonCleanupRef.current = () => {
-      node.removeEventListener('touchstart', onTouchStart);
-      node.removeEventListener('touchend', onTouchEnd);
-    };
   }, []);
 
-  useEffect(
-    () => () => {
+  const attachBeginButton = useCallback(
+    (node: HTMLButtonElement | null) => {
       buttonCleanupRef.current?.();
+      buttonCleanupRef.current = null;
+      if (!node) return;
+
+      let startX = 0;
+      let startY = 0;
+
+      const onTouchStart = (e: TouchEvent) => {
+        const touch = e.changedTouches[0];
+        if (!touch) return;
+        usedTouchRef.current = true;
+        startX = touch.clientX;
+        startY = touch.clientY;
+      };
+
+      const onTouchEnd = (e: TouchEvent) => {
+        const touch = e.changedTouches[0];
+        if (!touch) return;
+        if (Math.hypot(touch.clientX - startX, touch.clientY - startY) > 18) return;
+        // Prevent the synthetic click that would double-fire the fizz.
+        e.preventDefault();
+        runFromGesture();
+      };
+
+      node.addEventListener('touchstart', onTouchStart, { passive: true });
+      node.addEventListener('touchend', onTouchEnd, { passive: false });
+      buttonCleanupRef.current = () => {
+        node.removeEventListener('touchstart', onTouchStart);
+        node.removeEventListener('touchend', onTouchEnd);
+      };
     },
-    [],
+    [runFromGesture],
   );
 
   const particles = Array.from({ length: PARTICLE_COUNT });
@@ -96,7 +94,14 @@ export default function WeddingFizzyButton({ locale = 'en', onTapGesture, onBegi
         ref={attachBeginButton}
         type="button"
         className="wedding-fizzy__button"
-        onClick={() => runFromGestureRef.current()}
+        onClick={() => {
+          // Desktop / mouse only — touch already handled (and prevented click).
+          if (usedTouchRef.current) {
+            usedTouchRef.current = false;
+            return;
+          }
+          runFromGesture();
+        }}
         aria-label={isRtl ? 'دعوت شروع کرنے کے لیے تھپتھپائیں' : 'Tap to begin wedding invitation'}
       >
         <span className="wedding-fizzy__shine" />
