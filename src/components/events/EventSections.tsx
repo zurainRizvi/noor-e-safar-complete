@@ -51,8 +51,8 @@ export function Blessing({ locale }: { locale: Locale }) {
           alignItems: 'center',
           justifyContent: 'center',
           padding: isRtl
-            ? 'clamp(100px, 15vh, 128px) 28px max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px))'
-            : 'clamp(104px, 14.5vh, 132px) 30px max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px))',
+            ? 'clamp(100px, 15vh, 128px) 28px max(58px, calc(env(safe-area-inset-bottom, 0px) + 48px))'
+            : 'clamp(104px, 14.5vh, 132px) 30px max(58px, calc(env(safe-area-inset-bottom, 0px) + 48px))',
           boxSizing: 'border-box',
           textAlign: 'center',
         }}
@@ -125,11 +125,6 @@ export function Blessing({ locale }: { locale: Locale }) {
         locale={locale}
         color={theme.colors.gold}
         glow="rgba(198, 161, 91, 0.55)"
-        style={{
-          // Keep cue in the first viewport even if content is dense.
-          top: 'calc(var(--app-h, 100svh) - 56px)',
-          bottom: 'auto',
-        }}
       />
     </Card>
   );
@@ -183,7 +178,9 @@ export function Countdown({ locale }: { locale: Locale }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: isRtl ? 'clamp(78px, 15vh, 124px) 22px 18px' : 'clamp(84px, 14.5vh, 128px) 26px 18px',
+          padding: isRtl
+            ? 'clamp(78px, 15vh, 124px) 22px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
+            : 'clamp(84px, 14.5vh, 128px) 26px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))',
         }}
       >
         <p
@@ -640,15 +637,15 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               padding:
                 e.id === 'baraat'
                   ? isRtl
-                    ? '52% 20px 18px'
-                    : '52% 22px 18px'
+                    ? '52% 20px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
+                    : '52% 22px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
                   : e.id === 'waleema'
                     ? isRtl
-                      ? '54% 20px 16px'
-                      : '54% 22px 16px'
+                      ? '54% 20px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
+                      : '54% 22px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
                     : isRtl
-                      ? '24px 20px'
-                      : '24px 22px',
+                      ? '24px 20px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
+                      : '24px 22px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))',
               boxSizing: 'border-box',
               // Pass swipes through empty chrome; only the glass panel is interactive.
               pointerEvents: 'none',
@@ -940,7 +937,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         position: 'relative',
         overflow: 'visible',
         textAlign: isRtl ? 'right' : 'left',
-        padding: isRtl ? '108px 22px 180px' : '120px 28px 168px',
+        padding: isRtl ? '108px 22px 120px' : '120px 28px 112px',
         color: scheduleInk,
       }}
     >
@@ -997,7 +994,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
           margin: '0 auto',
           paddingLeft: isRtl ? 8 : 36,
           paddingRight: isRtl ? 36 : 8,
-          paddingBottom: 56,
+          paddingBottom: 20,
           zIndex: 2,
         }}
       >
@@ -1094,6 +1091,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
       </div>
       <ScrollDownHint
         locale={locale}
+        placement="afterContent"
         color={scheduleAccent}
         glow={
           eventId === 'mehndi'
@@ -1102,10 +1100,6 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
               ? 'rgba(92, 143, 143, 0.5)'
               : 'rgba(198, 161, 91, 0.5)'
         }
-        style={{
-          top: 'calc(var(--app-h, 100svh) - 56px)',
-          bottom: 'auto',
-        }}
       />
     </Card>
   );

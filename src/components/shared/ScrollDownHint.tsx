@@ -9,7 +9,11 @@ type Props = {
   color?: string;
   /** Soft glow behind the chevron. */
   glow?: string;
-  /** Extra class (e.g. opening-stage dark treatment). */
+  /**
+   * `footer` — pinned to the bottom of a one-viewport page (default).
+   * `afterContent` — sits in normal flow under the page content (schedules).
+   */
+  placement?: 'footer' | 'afterContent';
   className?: string;
   style?: React.CSSProperties;
 };
@@ -32,39 +36,42 @@ export function scrollInvitationDown(from?: HTMLElement | null) {
   main.scrollBy({ top: main.clientHeight, behavior: 'smooth' });
 }
 
-/** Themed, clickable "swipe / scroll down" cue for each snap page. */
+/** Compact, themed, clickable scroll-down cue. */
 export function ScrollDownHint({
   locale,
   color = 'rgba(255, 248, 232, 0.95)',
   glow = 'rgba(224, 192, 117, 0.85)',
+  placement = 'footer',
   className = '',
   style,
 }: Props) {
   const isRtl = locale === 'ur';
   const rootRef = React.useRef<HTMLButtonElement>(null);
+  const isFlow = placement === 'afterContent';
 
   return (
     <button
       ref={rootRef}
       type="button"
-      className={`scroll-hint ${className}`.trim()}
+      className={`scroll-hint scroll-hint-compact ${className}`.trim()}
       aria-label={isRtl ? 'نیچے سکرول کریں' : 'Scroll down'}
       onClick={() => scrollInvitationDown(rootRef.current)}
       style={
         {
           '--scroll-hint-color': color,
           '--scroll-hint-glow': glow,
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 'max(14px, calc(env(safe-area-inset-bottom, 0px) + 8px))',
+          position: isFlow ? 'relative' : 'absolute',
+          left: isFlow ? undefined : 0,
+          right: isFlow ? undefined : 0,
+          bottom: isFlow ? undefined : 'max(10px, calc(env(safe-area-inset-bottom, 0px) + 6px))',
           zIndex: 6,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 6,
-          margin: 0,
-          padding: '10px 16px',
+          gap: 3,
+          width: isFlow ? '100%' : undefined,
+          margin: isFlow ? '8px auto 0' : 0,
+          padding: isFlow ? '6px 12px 10px' : '6px 12px',
           border: 'none',
           background: 'transparent',
           cursor: 'pointer',

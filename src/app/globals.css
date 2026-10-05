@@ -126,7 +126,7 @@ main {
   justify-content: flex-start;
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  padding-bottom: max(168px, calc(env(safe-area-inset-bottom, 0px) + 120px));
+  padding-bottom: max(88px, calc(env(safe-area-inset-bottom, 0px) + 64px));
 }
 
 [dir='rtl'] .eyebrow {
@@ -947,46 +947,47 @@ label,
 }
 
 .scroll-hint-label {
-  font-size: 11px;
-  letter-spacing: 0.28em;
+  font-size: 9px;
+  letter-spacing: 0.22em;
   font-weight: 700;
   color: var(--scroll-hint-color, rgba(255, 248, 232, 0.95));
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.22);
 }
 
 [dir='rtl'] .scroll-hint-label {
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   font-family: 'Amiri', serif;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .scroll-hint-chevron {
-  width: 18px;
-  height: 18px;
-  border-right: 2px solid var(--scroll-hint-color, rgba(255, 248, 232, 0.95));
-  border-bottom: 2px solid var(--scroll-hint-color, rgba(255, 248, 232, 0.95));
+  width: 11px;
+  height: 11px;
+  border-right: 1.5px solid var(--scroll-hint-color, rgba(255, 248, 232, 0.95));
+  border-bottom: 1.5px solid var(--scroll-hint-color, rgba(255, 248, 232, 0.95));
   transform: rotate(45deg);
   animation: scrollHintBounce 1.6s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px var(--scroll-hint-glow, rgba(224, 192, 117, 0.85)));
+  filter: drop-shadow(0 0 5px var(--scroll-hint-glow, rgba(224, 192, 117, 0.85)));
 }
 
 .scroll-hint::before {
   content: '';
   position: absolute;
-  bottom: 2px;
-  width: 72px;
-  height: 28px;
+  bottom: 0;
+  width: 48px;
+  height: 18px;
   border-radius: 999px;
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--scroll-hint-color, rgba(255, 248, 232, 0.95)) 55%, transparent),
+    color-mix(in srgb, var(--scroll-hint-color, rgba(255, 248, 232, 0.95)) 45%, transparent),
     transparent
   );
   background-size: 200% 100%;
   animation: scrollHintShimmer 2.2s ease-in-out infinite;
   pointer-events: none;
+  opacity: 0.7;
 }
 
 @keyframes scrollHintBounce {
@@ -996,7 +997,7 @@ label,
     opacity: 0.55;
   }
   50% {
-    transform: translateY(7px) rotate(45deg);
+    transform: translateY(4px) rotate(45deg);
     opacity: 1;
   }
 }

@@ -289,7 +289,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          padding: isRtl ? 'clamp(64px, 11vh, 100px) 20px max(14px, 2.4vh)' : 'clamp(68px, 11vh, 104px) 24px max(14px, 2.4vh)',
+          padding: isRtl
+            ? 'clamp(64px, 11vh, 100px) 20px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
+            : 'clamp(68px, 11vh, 104px) 24px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))',
         }}
       >
         <p
