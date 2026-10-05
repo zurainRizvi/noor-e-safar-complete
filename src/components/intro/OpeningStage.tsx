@@ -9,6 +9,7 @@ import { Birds } from '@/components/intro/Birds';
 import type { Locale } from '@/config/translations';
 import { t } from '@/config/translations';
 import { ScrollDownHint } from '@/components/shared/ScrollDownHint';
+import WeddingFizzyButton from '@/components/intro/WeddingFizzyButton';
 
 type Props = {
   locale: Locale;
@@ -29,9 +30,6 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
   const beganRef = useRef(false);
   const heroReadyRef = useRef(false);
   const timersRef = useRef<number[]>([]);
-  const beginRef = useRef<() => void>(() => {});
-  const unbindBeginRef = useRef<(() => void) | null>(null);
-
   const [phase, setPhase] = useState<Phase>('awaitingTap');
   const [showInvite, setShowInvite] = useState(false);
   const [showHeroCard, setShowHeroCard] = useState(false);
@@ -58,10 +56,7 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
     }
   };
 
-  useEffect(() => () => {
-    clearTimers();
-    unbindBeginRef.current?.();
-  }, []);
+  useEffect(() => () => clearTimers(), []);
 
   const attachCurtain = useCallback((node: HTMLVideoElement | null) => {
     curtainRef.current = node;
@@ -100,7 +95,8 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
     });
   };
 
-  const begin = () => {
+  /** Runs on tap (same turn as user gesture) so iOS allows video + music. */
+  const beginFromGesture = () => {
     if (beganRef.current) return;
     beganRef.current = true;
 
@@ -110,7 +106,6 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
     } catch {
       // A failed music seek must not cancel the curtain.
     }
-    setPhase('curtain');
     setShowInvite(false);
     setShowHeroCard(false);
     clearTimers();
@@ -121,42 +116,14 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
       window.setTimeout(() => {
         revealHero();
       }, HERO_IN_MS),
-      // Scroll cue only after the opening video has played ~5s.
       window.setTimeout(() => setScrollCueReady(true), 5000),
     );
   };
 
-  useEffect(() => {
-    beginRef.current = begin;
-  });
-
-  const attachBeginButton = useCallback((node: HTMLButtonElement | null) => {
-    unbindBeginRef.current?.();
-    unbindBeginRef.current = null;
-    if (!node) return;
-
-    let startX = 0;
-    let startY = 0;
-    const onStart = (event: TouchEvent) => {
-      const touch = event.changedTouches[0];
-      if (!touch) return;
-      startX = touch.clientX;
-      startY = touch.clientY;
-    };
-    const onEnd = (event: TouchEvent) => {
-      const touch = event.changedTouches[0];
-      if (!touch) return;
-      if (Math.hypot(touch.clientX - startX, touch.clientY - startY) > 18) return;
-      // iOS in-app browsers only treat touchend as the media user-gesture.
-      beginRef.current();
-    };
-    node.addEventListener('touchstart', onStart, { passive: true });
-    node.addEventListener('touchend', onEnd);
-    unbindBeginRef.current = () => {
-      node.removeEventListener('touchstart', onStart);
-      node.removeEventListener('touchend', onEnd);
-    };
-  }, []);
+  /** After the fizzy burst — hide the tap overlay and show the curtain phase. */
+  const beginAfterFizz = () => {
+    setPhase('curtain');
+  };
 
   const handleCurtainEnded = () => {
     revealHero();
@@ -236,48 +203,17 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
         {showTap && (
           <motion.div
             key="tap"
+            className="wedding-opening-screen"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.45 }}
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              bottom: 'max(72px, calc(env(safe-area-inset-bottom, 0px) + 11vh))',
-              zIndex: 5,
-              display: 'flex',
-              justifyContent: 'center',
-              pointerEvents: 'none',
-            }}
           >
-            <button
-              ref={attachBeginButton}
-              type="button"
-              className="tap-begin"
-              onClick={begin}
-              style={{
-                pointerEvents: 'auto',
-                width: 'min(78%, 280px)',
-                padding: '14px 22px',
-                borderRadius: '999px',
-                border: '1.5px solid rgba(212, 175, 87, 0.85)',
-                background: 'rgba(16, 10, 12, 0.72)',
-                color: '#fff',
-                fontSize: '11px',
-                fontWeight: 700,
-                letterSpacing: '0.28em',
-                cursor: 'pointer',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                WebkitTapHighlightColor: 'transparent',
-                boxShadow: '0 10px 28px rgba(0,0,0,0.45)',
-                touchAction: 'manipulation',
-                minHeight: 48,
-              }}
-            >
-              TAP TO BEGIN
-            </button>
+            <WeddingFizzyButton
+              locale={locale}
+              onTapGesture={beginFromGesture}
+              onBegin={beginAfterFizz}
+            />
           </motion.div>
         )}
       </AnimatePresence>
