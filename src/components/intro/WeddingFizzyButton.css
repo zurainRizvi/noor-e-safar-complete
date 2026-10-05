@@ -3,11 +3,25 @@
   inset: 0;
   display: flex;
   justify-content: center;
-  /* Just below visual center of the curtain frame */
   align-items: flex-start;
+  /* Desktop/laptop: sits just above the aisle golden point */
   padding-top: 54vh;
   pointer-events: none;
   z-index: 5;
+}
+
+/* Phones crop the curtain video taller — raise the seal so it stays
+   exactly above the golden point once the curtains part. */
+@media (max-width: 600px) {
+  .wedding-opening-screen {
+    padding-top: 40vh;
+  }
+}
+
+@media (max-width: 600px) and (max-height: 720px) {
+  .wedding-opening-screen {
+    padding-top: 38vh;
+  }
 }
 
 .wedding-opening-screen .wedding-fizzy {

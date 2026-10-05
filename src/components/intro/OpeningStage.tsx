@@ -352,7 +352,7 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.55 }}
                 >
-                  {locale === 'ur' ? 'عابیہا' : 'Abeeha'}
+                  {locale === 'ur' ? 'أبيها' : 'Abeeha'}
                 </motion.em>
               </h1>
               <Ornament />
