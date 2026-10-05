@@ -35,9 +35,12 @@ export default function ClosingStage({ locale }: { locale: Locale }) {
           video.setAttribute('muted', '');
           video.setAttribute('playsinline', '');
           video.setAttribute('webkit-playsinline', '');
+          video.playbackRate = 1.1; // ~0.1x faster ending video
           if (video.readyState >= 1) video.currentTime = 0;
           const pending = video.play();
-          void pending?.catch(() => {
+          void pending?.then(() => {
+            video.playbackRate = 1.1;
+          }).catch(() => {
             if (onPage.current) setShowRsvp(true);
           });
           return;

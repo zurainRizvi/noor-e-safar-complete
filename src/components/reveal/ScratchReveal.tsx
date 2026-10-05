@@ -5,6 +5,7 @@ import { theme } from '@/config/theme';
 import { wedding } from '@/config/wedding';
 import { Ornament, Card } from '@/components/shared/Ornament';
 import { Petals } from '@/components/shared/Petals';
+import { ScrollDownHint } from '@/components/shared/ScrollDownHint';
 import { t, type Locale } from '@/config/translations';
 
 const pink = {
@@ -611,6 +612,11 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           )}
         </div>
       </div>
+      <ScrollDownHint
+        locale={locale}
+        color={pink.main}
+        glow="rgba(201, 149, 158, 0.55)"
+      />
     </Card>
   );
 }

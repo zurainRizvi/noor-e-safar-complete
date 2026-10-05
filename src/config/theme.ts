@@ -20,15 +20,15 @@ export const theme = {
   },
   events: {
     mehndi: {
-      // Schedule / botanical tokens (original light theme)
-      bg: 'linear-gradient(180deg, #FBF6EB 0%, #F3EAD8 100%)',
-      border: 'rgba(198, 161, 91, 0.35)',
-      accent: '#E0C075',
-      soft: '#F5E6B8',
-      flower: { primary: '#E0C075', secondary: '#FFF2CE', dark: '#C6A15B' },
-      scheduleInk: '#2C261F',
-      scheduleInkSoft: '#4A4138',
-      scheduleAccent: '#C6A15B',
+      // Schedule — light marigold orange matching the Mehndi video
+      bg: 'linear-gradient(180deg, #FFF7ED 0%, #FFE2C2 55%, #FFD3A3 100%)',
+      border: 'rgba(232, 140, 70, 0.42)',
+      accent: '#E8914A',
+      soft: '#FFE0BC',
+      flower: { primary: '#E8914A', secondary: '#FFE8CF', dark: '#C46A28' },
+      scheduleInk: '#3A2416',
+      scheduleInkSoft: '#6A4530',
+      scheduleAccent: '#D4782E',
       // Event-card media + readable overlay tokens
       bgImage: '/images/mehndi-bg.jpg',
       video: '/videos/mehndi.mp4',
@@ -74,21 +74,21 @@ export const theme = {
       panelBorder: 'rgba(255, 255, 255, 0.22)',
     },
     waleema: {
-      // Moonlight dusty-blue + cream, lifted from the end frame
-      bg: 'linear-gradient(180deg, #F3F1EC 0%, #E4E9F2 48%, #D5DEEB 100%)',
-      border: 'rgba(122, 145, 168, 0.42)',
-      accent: '#7A91A8',
-      soft: '#D7E0EC',
-      flower: { primary: '#7A91A8', secondary: '#F7F2E8', dark: '#4A5F78' },
-      // Schedule page ink (cooler slate than the warm global ink)
-      scheduleInk: '#243040',
-      scheduleInkSoft: '#4A5568',
-      scheduleAccent: '#B8956A',
+      // Schedule — soft light green silk
+      bg: 'linear-gradient(180deg, #EAF4F4 0%, #C5D9D9 100%)',
+      border: 'rgba(92, 143, 143, 0.42)',
+      accent: '#5C8F8F',
+      soft: '#D5E4E4',
+      flower: { primary: '#5C8F8F', secondary: '#FFFFFF', dark: '#3A6868' },
+      scheduleInk: '#243830',
+      scheduleInkSoft: '#4A5F58',
+      scheduleAccent: '#5C8F8F',
       bgImage: '/images/waleema-bg.jpg',
       video: '/videos/waleema.mp4',
       poster: '/videos/waleema-poster.jpg',
       freezeLastFrame: true,
-      trimStart: 0,
+      // Skip the first second of the Waleema intro.
+      trimStart: 1,
       // Gentle ease toward the couple; composition is already mobile-framed.
       zoomFrom: 1.02,
       zoomTo: 1.1,
@@ -103,13 +103,13 @@ export const theme = {
       panelBorder: 'rgba(232, 213, 163, 0.28)',
     },
   },
-  // Closing farewell note — soft teal / light green silk
+  // Closing farewell note — soft light blue
   farewell: {
-    bg: 'linear-gradient(180deg, #EAF4F4 0%, #C5D9D9 100%)',
-    border: 'rgba(92, 143, 143, 0.42)',
-    accent: '#5C8F8F',
-    accentDeep: '#3A6868',
-    flower: { primary: '#5C8F8F', secondary: '#FFFFFF', dark: '#3A6868' },
+    bg: 'linear-gradient(180deg, #F0F4FA 0%, #D5DEEB 100%)',
+    border: 'rgba(122, 145, 168, 0.42)',
+    accent: '#7A91A8',
+    accentDeep: '#4A5F78',
+    flower: { primary: '#7A91A8', secondary: '#FFFFFF', dark: '#4A5F78' },
   },
   // Ayah / blessing page climbers — red & white florals
   blessing: {

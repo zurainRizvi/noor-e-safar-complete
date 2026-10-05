@@ -10,6 +10,7 @@ import { Petals } from '@/components/shared/Petals';
 import { BotanicalClimber, ScheduleBow, TopCanopyArch } from '@/components/events/Botanicals';
 import { schedulesData } from '@/components/events/schedulesData';
 import { addEventToNativeCalendar } from '@/utils/calendar';
+import { ScrollDownHint } from '@/components/shared/ScrollDownHint';
 
 /** Play each event intro at most once per page load. */
 const playedEventIntros = new Set<EventId>();
@@ -120,6 +121,16 @@ export function Blessing({ locale }: { locale: Locale }) {
           {isRtl ? wedding.invitation.verseReferenceUr : wedding.invitation.verseReferenceEn}
         </small>
       </div>
+      <ScrollDownHint
+        locale={locale}
+        color={theme.colors.gold}
+        glow="rgba(198, 161, 91, 0.55)"
+        style={{
+          // Keep cue in the first viewport even if content is dense.
+          top: 'calc(var(--app-h, 100svh) - 56px)',
+          bottom: 'auto',
+        }}
+      />
     </Card>
   );
 }
@@ -214,6 +225,11 @@ export function Countdown({ locale }: { locale: Locale }) {
           ))}
         </div>
       </div>
+      <ScrollDownHint
+        locale={locale}
+        color={accent}
+        glow="rgba(201, 149, 158, 0.55)"
+      />
     </Card>
   );
 }
@@ -879,6 +895,11 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       </div>
         </>
       )}
+      <ScrollDownHint
+        locale={locale}
+        color={ev.cardAccent}
+        glow={e.id === 'mehndi' ? 'rgba(122, 90, 40, 0.45)' : 'rgba(240, 215, 138, 0.55)'}
+      />
     </Card>
   );
 }
@@ -892,11 +913,23 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
   const scheduleInkSoft = ev.scheduleInkSoft;
   const scheduleAccent = ev.scheduleAccent;
   const selectedBg =
-    eventId === 'waleema' ? 'rgba(122, 145, 168, 0.14)' : 'rgba(198,161,91,0.12)';
+    eventId === 'mehndi'
+      ? 'rgba(232, 145, 74, 0.14)'
+      : eventId === 'waleema'
+        ? 'rgba(92, 143, 143, 0.14)'
+        : 'rgba(198,161,91,0.12)';
   const selectedBorder =
-    eventId === 'waleema' ? 'rgba(184, 149, 106, 0.45)' : theme.colors.goldLine;
+    eventId === 'mehndi'
+      ? 'rgba(212, 120, 46, 0.45)'
+      : eventId === 'waleema'
+        ? 'rgba(92, 143, 143, 0.45)'
+        : theme.colors.goldLine;
   const railFade =
-    eventId === 'waleema' ? 'rgba(184, 149, 106, 0.18)' : 'rgba(198,161,91,0.2)';
+    eventId === 'mehndi'
+      ? 'rgba(232, 145, 74, 0.22)'
+      : eventId === 'waleema'
+        ? 'rgba(92, 143, 143, 0.2)'
+        : 'rgba(198,161,91,0.2)';
 
   return (
     <Card
@@ -1059,6 +1092,21 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
           );
         })}
       </div>
+      <ScrollDownHint
+        locale={locale}
+        color={scheduleAccent}
+        glow={
+          eventId === 'mehndi'
+            ? 'rgba(232, 145, 74, 0.5)'
+            : eventId === 'waleema'
+              ? 'rgba(92, 143, 143, 0.5)'
+              : 'rgba(198, 161, 91, 0.5)'
+        }
+        style={{
+          top: 'calc(var(--app-h, 100svh) - 56px)',
+          bottom: 'auto',
+        }}
+      />
     </Card>
   );
 }

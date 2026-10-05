@@ -5,6 +5,7 @@ import { theme } from '@/config/theme';
 import { Card, Ornament } from '@/components/shared/Ornament';
 import { Petals } from '@/components/shared/Petals';
 import { BotanicalClimber, ScheduleBow } from '@/components/events/Botanicals';
+import { ScrollDownHint } from '@/components/shared/ScrollDownHint';
 import type { Locale } from '@/config/translations';
 
 const PAGE_BG = theme.farewell.bg;
@@ -157,6 +158,11 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
           </p>
         </div>
       </div>
+      <ScrollDownHint
+        locale={locale}
+        color={ACCENT}
+        glow="rgba(122, 145, 168, 0.55)"
+      />
     </Card>
   );
 }
