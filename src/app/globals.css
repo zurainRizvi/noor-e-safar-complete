@@ -519,8 +519,9 @@ label,
 }
 
 .petals.baraat i {
-  background: #C62828;
-  box-shadow: 0 2px 6px rgba(180, 40, 40, 0.4);
+  /* Event card: white + red */
+  background: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(180, 40, 40, 0.32);
 }
 
 .petals.baraat i:nth-child(3n) {
@@ -528,25 +529,25 @@ label,
 }
 
 .petals.baraat i:nth-child(3n + 1) {
-  background: #B71C1C;
+  background: #FFFFFF;
 }
 
 .petals.baraat i:nth-child(5n) {
-  background: #FFCDD2;
+  background: #C62828;
 }
 
 .petals.baraat i:nth-child(7n) {
-  background: #EF5350;
+  background: #FFCDD2;
 }
 
 .petals.waleema i {
-  /* Event card: white + dusty moonlight blue */
+  /* Event card: white + soft green */
   background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(36, 48, 64, 0.28);
+  box-shadow: 0 2px 6px rgba(58, 104, 104, 0.28);
 }
 
 .petals.waleema i:nth-child(3n) {
-  background: #7A91A8;
+  background: #7AA3A3;
 }
 
 .petals.waleema i:nth-child(3n + 1) {
@@ -554,11 +555,11 @@ label,
 }
 
 .petals.waleema i:nth-child(5n) {
-  background: #B8C6D6;
+  background: #A8C4C4;
 }
 
 .petals.waleema i:nth-child(7n) {
-  background: #5C7A96;
+  background: #5C8F8F;
 }
 
 .petals.baraat-schedule i {

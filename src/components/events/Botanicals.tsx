@@ -14,6 +14,8 @@ function flowerPalette(type: BotanicalPaletteId) {
 /* Reusable Top Floral Arch Canopy (Spanning across top corners & center) */
 export function TopCanopyArch({ type }: { type: BotanicalPaletteId }) {
   const flowerColors = flowerPalette(type);
+  const vine = flowerColors.dark;
+  const vineSoft = flowerColors.primary;
 
   return (
     <svg
@@ -33,11 +35,11 @@ export function TopCanopyArch({ type }: { type: BotanicalPaletteId }) {
         transformOrigin: 'top center',
       }}
     >
-      {/* 1. Sweeping Gold Arch Vines */}
+      {/* 1. Sweeping theme-colored Arch Vines */}
       <path
         d="M 0 0 Q 70 8 135 32 Q 180 50 210 56"
         fill="none"
-        stroke="#C6A15B"
+        stroke={vine}
         strokeWidth="2.2"
         strokeLinecap="round"
         opacity="0.95"
@@ -45,18 +47,18 @@ export function TopCanopyArch({ type }: { type: BotanicalPaletteId }) {
       <path
         d="M 420 0 Q 350 8 285 32 Q 240 50 210 56"
         fill="none"
-        stroke="#C6A15B"
+        stroke={vine}
         strokeWidth="2.2"
         strokeLinecap="round"
         opacity="0.95"
       />
 
       {/* 2. Secondary Delicate Filigree Swirls */}
-      <path d="M 0 12 Q 55 18 115 45 Q 165 65 210 68" fill="none" stroke="#E0C075" strokeWidth="1.2" opacity="0.75" />
-      <path d="M 420 12 Q 365 18 305 45 Q 255 65 210 68" fill="none" stroke="#E0C075" strokeWidth="1.2" opacity="0.75" />
-      <path d="M 210 56 Q 210 74 214 80 Q 218 84 212 88" fill="none" stroke="#C6A15B" strokeWidth="1" opacity="0.8" />
+      <path d="M 0 12 Q 55 18 115 45 Q 165 65 210 68" fill="none" stroke={vineSoft} strokeWidth="1.2" opacity="0.75" />
+      <path d="M 420 12 Q 365 18 305 45 Q 255 65 210 68" fill="none" stroke={vineSoft} strokeWidth="1.2" opacity="0.75" />
+      <path d="M 210 56 Q 210 74 214 80 Q 218 84 212 88" fill="none" stroke={vine} strokeWidth="1" opacity="0.8" />
 
-      {/* 3. Top Arch Heart Leaves (Physically attached with gold stems) */}
+      {/* 3. Top Arch Heart Leaves (Physically attached with themed stems) */}
       {[
         // Left Arch Leaves
         { stemX: 15, stemY: 3, lx: 25, ly: 14, angle: 30, s: 1.3 },
@@ -86,7 +88,7 @@ export function TopCanopyArch({ type }: { type: BotanicalPaletteId }) {
           <path
             d={`M ${leaf.stemX} ${leaf.stemY} Q ${(leaf.stemX + leaf.lx) / 2} ${(leaf.stemY + leaf.ly) / 2 - 2} ${leaf.lx} ${leaf.ly}`}
             fill="none"
-            stroke="#C6A15B"
+            stroke={vine}
             strokeWidth={0.8 * leaf.s}
             strokeLinecap="round"
           />
@@ -98,7 +100,7 @@ export function TopCanopyArch({ type }: { type: BotanicalPaletteId }) {
               strokeWidth="0.5"
               opacity={tone === 0 ? 1 : 0.92}
             />
-            <path d="M 0 0 L 0 13" stroke="#C6A15B" strokeWidth="0.5" opacity="0.85" />
+            <path d="M 0 0 L 0 13" stroke={vine} strokeWidth="0.5" opacity="0.85" />
           </g>
         </g>
         );

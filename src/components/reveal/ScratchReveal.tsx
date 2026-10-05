@@ -290,8 +290,8 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           alignItems: 'center',
           justifyContent: 'flex-start',
           padding: isRtl
-            ? 'clamp(64px, 11vh, 100px) 20px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
-            : 'clamp(68px, 11vh, 104px) 24px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))',
+            ? 'clamp(56px, 9vh, 88px) 18px max(18px, calc(env(safe-area-inset-bottom, 0px) + 12px))'
+            : 'clamp(68px, 11vh, 104px) 24px max(18px, calc(env(safe-area-inset-bottom, 0px) + 12px))',
         }}
       >
         <p
@@ -366,7 +366,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             style={{
               position: 'relative',
               width: 'min(268px, 78vw)',
-              height: 'min(292px, 62vh)',
+              height: isRtl ? 'min(250px, 48vh)' : 'min(292px, 62vh)',
               margin: '0 auto 10px',
               flexShrink: 0,
               zIndex: 3,
@@ -593,32 +593,36 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
               onClick={() => celebrate()}
               style={{
                 marginTop: 2,
+                marginBottom: 4,
                 padding: '11px 20px',
                 borderRadius: 999,
                 border: `1px solid ${pink.line}`,
                 background: 'rgba(255, 245, 246, 0.92)',
                 color: theme.colors.ink,
-                fontSize: 11,
+                fontSize: isRtl ? 12 : 11,
                 fontWeight: 700,
-                letterSpacing: '0.16em',
+                letterSpacing: isRtl ? '0.04em' : '0.16em',
                 cursor: 'pointer',
                 minHeight: 42,
                 flexShrink: 0,
                 position: 'relative',
                 zIndex: 4,
                 touchAction: 'manipulation',
+                fontFamily: isRtl ? "'Amiri', serif" : undefined,
               }}
             >
               {isRtl ? '✨ فوری طور پر ظاہر کریں' : '✨ Tap to reveal instantly'}
             </button>
           )}
+          <ScrollDownHint
+            locale={locale}
+            placement="afterContent"
+            color={pink.main}
+            glow="rgba(201, 149, 158, 0.55)"
+            style={{ marginTop: isRevealed ? 8 : 2, paddingBottom: 4 }}
+          />
         </div>
       </div>
-      <ScrollDownHint
-        locale={locale}
-        color={pink.main}
-        glow="rgba(201, 149, 158, 0.55)"
-      />
     </Card>
   );
 }

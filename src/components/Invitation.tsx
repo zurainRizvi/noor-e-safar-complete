@@ -124,8 +124,20 @@ export default function Invitation() {
           node.style.overflowY = 'hidden';
           return;
         }
+        // Urdu / dense pages: grow the snap card so <main> keeps the swipe,
+        // instead of nesting a scrollport that eats touch and blocks scrolling.
         const overflows = node.scrollHeight > node.clientHeight + 4;
-        node.style.overflowY = overflows ? 'auto' : 'hidden';
+        if (overflows) {
+          node.style.height = 'auto';
+          node.style.minHeight = 'var(--app-h, 100svh)';
+          node.style.maxHeight = 'none';
+          node.style.overflowY = 'visible';
+        } else {
+          node.style.height = '';
+          node.style.minHeight = '';
+          node.style.maxHeight = '';
+          node.style.overflowY = 'hidden';
+        }
       });
     };
     releaseTightScrollers();

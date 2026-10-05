@@ -36,6 +36,7 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
   const [showInvite, setShowInvite] = useState(false);
   const [showHeroCard, setShowHeroCard] = useState(false);
   const [videoStarted, setVideoStarted] = useState(false);
+  const [scrollCueReady, setScrollCueReady] = useState(false);
 
   const curtainSrc = `${theme.videos.opening}?v=${theme.videos.version}`;
   const posterSrc = `${theme.videos.openingPoster}?v=${theme.videos.version}`;
@@ -120,6 +121,8 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
       window.setTimeout(() => {
         revealHero();
       }, HERO_IN_MS),
+      // Scroll cue only after the opening video has played ~5s.
+      window.setTimeout(() => setScrollCueReady(true), 5000),
     );
   };
 
@@ -409,12 +412,12 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showHero && (
+        {showHero && scrollCueReady && (
           <motion.div
             key="scroll-hint"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.1, duration: 0.6 }}
+            transition={{ duration: 0.55 }}
             style={{
               position: 'absolute',
               left: 0,

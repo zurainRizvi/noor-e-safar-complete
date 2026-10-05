@@ -262,6 +262,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
   const videoRef = useRef<HTMLVideoElement>(null);
   const failSafeRef = useRef<number | null>(null);
   const textTimerRef = useRef<number | null>(null);
+  const scrollCueTimerRef = useRef<number | null>(null);
   const startedRef = useRef(false);
   const finishedRef = useRef(playedEventIntros.has(e.id));
   const textRevealedRef = useRef(playedEventIntros.has(e.id));
@@ -278,6 +279,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
   const [videoDone, setVideoDone] = useState(() => playedEventIntros.has(e.id));
   const [zoomActive, setZoomActive] = useState(false);
   const [zoomSecs, setZoomSecs] = useState(0);
+  // Scroll cue waits ~5s of video play; revisits show it immediately.
+  const [showScrollCue, setShowScrollCue] = useState(() => playedEventIntros.has(e.id));
   // Always keep the video mounted so the last frame can stay as the page background.
   const keepVideo = true;
 
@@ -386,6 +389,10 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
         window.clearTimeout(textTimerRef.current);
         textTimerRef.current = null;
       }
+      if (scrollCueTimerRef.current != null) {
+        window.clearTimeout(scrollCueTimerRef.current);
+        scrollCueTimerRef.current = null;
+      }
     };
 
     const onTimeUpdate = () => {
@@ -414,6 +421,8 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
 
     const beginPlayback = () => {
       textTimerRef.current = window.setTimeout(() => revealText(), Math.round(TEXT_AT * 1000));
+      // Show scroll-down only after ~5s of this event video.
+      scrollCueTimerRef.current = window.setTimeout(() => setShowScrollCue(true), 5000);
       const playWindowMs =
         Number.isFinite(video.duration) && video.duration > trimStart
           ? Math.round((video.duration - trimStart + 1.25) * 1000)
@@ -425,6 +434,7 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       void pending?.catch(() => {
         revealText();
         finishVideo(false);
+        setShowScrollCue(true);
       });
     };
 
@@ -892,11 +902,13 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
       </div>
         </>
       )}
-      <ScrollDownHint
-        locale={locale}
-        color={ev.cardAccent}
-        glow={e.id === 'mehndi' ? 'rgba(122, 90, 40, 0.45)' : 'rgba(240, 215, 138, 0.55)'}
-      />
+      {showScrollCue && (
+        <ScrollDownHint
+          locale={locale}
+          color={ev.cardAccent}
+          glow={e.id === 'mehndi' ? 'rgba(122, 90, 40, 0.45)' : 'rgba(240, 215, 138, 0.55)'}
+        />
+      )}
     </Card>
   );
 }
@@ -912,21 +924,27 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
   const selectedBg =
     eventId === 'mehndi'
       ? 'rgba(232, 145, 74, 0.14)'
-      : eventId === 'waleema'
-        ? 'rgba(92, 143, 143, 0.14)'
-        : 'rgba(198,161,91,0.12)';
+      : eventId === 'baraat'
+        ? 'rgba(196, 92, 92, 0.14)'
+        : eventId === 'waleema'
+          ? 'rgba(92, 143, 143, 0.14)'
+          : 'rgba(198,161,91,0.12)';
   const selectedBorder =
     eventId === 'mehndi'
       ? 'rgba(212, 120, 46, 0.45)'
-      : eventId === 'waleema'
-        ? 'rgba(92, 143, 143, 0.45)'
-        : theme.colors.goldLine;
+      : eventId === 'baraat'
+        ? 'rgba(196, 92, 92, 0.45)'
+        : eventId === 'waleema'
+          ? 'rgba(92, 143, 143, 0.45)'
+          : theme.colors.goldLine;
   const railFade =
     eventId === 'mehndi'
       ? 'rgba(232, 145, 74, 0.22)'
-      : eventId === 'waleema'
-        ? 'rgba(92, 143, 143, 0.2)'
-        : 'rgba(198,161,91,0.2)';
+      : eventId === 'baraat'
+        ? 'rgba(196, 92, 92, 0.22)'
+        : eventId === 'waleema'
+          ? 'rgba(92, 143, 143, 0.2)'
+          : 'rgba(198,161,91,0.2)';
 
   return (
     <Card
@@ -1096,9 +1114,11 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         glow={
           eventId === 'mehndi'
             ? 'rgba(232, 145, 74, 0.5)'
-            : eventId === 'waleema'
-              ? 'rgba(92, 143, 143, 0.5)'
-              : 'rgba(198, 161, 91, 0.5)'
+            : eventId === 'baraat'
+              ? 'rgba(196, 92, 92, 0.5)'
+              : eventId === 'waleema'
+                ? 'rgba(92, 143, 143, 0.5)'
+                : 'rgba(198, 161, 91, 0.5)'
         }
       />
     </Card>
