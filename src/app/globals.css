@@ -129,6 +129,14 @@ main {
   padding-bottom: max(88px, calc(env(safe-area-inset-bottom, 0px) + 64px));
 }
 
+/* Content pages stay still — only decorative children animate */
+.card.page-snap.blessing,
+.card.page-snap.count-card,
+.card.page-snap.reveal-date-card,
+.card.page-snap.ivory {
+  transform: none !important;
+}
+
 /* Urdu ayah page: taller type — grow so surah + scroll cue never collide */
 [dir='rtl'] .card.page-snap.blessing {
   height: auto;

@@ -374,7 +374,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             }}
           >
             <div
-              className={`scratch-card-visual${showHint ? ' scratch-card-live' : ''}`}
+              className="scratch-card-visual"
               style={{
                 position: 'absolute',
                 inset: 0,
