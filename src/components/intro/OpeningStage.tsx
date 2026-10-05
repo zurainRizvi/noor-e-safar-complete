@@ -33,8 +33,9 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
   const [phase, setPhase] = useState<Phase>('awaitingTap');
   const [showInvite, setShowInvite] = useState(false);
   const [showHeroCard, setShowHeroCard] = useState(false);
-  const [videoStarted, setVideoStarted] = useState(false);
+  const [videoPainted, setVideoPainted] = useState(false);
   const [scrollCueReady, setScrollCueReady] = useState(false);
+  const videoPaintedRef = useRef(false);
 
   const curtainSrc = `${theme.videos.opening}?v=${theme.videos.version}`;
   const posterSrc = `${theme.videos.openingPoster}?v=${theme.videos.version}`;
@@ -46,6 +47,18 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
     timersRef.current.forEach((id) => window.clearTimeout(id));
     timersRef.current = [];
   };
+
+  /** Only lift the poster once a real frame is on screen — avoids the black flash. */
+  const markVideoPainted = useCallback(() => {
+    if (videoPaintedRef.current) return;
+    const video = curtainRef.current;
+    if (!video || video.paused || video.readyState < 2) return;
+    videoPaintedRef.current = true;
+    // Two rAFs so the browser commits the first decoded frame before we fade the poster.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setVideoPainted(true));
+    });
+  }, []);
 
   const revealHero = () => {
     setShowInvite(false);
@@ -120,9 +133,20 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
     );
   };
 
-  /** After the fizzy burst — hide the tap overlay and show the curtain phase. */
+  /** After the fizzy burst — clear the tap overlay once the curtain is painting. */
   const beginAfterFizz = () => {
-    setPhase('curtain');
+    const finish = () => setPhase('curtain');
+    if (videoPaintedRef.current) {
+      finish();
+      return;
+    }
+    const video = curtainRef.current;
+    if (video) {
+      video.addEventListener('playing', finish, { once: true });
+      video.addEventListener('timeupdate', finish, { once: true });
+    }
+    // Fallback so a stalled decode never leaves the seal stuck on screen.
+    timersRef.current.push(window.setTimeout(finish, 500));
   };
 
   const handleCurtainEnded = () => {
@@ -136,7 +160,8 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
       style={{
         position: 'relative',
         width: '100%',
-        background: '#1a0508',
+        // Match curtain burgundy so any brief gap never reads as black.
+        background: '#3a0a14',
         // Let swipe / wheel reach the scrolling <main>; the video must not capture them.
         touchAction: 'pan-y',
       }}
@@ -150,8 +175,8 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
         preload="auto"
         controls={false}
         disablePictureInPicture
-        onPlay={() => setVideoStarted(true)}
-        onPlaying={() => setVideoStarted(true)}
+        onPlaying={markVideoPainted}
+        onTimeUpdate={markVideoPainted}
         onEnded={handleCurtainEnded}
         style={{
           position: 'absolute',
@@ -161,6 +186,7 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
           objectFit: 'cover',
           zIndex: 0,
           pointerEvents: 'none',
+          background: '#3a0a14',
         }}
       />
 
@@ -176,8 +202,9 @@ export default function OpeningStage({ locale, onBegin, onHeroReady }: Props) {
           objectFit: 'cover',
           zIndex: 1,
           pointerEvents: 'none',
-          opacity: videoStarted ? 0 : 1,
-          transition: 'opacity 280ms ease',
+          opacity: videoPainted ? 0 : 1,
+          transition: videoPainted ? 'opacity 420ms ease' : 'none',
+          background: '#3a0a14',
         }}
       />
 

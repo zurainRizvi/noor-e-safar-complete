@@ -129,6 +129,15 @@ main {
   padding-bottom: max(88px, calc(env(safe-area-inset-bottom, 0px) + 64px));
 }
 
+/* Urdu ayah page: taller type — grow so surah + scroll cue never collide */
+[dir='rtl'] .card.page-snap.blessing {
+  height: auto;
+  min-height: var(--app-h, 100svh);
+  max-height: none;
+  overflow: visible;
+  justify-content: flex-start;
+}
+
 [dir='rtl'] .eyebrow {
   letter-spacing: 0.1em;
 }

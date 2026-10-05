@@ -290,8 +290,8 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           alignItems: 'center',
           justifyContent: 'flex-start',
           padding: isRtl
-            ? 'clamp(56px, 9vh, 88px) 18px max(18px, calc(env(safe-area-inset-bottom, 0px) + 12px))'
-            : 'clamp(68px, 11vh, 104px) 24px max(18px, calc(env(safe-area-inset-bottom, 0px) + 12px))',
+            ? 'clamp(56px, 9vh, 88px) 18px max(40px, calc(env(safe-area-inset-bottom, 0px) + 32px))'
+            : 'clamp(68px, 11vh, 104px) 24px max(40px, calc(env(safe-area-inset-bottom, 0px) + 32px))',
         }}
       >
         <p
@@ -619,7 +619,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             placement="afterContent"
             color={pink.main}
             glow="rgba(201, 149, 158, 0.55)"
-            style={{ marginTop: isRevealed ? 8 : 2, paddingBottom: 4 }}
+            style={{ marginTop: isRevealed ? 14 : 10, paddingBottom: 12 }}
           />
         </div>
       </div>

@@ -30,7 +30,11 @@ export function Blessing({ locale }: { locale: Locale }) {
         borderTop: `1px solid ${theme.colors.goldLine}`,
         padding: 0,
         position: 'relative',
-        overflow: 'hidden',
+        // Urdu ayah text is taller — grow past one viewport so the surah never sits under the cue.
+        overflow: isRtl ? 'visible' : 'hidden',
+        height: isRtl ? 'auto' : undefined,
+        minHeight: 'var(--app-h, 100svh)',
+        maxHeight: isRtl ? 'none' : undefined,
         justifyContent: 'flex-start',
       }}
     >
@@ -44,15 +48,14 @@ export function Blessing({ locale }: { locale: Locale }) {
           position: 'relative',
           zIndex: 2,
           width: '100%',
-          height: '100%',
-          minHeight: '100%',
+          minHeight: 'var(--app-h, 100svh)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: isRtl ? 'flex-start' : 'center',
           padding: isRtl
-            ? 'clamp(92px, 13vh, 120px) 28px max(16px, env(safe-area-inset-bottom, 0px))'
-            : 'clamp(104px, 14.5vh, 132px) 30px max(16px, env(safe-area-inset-bottom, 0px))',
+            ? 'clamp(88px, 12vh, 112px) 28px max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px))'
+            : 'clamp(104px, 14.5vh, 132px) 30px max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px))',
           boxSizing: 'border-box',
           textAlign: 'center',
         }}
@@ -63,7 +66,7 @@ export function Blessing({ locale }: { locale: Locale }) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            flex: '1 1 auto',
+            flex: isRtl ? '0 1 auto' : '1 1 auto',
             justifyContent: 'center',
             minHeight: 0,
           }}
@@ -71,14 +74,40 @@ export function Blessing({ locale }: { locale: Locale }) {
           <p className="eyebrow" style={{ color: theme.colors.gold, letterSpacing: isRtl ? '0.1em' : undefined }}>
             {isRtl ? 'اللہ کے نام سے' : 'IN THE NAME OF ALLAH'}
           </p>
-          <p className="arabic" style={{ color: theme.colors.ink, margin: '12px 0', fontSize: 28, lineHeight: 1.9, fontFamily: "'Amiri', serif" }}>
+          <p
+            className="arabic"
+            style={{
+              color: theme.colors.ink,
+              margin: isRtl ? '8px 0' : '12px 0',
+              fontSize: isRtl ? 26 : 28,
+              lineHeight: 1.9,
+              fontFamily: "'Amiri', serif",
+            }}
+          >
             {wedding.invitation.arabic}
           </p>
           <Ornament />
-          <h2 style={{ color: theme.colors.ink, margin: '14px 0 10px', fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif", lineHeight: isRtl ? 1.65 : undefined }}>
+          <h2
+            style={{
+              color: theme.colors.ink,
+              margin: isRtl ? '10px 0 8px' : '14px 0 10px',
+              fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
+              lineHeight: isRtl ? 1.65 : undefined,
+            }}
+          >
             {isRtl ? 'محبت سے آغاز' : 'With love, we begin.'}
           </h2>
-          <p className="copy" style={{ color: theme.colors.inkSoft, maxWidth: 300, margin: '0 auto', fontSize: isRtl ? 16 : 17, lineHeight: isRtl ? 1.9 : 1.7, fontFamily: isRtl ? "'Amiri', serif" : undefined }}>
+          <p
+            className="copy"
+            style={{
+              color: theme.colors.inkSoft,
+              maxWidth: 300,
+              margin: '0 auto',
+              fontSize: isRtl ? 15 : 17,
+              lineHeight: isRtl ? 1.85 : 1.7,
+              fontFamily: isRtl ? "'Amiri', serif" : undefined,
+            }}
+          >
             {isRtl
               ? 'اللہ کے نام سے ہم ایک حسین سفر کا آغاز کرتے ہیں اور آپ کو اس لمحے میں شریک ہونے کی دعوت دیتے ہیں۔'
               : 'In the name of Allah, we begin a beautiful journey and invite you to share this precious moment with us.'}
@@ -87,10 +116,10 @@ export function Blessing({ locale }: { locale: Locale }) {
             dir="rtl"
             lang="ar"
             style={{
-              marginTop: 28,
+              marginTop: isRtl ? 18 : 28,
               fontFamily: "'Amiri', serif",
-              fontSize: isRtl ? 22 : 20,
-              lineHeight: 2.05,
+              fontSize: isRtl ? 20 : 20,
+              lineHeight: isRtl ? 1.95 : 2.05,
               color: theme.colors.ink,
               maxWidth: 300,
               marginLeft: 'auto',
@@ -106,8 +135,8 @@ export function Blessing({ locale }: { locale: Locale }) {
               margin: '12px auto 0',
               maxWidth: 300,
               color: theme.colors.inkSoft,
-              fontSize: isRtl ? 16 : 15,
-              lineHeight: isRtl ? 1.95 : 1.7,
+              fontSize: isRtl ? 15 : 15,
+              lineHeight: isRtl ? 1.9 : 1.7,
               fontFamily: isRtl ? "'Amiri', serif" : "'Cormorant Garamond', serif",
               fontStyle: isRtl ? 'normal' : 'italic',
               textAlign: 'center',
@@ -122,7 +151,7 @@ export function Blessing({ locale }: { locale: Locale }) {
             style={{
               display: 'block',
               marginTop: 12,
-              marginBottom: 8,
+              marginBottom: 0,
               color: theme.colors.muted,
               letterSpacing: isRtl ? '0.04em' : '0.12em',
               fontSize: isRtl ? 12 : 10,
@@ -138,7 +167,7 @@ export function Blessing({ locale }: { locale: Locale }) {
           placement="afterContent"
           color={theme.colors.gold}
           glow="rgba(198, 161, 91, 0.55)"
-          style={{ flexShrink: 0, marginTop: 4 }}
+          style={{ flexShrink: 0, marginTop: isRtl ? 28 : 18, paddingBottom: 8 }}
         />
       </div>
     </Card>
@@ -617,7 +646,6 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               poster={posterSrc}
               playsInline
               muted
-              // Waleema waits until the guest lands on this page before buffering/playing.
               preload="auto"
               controls={false}
               disablePictureInPicture
@@ -666,20 +694,20 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              // Baraat / Waleema: lower panel so faces + sky / moon stay clear
+              // Mehndi stays truly centered; Baraat / Waleema sit lower for faces/sky.
               justifyContent: e.id === 'baraat' || e.id === 'waleema' ? 'flex-start' : 'center',
               padding:
                 e.id === 'baraat'
                   ? isRtl
-                    ? '50% 20px max(10px, env(safe-area-inset-bottom, 0px))'
-                    : '50% 22px max(10px, env(safe-area-inset-bottom, 0px))'
+                    ? '50% 20px max(56px, calc(env(safe-area-inset-bottom, 0px) + 48px))'
+                    : '50% 22px max(56px, calc(env(safe-area-inset-bottom, 0px) + 48px))'
                   : e.id === 'waleema'
                     ? isRtl
-                      ? '52% 20px max(10px, env(safe-area-inset-bottom, 0px))'
-                      : '52% 22px max(10px, env(safe-area-inset-bottom, 0px))'
+                      ? '52% 20px max(56px, calc(env(safe-area-inset-bottom, 0px) + 48px))'
+                      : '52% 22px max(56px, calc(env(safe-area-inset-bottom, 0px) + 48px))'
                     : isRtl
-                      ? '24px 20px max(10px, env(safe-area-inset-bottom, 0px))'
-                      : '24px 22px max(10px, env(safe-area-inset-bottom, 0px))',
+                      ? '24px 20px max(56px, calc(env(safe-area-inset-bottom, 0px) + 48px))'
+                      : '24px 22px max(56px, calc(env(safe-area-inset-bottom, 0px) + 48px))',
               boxSizing: 'border-box',
               // Pass swipes through empty chrome; only the glass panel is interactive.
               pointerEvents: 'none',
@@ -720,7 +748,6 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
                 pointerEvents: 'auto',
                 flexShrink: 1,
                 minHeight: 0,
-                marginBottom: 4,
               }}
             >
           <p
@@ -926,30 +953,19 @@ export function EventCard({ e, i, locale }: { e: WeddingEvent; i: number; locale
             </button>
           </div>
         </div>
-            <div
-              style={{
-                marginTop: 'auto',
-                flexShrink: 0,
-                minHeight: 44,
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'flex-end',
-                pointerEvents: showScrollCue ? 'auto' : 'none',
-              }}
-            >
-              {showScrollCue && (
-                <ScrollDownHint
-                  locale={locale}
-                  placement="afterContent"
-                  color={ev.cardAccent}
-                  glow={e.id === 'mehndi' ? 'rgba(122, 90, 40, 0.45)' : 'rgba(240, 215, 138, 0.55)'}
-                  style={{ marginTop: 0, paddingBottom: 2 }}
-                />
-              )}
-            </div>
       </div>
         </>
+      )}
+      {showScrollCue && (
+        <ScrollDownHint
+          locale={locale}
+          color={ev.cardAccent}
+          glow={e.id === 'mehndi' ? 'rgba(122, 90, 40, 0.45)' : 'rgba(240, 215, 138, 0.55)'}
+          style={{
+            // Pin to the reserved bottom pad so Mehndi glass stays mid-screen.
+            bottom: 'max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px))',
+          }}
+        />
       )}
     </Card>
   );

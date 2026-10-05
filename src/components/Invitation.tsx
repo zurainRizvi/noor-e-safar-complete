@@ -114,7 +114,8 @@ export default function Invitation() {
         if (
           node.classList.contains('event-schedule') ||
           node.classList.contains('rsvp') ||
-          node.classList.contains('farewell')
+          node.classList.contains('farewell') ||
+          (node.classList.contains('blessing') && main.getAttribute('dir') === 'rtl')
         ) {
           return;
         }

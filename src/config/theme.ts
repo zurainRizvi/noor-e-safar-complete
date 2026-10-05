@@ -34,7 +34,8 @@ export const theme = {
       video: '/videos/mehndi.mp4',
       poster: '/videos/mehndi-poster.jpg',
       freezeLastFrame: true,
-      trimStart: 0,
+      // Skip the first 0.20s of the Mehndi intro.
+      trimStart: 0.2,
       zoomFrom: 1,
       zoomTo: 1,
       cardInk: '#14281C',
@@ -60,7 +61,8 @@ export const theme = {
       video: '/videos/baraat.mp4',
       poster: '/videos/baraat-poster.jpg',
       freezeLastFrame: true,
-      trimStart: 0,
+      // Skip the first 0.15s of the Baraat intro.
+      trimStart: 0.15,
       zoomFrom: 1,
       zoomTo: 1,
       cardInk: '#FFFFFF',
@@ -132,7 +134,7 @@ export const theme = {
     openingPoster: '/videos/opening-poster.jpg',
     closing: '/videos/closing.mp4',
     closingPoster: '/videos/closing-poster.jpg',
-    version: '20261005a',
+    version: '20261005b',
   },
 } as const;
 
