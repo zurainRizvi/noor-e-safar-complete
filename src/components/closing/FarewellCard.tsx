@@ -163,7 +163,7 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
       <ScrollDownHint
         locale={locale}
         color={ACCENT}
-        glow="rgba(122, 145, 168, 0.55)"
+        glow="rgba(122, 145, 168, 0.45)"
       />
     </Card>
   );

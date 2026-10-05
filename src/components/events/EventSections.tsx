@@ -1019,7 +1019,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         position: 'relative',
         overflow: 'visible',
         textAlign: isRtl ? 'right' : 'left',
-        padding: isRtl ? '108px 22px 120px' : '120px 28px 112px',
+        padding: isRtl ? '108px 22px 56px' : '120px 28px 52px',
         color: scheduleInk,
         transform: 'none',
       }}
@@ -1108,7 +1108,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                 position: 'relative',
                 display: 'block',
                 width: '100%',
-                marginBottom: idx === data.items.length - 1 ? 40 : 18,
+                marginBottom: idx === data.items.length - 1 ? 10 : 18,
                 cursor: 'pointer',
                 padding: isRtl ? '12px 14px 14px' : '10px 14px',
                 borderRadius: 14,
@@ -1190,6 +1190,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                 ? 'rgba(92, 143, 143, 0.5)'
                 : 'rgba(198, 161, 91, 0.5)'
         }
+        style={{ marginTop: 4, paddingBottom: 2 }}
       />
       </div>
     </Card>

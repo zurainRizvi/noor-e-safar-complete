@@ -117,7 +117,7 @@ main {
   transform: none !important;
 }
 
-/* Schedules need room under the last item — grow past one viewport on all locales */
+/* Schedules — tight bottom so scroll cue sits near the celebration timeline */
 .card.page-snap.event-schedule {
   height: auto;
   min-height: var(--app-h, 100svh);
@@ -126,7 +126,7 @@ main {
   justify-content: flex-start;
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  padding-bottom: max(88px, calc(env(safe-area-inset-bottom, 0px) + 64px));
+  padding-bottom: max(36px, calc(env(safe-area-inset-bottom, 0px) + 20px));
 }
 
 /* Content pages stay still — only decorative children animate */
@@ -216,6 +216,15 @@ main.snap-paused .closing-stage {
 .rsvp input:-webkit-autofill {
   animation-name: rsvp-autofill-start;
   animation-duration: 0.01s;
+  -webkit-text-fill-color: #2c261f !important;
+  box-shadow: 0 0 0 1000px rgba(255, 252, 247, 0.92) inset !important;
+  caret-color: #2c261f;
+}
+
+.rsvp textarea:-webkit-autofill {
+  -webkit-text-fill-color: #2c261f !important;
+  box-shadow: 0 0 0 1000px rgba(255, 252, 247, 0.92) inset !important;
+  caret-color: #2c261f;
 }
 
 .page-snap > :not(.petals):not(.botanical-climber-container):not(.hero-birds) {

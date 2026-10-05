@@ -105,13 +105,25 @@ export const theme = {
       panelBorder: 'rgba(232, 213, 163, 0.28)',
     },
   },
-  // Closing farewell note — soft light blue
+  // Closing farewell note — cream → soft blue wash (same recipe as schedules)
   farewell: {
-    bg: 'linear-gradient(180deg, #F0F4FA 0%, #D5DEEB 100%)',
-    border: 'rgba(122, 145, 168, 0.42)',
+    bg: 'linear-gradient(180deg, #F8FAFC 0%, #E6EEF6 55%, #CDD9EA 100%)',
+    border: 'rgba(122, 145, 168, 0.38)',
     accent: '#7A91A8',
     accentDeep: '#4A5F78',
     flower: { primary: '#7A91A8', secondary: '#FFFFFF', dark: '#4A5F78' },
+  },
+  // RSVP overlay — cream / warm brown / gold
+  rsvp: {
+    bg: 'linear-gradient(180deg, #FFFBF5 0%, #F3E6D0 48%, #E6D0A8 100%)',
+    border: 'rgba(198, 161, 91, 0.48)',
+    ink: '#2C261F',
+    inkSoft: '#5C4F42',
+    muted: '#7A6F63',
+    field: 'rgba(255, 252, 247, 0.78)',
+    fieldBorder: 'rgba(184, 150, 90, 0.42)',
+    accent: '#C6A15B',
+    accentSoft: '#E0C075',
   },
   // Ayah / blessing page climbers — red & white florals
   blessing: {
