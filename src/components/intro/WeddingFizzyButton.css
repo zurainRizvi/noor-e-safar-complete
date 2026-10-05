@@ -50,18 +50,19 @@
     0 0 22px rgba(216, 171, 88, 0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  /* Keep transform OUT of transitions so pop keyframes don't fight hover. */
+  /* Soft morph into the seal — no competing transform transitions */
   transition:
-    width 650ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    height 650ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-radius 650ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 500ms ease,
-    background 500ms ease,
-    border-color 350ms ease;
+    width 920ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 920ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 920ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 720ms ease,
+    background 720ms ease,
+    border-color 480ms ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   transform: translateZ(0);
   backface-visibility: hidden;
+  will-change: width, height, border-radius;
 }
 
 .wedding-fizzy__button::before {
@@ -71,7 +72,7 @@
   border: 1px solid rgba(255, 225, 165, 0.2);
   border-radius: inherit;
   pointer-events: none;
-  transition: opacity 250ms ease, inset 400ms ease;
+  transition: opacity 320ms ease, inset 720ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .wedding-fizzy__button::after {
@@ -84,7 +85,8 @@
   opacity: 0.35;
   z-index: -1;
   pointer-events: none;
-  animation: weddingAura 2.8s ease-in-out infinite;
+  animation: weddingAura 3.4s ease-in-out infinite;
+  transition: opacity 420ms ease, transform 720ms ease;
 }
 
 .wedding-fizzy__content {
@@ -95,7 +97,9 @@
   justify-content: center;
   gap: 15px;
   white-space: nowrap;
-  transition: opacity 180ms ease, transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition:
+    opacity 360ms ease,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .wedding-fizzy__text {
@@ -118,7 +122,7 @@
   font-size: 10px;
   color: var(--gold-light);
   opacity: 0.68;
-  transition: transform 400ms ease, opacity 400ms ease;
+  transition: transform 480ms ease, opacity 480ms ease;
 }
 
 .wedding-fizzy__arrow {
@@ -129,7 +133,7 @@
   color: var(--gold-light);
   opacity: 0.7;
   transform: translateX(-4px);
-  transition: transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 350ms ease;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms ease;
 }
 
 .wedding-fizzy__shine {
@@ -149,12 +153,13 @@
   );
   filter: blur(1px);
   pointer-events: none;
-  animation: weddingSweep 4s ease-in-out infinite;
+  animation: weddingSweep 4.6s ease-in-out infinite;
+  transition: opacity 280ms ease;
 }
 
 @media (hover: hover) {
   .wedding-fizzy:not(.is-active) .wedding-fizzy__button:hover {
-    transform: translate3d(0, -2px, 0) scale(1.015);
+    transform: translate3d(0, -1px, 0) scale(1.01);
     border-color: rgba(255, 222, 151, 1);
     background: linear-gradient(180deg, rgba(111, 30, 48, 0.68), rgba(45, 7, 17, 0.9));
     box-shadow:
@@ -169,7 +174,7 @@
   }
 
   .wedding-fizzy:not(.is-active) .wedding-fizzy__button:hover .wedding-fizzy__spark {
-    transform: rotate(90deg) scale(1.15);
+    transform: rotate(90deg) scale(1.12);
     opacity: 1;
   }
 }
@@ -202,7 +207,14 @@
 
 .wedding-fizzy.is-active .wedding-fizzy__content {
   opacity: 0;
-  transform: scale(0.84);
+  transform: scale(0.92);
+  pointer-events: none;
+}
+
+.wedding-fizzy.is-active .wedding-fizzy__shine,
+.wedding-fizzy.is-active .wedding-fizzy__button::after {
+  opacity: 0;
+  animation: none;
 }
 
 .wedding-fizzy.is-active .wedding-fizzy__button {
@@ -212,19 +224,20 @@
   background: radial-gradient(circle at 40% 32%, rgba(126, 50, 57, 0.96), rgba(47, 7, 17, 0.98) 67%);
   box-shadow:
     inset 0 0 0 1px rgba(255, 236, 191, 0.22),
-    0 0 18px rgba(226, 179, 87, 0.3),
-    0 0 46px rgba(226, 179, 87, 0.22);
-  /* Pop lives on a dedicated animation; no competing transform transition. */
-  animation: weddingButtonPop 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    0 0 18px rgba(226, 179, 87, 0.28),
+    0 0 40px rgba(226, 179, 87, 0.18);
+  /* Gentle settle — no squash/stretch pop */
+  transform: translateZ(0) scale(1);
   pointer-events: none;
 }
 
 .wedding-fizzy.is-active .wedding-fizzy__button::before {
-  inset: 4px;
+  inset: 5px;
+  opacity: 0.85;
 }
 
 .wedding-fizzy.is-active .wedding-fizzy__particle {
-  animation: weddingFizz 850ms cubic-bezier(0.15, 0.7, 0.25, 1) var(--delay) forwards;
+  animation: weddingFizz 980ms cubic-bezier(0.16, 0.84, 0.24, 1) var(--delay) forwards;
 }
 
 .wedding-fizzy__success {
@@ -233,15 +246,17 @@
   display: grid;
   place-items: center;
   opacity: 0;
-  transform: scale(0) rotate(-90deg);
-  font-size: 23px;
+  transform: scale(0.72);
+  font-size: 22px;
   color: var(--gold-light);
-  text-shadow: 0 0 10px rgba(255, 224, 151, 0.6), 0 0 22px rgba(220, 166, 70, 0.35);
+  text-shadow:
+    0 0 10px rgba(255, 224, 151, 0.55),
+    0 0 22px rgba(220, 166, 70, 0.3);
   pointer-events: none;
 }
 
 .wedding-fizzy.is-active .wedding-fizzy__success {
-  animation: weddingSuccess 480ms cubic-bezier(0.2, 1.5, 0.4, 1) 430ms forwards;
+  animation: weddingSuccess 640ms cubic-bezier(0.22, 1, 0.36, 1) 360ms forwards;
 }
 
 .wedding-fizzy.is-active::before,
@@ -250,18 +265,18 @@
   position: absolute;
   width: 58px;
   height: 58px;
-  border: 1px solid rgba(238, 197, 113, 0.65);
+  border: 1px solid rgba(238, 197, 113, 0.55);
   border-radius: 50%;
   pointer-events: none;
   opacity: 0;
 }
 
 .wedding-fizzy.is-active::before {
-  animation: weddingRing 800ms ease-out 150ms forwards;
+  animation: weddingRing 900ms ease-out 180ms forwards;
 }
 
 .wedding-fizzy.is-active::after {
-  animation: weddingRing 850ms ease-out 300ms forwards;
+  animation: weddingRing 980ms ease-out 340ms forwards;
 }
 
 @keyframes weddingSweep {
@@ -286,69 +301,50 @@
 @keyframes weddingAura {
   0%,
   100% {
-    opacity: 0.25;
-    transform: scale(0.98);
+    opacity: 0.22;
+    transform: scale(0.99);
   }
   50% {
-    opacity: 0.5;
-    transform: scale(1.035);
-  }
-}
-
-@keyframes weddingButtonPop {
-  0% {
-    transform: scale(1);
-  }
-  38% {
-    transform: scale(0.88);
-  }
-  68% {
-    transform: scale(1.08);
-  }
-  100% {
-    transform: scale(1);
+    opacity: 0.42;
+    transform: scale(1.02);
   }
 }
 
 @keyframes weddingFizz {
   0% {
     opacity: 0;
-    transform: rotate(var(--angle)) translateX(30px) scale(0);
+    transform: rotate(var(--angle)) translateX(28px) scale(0);
   }
-  15% {
+  18% {
     opacity: 1;
   }
-  55% {
-    opacity: 0.95;
+  60% {
+    opacity: 0.85;
   }
   100% {
     opacity: 0;
-    transform: rotate(var(--angle)) translateX(var(--distance)) scale(0.25);
+    transform: rotate(var(--angle)) translateX(var(--distance)) scale(0.2);
   }
 }
 
 @keyframes weddingSuccess {
   0% {
     opacity: 0;
-    transform: scale(0) rotate(-90deg);
-  }
-  70% {
-    opacity: 1;
-    transform: scale(1.18) rotate(7deg);
+    transform: scale(0.72);
   }
   100% {
     opacity: 1;
-    transform: scale(1) rotate(0);
+    transform: scale(1);
   }
 }
 
 @keyframes weddingRing {
   0% {
-    transform: scale(0.75);
-    opacity: 0.75;
+    transform: scale(0.85);
+    opacity: 0.65;
   }
   100% {
-    transform: scale(2);
+    transform: scale(1.85);
     opacity: 0;
   }
 }
@@ -370,6 +366,17 @@
   .wedding-fizzy.is-rtl .wedding-fizzy__text {
     font-size: 14px;
   }
+
+  .wedding-fizzy.is-active .wedding-fizzy__button {
+    width: 56px;
+    height: 56px;
+  }
+
+  .wedding-fizzy.is-active::before,
+  .wedding-fizzy.is-active::after {
+    width: 56px;
+    height: 56px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -378,5 +385,6 @@
   .wedding-fizzy *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

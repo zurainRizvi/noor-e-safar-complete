@@ -279,6 +279,8 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
       </svg>
 
       <div
+        dir={isRtl ? 'rtl' : 'ltr'}
+        lang={isRtl ? 'ur' : 'en'}
         style={{
           position: 'relative',
           zIndex: 2,
@@ -292,6 +294,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
           padding: isRtl
             ? 'clamp(56px, 9vh, 88px) 18px max(40px, calc(env(safe-area-inset-bottom, 0px) + 32px))'
             : 'clamp(68px, 11vh, 104px) 24px max(40px, calc(env(safe-area-inset-bottom, 0px) + 32px))',
+          transform: 'none',
         }}
       >
         <p

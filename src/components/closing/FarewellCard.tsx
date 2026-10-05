@@ -35,6 +35,8 @@ export default function FarewellCard({ locale }: { locale: Locale }) {
       <ScheduleBow id="farewell" isRtl={isRtl} />
 
       <div
+        dir={isRtl ? 'rtl' : 'ltr'}
+        lang={isRtl ? 'ur' : 'en'}
         style={{
           position: 'relative',
           zIndex: 2,

@@ -5,7 +5,7 @@ import type { Locale } from '@/config/translations';
 import './WeddingFizzyButton.css';
 
 const PARTICLE_COUNT = 42;
-const FIZZ_MS = 1050;
+const FIZZ_MS = 1180;
 
 type Props = {
   locale?: Locale;

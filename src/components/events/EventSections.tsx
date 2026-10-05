@@ -44,6 +44,8 @@ export function Blessing({ locale }: { locale: Locale }) {
       <ScheduleBow id="blessing" isRtl={isRtl} />
 
       <div
+        dir={isRtl ? 'rtl' : 'ltr'}
+        lang={isRtl ? 'ur' : 'en'}
         style={{
           position: 'relative',
           zIndex: 2,
@@ -58,6 +60,7 @@ export function Blessing({ locale }: { locale: Locale }) {
             : 'clamp(104px, 14.5vh, 132px) 30px max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px))',
           boxSizing: 'border-box',
           textAlign: 'center',
+          transform: 'none',
         }}
       >
         <div
@@ -212,6 +215,8 @@ export function Countdown({ locale }: { locale: Locale }) {
       <Petals tone="blush-mix" amount={20} />
       <div
         className="count-overlay"
+        dir={isRtl ? 'rtl' : 'ltr'}
+        lang={isRtl ? 'ur' : 'en'}
         style={{
           position: 'relative',
           zIndex: 2,
@@ -225,6 +230,7 @@ export function Countdown({ locale }: { locale: Locale }) {
           padding: isRtl
             ? 'clamp(78px, 15vh, 124px) 22px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))'
             : 'clamp(84px, 14.5vh, 128px) 26px max(52px, calc(env(safe-area-inset-bottom, 0px) + 44px))',
+          transform: 'none',
         }}
       >
         <p
@@ -1015,6 +1021,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
         textAlign: isRtl ? 'right' : 'left',
         padding: isRtl ? '108px 22px 120px' : '120px 28px 112px',
         color: scheduleInk,
+        transform: 'none',
       }}
     >
       <TopCanopyArch type={eventId} />
@@ -1026,6 +1033,11 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
       />
       <ScheduleBow id={eventId} isRtl={isRtl} />
 
+      <div
+        dir={isRtl ? 'rtl' : 'ltr'}
+        lang={isRtl ? 'ur' : 'en'}
+        style={{ width: '100%', transform: 'none' }}
+      >
       <div style={{ width: '100%', textAlign: 'center', marginBottom: isRtl ? 24 : 28, position: 'relative', zIndex: 2 }}>
         <p
           className="eyebrow"
@@ -1179,6 +1191,7 @@ export function EventSchedule({ eventId, locale }: { eventId: 'mehndi' | 'baraat
                 : 'rgba(198, 161, 91, 0.5)'
         }
       />
+      </div>
     </Card>
   );
 }

@@ -115,7 +115,7 @@ export default function Invitation() {
           node.classList.contains('event-schedule') ||
           node.classList.contains('rsvp') ||
           node.classList.contains('farewell') ||
-          (node.classList.contains('blessing') && main.getAttribute('dir') === 'rtl')
+          (node.classList.contains('blessing') && main.getAttribute('data-locale') === 'ur')
         ) {
           return;
         }
@@ -260,7 +260,12 @@ export default function Invitation() {
   };
 
   return (
-    <main dir={locale === 'ur' ? 'rtl' : 'ltr'} style={{ background: theme.colors.page, color: theme.colors.ink }}>
+    <main
+      dir="ltr"
+      lang={locale === 'ur' ? 'ur' : 'en'}
+      data-locale={locale}
+      style={{ background: theme.colors.page, color: theme.colors.ink }}
+    >
       <audio ref={audio} src={wedding.musicPath} onTimeUpdate={handleAudioTimeUpdate} preload="auto" />
 
       <OpeningStage

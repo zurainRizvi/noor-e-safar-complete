@@ -138,7 +138,7 @@ main {
 }
 
 /* Urdu ayah page: taller type — grow so surah + scroll cue never collide */
-[dir='rtl'] .card.page-snap.blessing {
+main[data-locale='ur'] .card.page-snap.blessing {
   height: auto;
   min-height: var(--app-h, 100svh);
   max-height: none;
@@ -221,6 +221,24 @@ main.snap-paused .closing-stage {
 .page-snap > :not(.petals):not(.botanical-climber-container):not(.hero-birds) {
   position: relative;
   z-index: 2;
+}
+
+/* Décor animates in its own layer — never composite with page content */
+.petals,
+.botanical-climber-container,
+.schedule-bow,
+.hero-birds {
+  isolation: isolate;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+/* Page shells stay frozen; only child décor may transform */
+.card.page-snap,
+.opening-stage.page-snap,
+.closing-stage.page-snap {
+  transform: none !important;
 }
 
 .eyebrow {
