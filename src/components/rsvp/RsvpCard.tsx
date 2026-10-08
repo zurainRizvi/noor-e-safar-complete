@@ -6,7 +6,6 @@ import { wedding } from '@/config/wedding';
 import { rsvpService } from '@/services/rsvp';
 import { type Locale } from '@/config/translations';
 import { Ornament } from '@/components/shared/Ornament';
-import RsvpAdmin from '@/components/rsvp/RsvpAdmin';
 import {
   buildWhatsAppChatUrl,
   formatWhatsAppDisplayNumber,
@@ -219,8 +218,7 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
       baraat: 'Baraat (13th Jan)',
       waleema: 'Waleema (14th Jan)',
     };
-    const eventList = isAttending ? data.events.map((e) => `  • ${eventMap[e] || e}`).join('
-') : '  • None';
+    const eventList = isAttending ? data.events.map((e) => `  • ${eventMap[e] || e}`).join('\n') : '  • None';
     const hostLine = `To: ${formatWhatsAppDisplayNumber(wedding.whatsapp.contactNumber)}`;
     // Compact body — Android share + deep-link URLs reject oversized Unicode payloads.
     return `${hostLine}
@@ -228,11 +226,7 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
 *NOOR-E-SAFAR — WEDDING RSVP*
 Guest: ${data.name}
 Response: ${isAttending ? 'Joyfully Attending' : 'Regretfully Declining'}
-${isAttending ? `Guests: ${data.guests || '1'}
-Events:
-${eventList}
-` : ''}${data.message.trim() ? `Wishes: "${data.message.trim()}"
-` : ''}Sent: ${new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
+${isAttending ? `Guests: ${data.guests || '1'}\nEvents:\n${eventList}\n` : ''}${data.message.trim() ? `Wishes: "${data.message.trim()}"\n` : ''}Sent: ${new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
 _Zurain & Abeeha's Wedding Invitation_`;
   };
 
@@ -248,7 +242,6 @@ _Zurain & Abeeha's Wedding Invitation_`;
     );
     if (result === 'fallback') setAndroidUseLink(true);
   };
-
 
   async function handleSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -450,7 +443,173 @@ _Zurain & Abeeha's Wedding Invitation_`;
               <label style={labelStyle}>{isRtl ? 'شرکت کی تصدیق' : 'WILL YOU ATTEND?'} *</label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 {(['yes', 'no'] as const).map((val) => (
-                  <a
+                  <button
+                    key={val}
+                    type="button"
+                    onClick={() => chooseAttendance(val)}
+                    style={{
+                      padding: '12px 12px',
+                      borderRadius: 14,
+                      border:
+                        response === val
+                          ? `1.5px solid ${RSVP_ACCENT}`
+                          : `1px solid ${RSVP_LINE}`,
+                      background:
+                        response === val
+                          ? val === 'yes'
+                            ? `linear-gradient(135deg, ${RSVP_ACCENT_SOFT}, ${RSVP_ACCENT})`
+                            : 'rgba(184,116,116,0.22)'
+                          : RSVP_FIELD,
+                      color: response === val && val === 'yes' ? '#2C261F' : RSVP_INK,
+                      fontWeight: 600,
+                      fontSize: 12,
+                      cursor: 'pointer',
+                      minHeight: 46,
+                      fontFamily: isRtl ? "'Amiri', serif" : undefined,
+                    }}
+                  >
+                    {val === 'yes'
+                      ? isRtl
+                        ? '✓ خوشی سے شرکت'
+                        : '✓ Joyfully Attend'
+                      : isRtl
+                        ? '✕ معذرت'
+                        : '✕ Regretfully Decline'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {response === 'yes' && (
+              <>
+                <div>
+                  <label style={labelStyle}>{isRtl ? 'مہمانوں کی تعداد' : 'NUMBER OF GUESTS'}</label>
+                  <input
+                    type="number"
+                    name="guests"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={guestCount}
+                    onFocus={() => pauseSnapForTyping()}
+                    onChange={(e) => {
+                      pauseSnapForTyping();
+                      setGuestCount(e.target.value);
+                    }}
+                    placeholder="1"
+                    style={fieldStyle}
+                  />
+                </div>
+                <div>
+                  <label style={{ ...labelStyle, marginBottom: 8 }}>{isRtl ? 'تقریبات' : 'WHICH EVENTS?'}</label>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 8,
+                      width: '100%',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: 8,
+                        width: '100%',
+                        maxWidth: 340,
+                      }}
+                    >
+                      {topEvents.map((ev) => {
+                        const on = selectedEvents.includes(ev.id);
+                        return (
+                          <button key={ev.id} type="button" onClick={() => toggleEvent(ev.id)} style={eventBtnStyle(on, ev.color)}>
+                            {isRtl ? ev.labelUr : ev.labelEn}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => toggleEvent(waleemaEvent.id)}
+                      style={{
+                        ...eventBtnStyle(selectedEvents.includes(waleemaEvent.id), waleemaEvent.color),
+                        width: '100%',
+                        maxWidth: 168,
+                      }}
+                    >
+                      {isRtl ? waleemaEvent.labelUr : waleemaEvent.labelEn}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div>
+              <label style={{ ...labelStyle, marginBottom: isRtl ? 2 : 4 }}>
+                {isRtl ? 'پیغام (اختیاری)' : 'A NOTE FOR THE COUPLE'}
+              </label>
+              <textarea
+                name="message"
+                autoComplete="off"
+                value={guestMessage}
+                onFocus={() => pauseSnapForTyping()}
+                onChange={(e) => {
+                  pauseSnapForTyping();
+                  setGuestMessage(e.target.value);
+                }}
+                rows={1}
+                placeholder={isRtl ? 'دعائیں یا پیغام...' : 'Optional dua or wishes...'}
+                style={{
+                  ...fieldStyle,
+                  resize: 'none',
+                  margin: 0,
+                  lineHeight: isRtl ? 1.45 : 1.35,
+                  minHeight: 0,
+                  padding: '10px 16px',
+                }}
+              />
+            </div>
+
+            <p style={{ margin: '2px 0 0', color: RSVP_SOFT, fontSize: 12, lineHeight: 1.5 }}>
+              {isRtl
+                ? 'جواب محفوظ ہو جائے گا — بھیجنے کے لیے واٹس ایپ کا بٹن دبائیں'
+                : 'Your reply is saved here. Send it on WhatsApp when you are ready.'}
+            </p>
+
+            <button
+              type="submit"
+              className="rsvp-submit"
+              disabled={!response || !guestName.trim()}
+              style={{
+                marginTop: 4,
+                marginBottom: 8,
+                padding: '14px 20px',
+                borderRadius: 999,
+                border: 'none',
+                background:
+                  !response || !guestName.trim()
+                    ? 'rgba(198, 161, 91, 0.22)'
+                    : `linear-gradient(135deg, ${RSVP_ACCENT_SOFT}, ${RSVP_ACCENT})`,
+                color: !response || !guestName.trim() ? RSVP_MUTED : '#2C261F',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                cursor: !response || !guestName.trim() ? 'not-allowed' : 'pointer',
+                minHeight: 48,
+                boxShadow: '0 8px 22px rgba(61, 52, 41, 0.16)',
+                fontFamily: isRtl ? "'Amiri', serif" : undefined,
+              }}
+            >
+              {isRtl ? 'جواب محفوظ کریں' : 'Confirm RSVP'}
+            </button>
+          </form>
+        ) : (
+          <div style={{ margin: '14px auto 0', textAlign: 'center' }}>
+            <p style={{ color: RSVP_SOFT, fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>
+              {isRtl
+                ? 'جواب بھیجنے کے لیے نیچے واٹس ایپ دبائیں'
+                : 'Tap Send on WhatsApp to share your reply'}
+            </p>
+            <a
               href={whatsAppHref}
               target="_self"
               rel="noopener"
@@ -524,8 +683,6 @@ _Zurain & Abeeha's Wedding Invitation_`;
             </button>
           </div>
         )}
-
-        <RsvpAdmin />
       </div>
     </div>
   );
