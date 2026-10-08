@@ -6,7 +6,8 @@ import { wedding } from '@/config/wedding';
 import { rsvpService } from '@/services/rsvp';
 import { type Locale } from '@/config/translations';
 import { Ornament } from '@/components/shared/Ornament';
-import { openWhatsAppChat } from '@/utils/whatsapp';
+import RsvpAdmin from '@/components/rsvp/RsvpAdmin';
+import { buildWhatsAppChatUrl } from '@/utils/whatsapp';
 
 const RSVP_INK = theme.rsvp.ink;
 const RSVP_MUTED = theme.rsvp.muted;
@@ -212,19 +213,17 @@ export default function RsvpCard({ locale }: { locale: Locale }) {
       waleema: 'Waleema (14th Jan)',
     };
     const eventList = isAttending ? data.events.map((e) => `  • ${eventMap[e] || e}`).join('\n') : '  • None';
-    return `✨ *NOOR-E-SAFAR — WEDDING RSVP* ✨
-━━━━━━━━━━━━━━━━━━━━━
-👤 *Guest:* ${data.name}
-💍 *Response:* ${isAttending ? '✅ Joyfully Attending' : '❌ Regretfully Declining'}
-${isAttending ? `👥 *Guests:* ${data.guests || '1'}\n📅 *Events:*\n${eventList}\n` : ''}${data.message.trim() ? `💌 *Wishes:* "${data.message.trim()}"\n` : ''}⏰ *Sent:* ${new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
-━━━━━━━━━━━━━━━━━━━━━
+    // Keep the body compact — long Unicode dividers blow past Android URL limits.
+    return `*NOOR-E-SAFAR — WEDDING RSVP*
+Guest: ${data.name}
+Response: ${isAttending ? 'Joyfully Attending' : 'Regretfully Declining'}
+${isAttending ? `Guests: ${data.guests || '1'}\nEvents:\n${eventList}\n` : ''}${data.message.trim() ? `Wishes: "${data.message.trim()}"\n` : ''}Sent: ${new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
 _Zurain & Abeeha's Wedding Invitation_`;
   };
 
-  const sendToWhatsApp = (data: typeof submittedData) => {
-    if (!data) return;
-    openWhatsAppChat(wedding.whatsapp.contactNumber, getWhatsAppMessage(data));
-  };
+  const whatsAppHref = submittedData
+    ? buildWhatsAppChatUrl(wedding.whatsapp.contactNumber, getWhatsAppMessage(submittedData))
+    : undefined;
 
   async function handleSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -592,9 +591,11 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 ? 'جواب بھیجنے کے لیے نیچے واٹس ایپ دبائیں'
                 : 'Tap Send on WhatsApp to share your reply'}
             </p>
-            <button
-              type="button"
-              onClick={() => sendToWhatsApp(submittedData)}
+            <a
+              href={whatsAppHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-action="share/whatsapp/share"
               style={{
                 width: '100%',
                 padding: '14px 20px',
@@ -610,11 +611,14 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
+                textDecoration: 'none',
+                boxSizing: 'border-box',
+                WebkitTapHighlightColor: 'transparent',
               }}
             >
               <WhatsAppIcon />
               {isRtl ? 'واٹس ایپ پر بھیجیں' : 'Send on WhatsApp'}
-            </button>
+            </a>
             <button
               type="button"
               onClick={() => setSubmittedData(null)}
@@ -633,6 +637,8 @@ _Zurain & Abeeha's Wedding Invitation_`;
             </button>
           </div>
         )}
+
+        <RsvpAdmin />
       </div>
     </div>
   );
