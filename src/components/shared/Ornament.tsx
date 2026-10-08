@@ -27,21 +27,20 @@ export function Ornament({ color = theme.colors.gold }: { color?: string }) {
   );
 }
 
-export function Card({
-  className = '',
-  id,
-  style,
-  children,
-}: {
-  className?: string;
-  id?: string;
-  style?: React.CSSProperties;
-  children: React.ReactNode;
-}) {
+export const Card = React.forwardRef<
+  HTMLElement,
+  {
+    className?: string;
+    id?: string;
+    style?: React.CSSProperties;
+    children: React.ReactNode;
+  }
+>(function Card({ className = '', id, style, children }, ref) {
   // Plain section — never animate the page shell. Decorative motion
   // (petals, climbers, bows, scratch hint) lives on child elements only.
   return (
     <section
+      ref={ref}
       id={id}
       style={{ width: '100%', margin: 0, borderRadius: 0, transform: 'none', ...style }}
       className={`card page-snap ${className}`}
@@ -49,4 +48,4 @@ export function Card({
       {children}
     </section>
   );
-}
+});

@@ -28,6 +28,7 @@ const dayKey = {
 export default function ScratchReveal({ locale }: { locale: Locale }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const surfaceRef = useRef<HTMLDivElement | null>(null);
+  const cardRef = useRef<HTMLElement | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [showHint, setShowHint] = useState(true);
   const isDrawing = useRef(false);
@@ -36,37 +37,48 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
   const isRtl = locale === 'ur';
 
+  /** Keep the Scratch Reveal page locked in view while foil/button state changes. */
+  const pinRevealInView = useCallback((ms = 700) => {
+    const main = document.querySelector('main');
+    const card = cardRef.current;
+    if (!main || !card) return;
+    main.classList.add('snap-paused');
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    // offsetTop is relative to offsetParent (often an inner wrapper), not <main>.
+    const mainTop = () =>
+      main.scrollTop + card.getBoundingClientRect().top - main.getBoundingClientRect().top;
+    const pinnedTop = mainTop();
+    const pinScroll = () => {
+      const target = Number.isFinite(pinnedTop) ? pinnedTop : mainTop();
+      if (Math.abs(main.scrollTop - target) > 1) {
+        main.scrollTop = target;
+      }
+    };
+    pinScroll();
+    requestAnimationFrame(pinScroll);
+    const pinTimers = [16, 50, 120, 280, 500].map((delay) => window.setTimeout(pinScroll, delay));
+    window.setTimeout(() => {
+      pinTimers.forEach((id) => window.clearTimeout(id));
+      pinScroll();
+      main.classList.remove('snap-paused');
+      pinScroll();
+    }, ms);
+  }, []);
+
   const celebrate = useCallback(async () => {
     if (hasTriggered.current) return;
     hasTriggered.current = true;
     revealedRef.current = true;
 
-    // Instant reveal unmounts the button + foil. Mandatory scroll-snap and iOS
-    // focus loss otherwise yank the invitation to the opening page (or glitch-zoom).
-    const main = document.querySelector('main');
-    const pinnedTop = main?.scrollTop ?? 0;
-    main?.classList.add('snap-paused');
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-    const pinScroll = () => {
-      if (main && Math.abs(main.scrollTop - pinnedTop) > 1) {
-        main.scrollTop = pinnedTop;
-      }
-    };
+    // Instant reveal used to unmount foil/button under mandatory scroll-snap.
+    // Pin to this card's offset (not live scrollTop) so focus/click scroll-into-view
+    // cannot yank guests to the opening page or flash-zoom the viewport.
+    pinRevealInView(700);
 
     setShowHint(false);
     setIsRevealed(true);
-    pinScroll();
-    requestAnimationFrame(pinScroll);
-    const pinTimers = [16, 50, 120, 280, 500].map((ms) => window.setTimeout(pinScroll, ms));
-    window.setTimeout(() => {
-      pinTimers.forEach((id) => window.clearTimeout(id));
-      pinScroll();
-      main?.classList.remove('snap-paused');
-      pinScroll();
-    }, 700);
-
     try {
       const confetti = (await import('canvas-confetti')).default;
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
@@ -95,7 +107,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     } catch {
       // ignore
     }
-  }, []);
+  }, [pinRevealInView]);
 
   const paintFoil = useCallback(() => {
     const canvas = canvasRef.current;
@@ -275,6 +287,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
 
   return (
     <Card
+      ref={cardRef}
       className="reveal-date-card"
       style={{
         backgroundColor: backdrop,
@@ -620,6 +633,10 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
 
           <button
             type="button"
+            onMouseDown={(event) => {
+              // Prevent focus scroll-into-view before Instant Reveal pins the page.
+              event.preventDefault();
+            }}
             onClick={(event) => {
               event.preventDefault();
               event.currentTarget.blur();
