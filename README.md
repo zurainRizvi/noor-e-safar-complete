@@ -32,7 +32,7 @@ Guest replies are saved through `RSVPService` in `src/services/rsvp.ts`. With Su
 
 ### 1. Create the table
 
-In Supabase → SQL Editor, run [`supabase/rsvps.sql`](supabase/rsvps.sql). That creates `public.rsvps` and anon insert/select policies for the frontend admin panel.
+In Supabase → SQL Editor, run [`supabase/rsvps.sql`](supabase/rsvps.sql). If the table already existed, also run [`supabase/rsvps_invite_key.sql`](supabase/rsvps_invite_key.sql) so each invite link keeps its own guest list (`invite_key = 'complete'` for this site). That creates `public.rsvps` and anon insert/select policies for the frontend admin panel.
 
 ### 2. Environment variables
 
