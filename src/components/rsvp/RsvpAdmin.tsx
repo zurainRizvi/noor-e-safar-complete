@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { theme } from '@/config/theme';
+import { wedding } from '@/config/wedding';
 import { rsvpService, type RSVPSubmission } from '@/services/rsvp';
 
 const RSVP_INK = theme.rsvp.ink;
@@ -63,7 +64,8 @@ export default function RsvpAdmin() {
   const [loading, setLoading] = useState(false);
   const [entries, setEntries] = useState<RSVPSubmission[]>([]);
 
-  const expectedPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD?.trim() || '';
+  const expectedPassword =
+    process.env.NEXT_PUBLIC_ADMIN_PASSWORD?.trim() || wedding.rsvp.adminPassword || '';
 
   async function loadEntries() {
     setLoading(true);

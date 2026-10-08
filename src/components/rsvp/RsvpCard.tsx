@@ -663,8 +663,20 @@ _Zurain & Abeeha's Wedding Invitation_`;
                   ? 'دوبارہ واٹس ایپ پر بھیجیں دبائیں — واٹس ایپ سیدھا کھل جائے گا'
                   : 'Tap Send on WhatsApp again — it will open the app directly'
                 : isRtl
-                  ? `واٹس ایپ چنیں، پھر میزبان کا چیٹ کھولیں (${formatWhatsAppDisplayNumber(wedding.whatsapp.contactNumber)})`
-                  : `On Android: choose WhatsApp, then the hosts' chat (${formatWhatsAppDisplayNumber(wedding.whatsapp.contactNumber)})`}
+                  ? (
+                    <>
+                      واٹس ایپ چنیں، پھر میزبان کا چیٹ کھولیں
+                      <br />
+                      {formatWhatsAppDisplayNumber(wedding.whatsapp.contactNumber)}
+                    </>
+                  )
+                  : (
+                    <>
+                      On Android: choose WhatsApp, then the hosts&apos; chat
+                      <br />
+                      {formatWhatsAppDisplayNumber(wedding.whatsapp.contactNumber)}
+                    </>
+                  )}
             </p>
             <button
               type="button"
