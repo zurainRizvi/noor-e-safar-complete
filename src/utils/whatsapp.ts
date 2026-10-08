@@ -1,29 +1,73 @@
-/** Official click-to-chat URL (works on iOS, Android Chrome, MIUI, Samsung, desktop). */
-export function buildWhatsAppChatUrl(phoneDigits: string, message: string) {
-  const phone = phoneDigits.replace(/[^\d]/g, '');
+function digitsOnly(phoneDigits: string) {
+  return phoneDigits.replace(/[^\d]/g, '');
+}
+
+function isAndroidUa() {
+  return typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+}
+
+/** HTTPS click-to-chat (iOS + desktop). */
+export function buildWhatsAppHttpsUrl(phoneDigits: string, message: string) {
+  const phone = digitsOnly(phoneDigits);
   const text = encodeURIComponent(message);
-  // wa.me is WhatsApp's supported universal link. Prefer it over intent:// —
-  // Redmi/MIUI often blocks package-locked intents (and WhatsApp Business /
-  // Dual Apps breaks package=com.whatsapp).
-  return `https://wa.me/${phone}?text=${text}`;
+  return `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
+}
+
+/** Native scheme — opens the WhatsApp app when the browser allows custom schemes. */
+export function buildWhatsAppAppUrl(phoneDigits: string, message: string) {
+  const phone = digitsOnly(phoneDigits);
+  const text = encodeURIComponent(message);
+  return `whatsapp://send?phone=${phone}&text=${text}`;
 }
 
 /**
- * Open WhatsApp with a prefilled message.
- * Prefer calling this from a real user tap, or better: use an <a href={buildWhatsAppChatUrl(...)}>.
+ * Chrome/MIUI Intent URI — launches WhatsApp without loading a Chrome tab.
+ * No package= lock so personal WhatsApp, Business, or Dual Apps can resolve.
+ */
+export function buildWhatsAppIntentUrl(phoneDigits: string, message: string) {
+  const phone = digitsOnly(phoneDigits);
+  const text = encodeURIComponent(message);
+  // Fallback only if no WhatsApp app can handle the intent.
+  const fallback = encodeURIComponent(buildWhatsAppHttpsUrl(phone, message));
+  return `intent://send/?phone=${phone}&text=${text}#Intent;scheme=whatsapp;S.browser_fallback_url=${fallback};end`;
+}
+
+/** Platform-aware href if you need a plain <a>. */
+export function buildWhatsAppChatUrl(phoneDigits: string, message: string) {
+  if (isAndroidUa()) return buildWhatsAppIntentUrl(phoneDigits, message);
+  return buildWhatsAppHttpsUrl(phoneDigits, message);
+}
+
+/**
+ * Open WhatsApp with a prefilled message from a direct user tap.
+ * Android opens the app via Intent / whatsapp:// — not a Chrome wa.me page.
  */
 export function openWhatsAppChat(phoneDigits: string, message: string) {
-  const url = buildWhatsAppChatUrl(phoneDigits, message);
-  if (typeof document === 'undefined') return;
+  if (typeof window === 'undefined') return;
 
-  // Synchronous <a> click keeps the user-gesture chain on Android Chrome / MIUI.
-  // window.location / window.open to intent:// is frequently blocked on Redmi.
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.target = '_blank';
-  anchor.rel = 'noopener noreferrer';
-  anchor.style.display = 'none';
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
+  if (!isAndroidUa()) {
+    // Same-window HTTPS — iOS hands this to the WhatsApp app.
+    window.location.href = buildWhatsAppHttpsUrl(phoneDigits, message);
+    return;
+  }
+
+  const appUrl = buildWhatsAppAppUrl(phoneDigits, message);
+  const intentUrl = buildWhatsAppIntentUrl(phoneDigits, message);
+
+  let leftPage = false;
+  const onLeave = () => {
+    leftPage = true;
+  };
+  document.addEventListener('visibilitychange', onLeave, { once: true });
+  window.addEventListener('pagehide', onLeave, { once: true });
+  window.addEventListener('blur', onLeave, { once: true });
+
+  // location.href keeps the tap gesture; never target=_blank (Chrome tab bounce on Redmi).
+  window.location.href = intentUrl;
+
+  // If Intent was ignored, try the native scheme once more (still same window).
+  window.setTimeout(() => {
+    if (leftPage || document.visibilityState === 'hidden') return;
+    window.location.href = appUrl;
+  }, 400);
 }

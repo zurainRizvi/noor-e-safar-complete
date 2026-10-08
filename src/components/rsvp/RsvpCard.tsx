@@ -7,7 +7,7 @@ import { rsvpService } from '@/services/rsvp';
 import { type Locale } from '@/config/translations';
 import { Ornament } from '@/components/shared/Ornament';
 import RsvpAdmin from '@/components/rsvp/RsvpAdmin';
-import { buildWhatsAppChatUrl } from '@/utils/whatsapp';
+import { openWhatsAppChat } from '@/utils/whatsapp';
 
 const RSVP_INK = theme.rsvp.ink;
 const RSVP_MUTED = theme.rsvp.muted;
@@ -221,9 +221,10 @@ ${isAttending ? `Guests: ${data.guests || '1'}\nEvents:\n${eventList}\n` : ''}${
 _Zurain & Abeeha's Wedding Invitation_`;
   };
 
-  const whatsAppHref = submittedData
-    ? buildWhatsAppChatUrl(wedding.whatsapp.contactNumber, getWhatsAppMessage(submittedData))
-    : undefined;
+  const sendToWhatsApp = (data: typeof submittedData) => {
+    if (!data) return;
+    openWhatsAppChat(wedding.whatsapp.contactNumber, getWhatsAppMessage(data));
+  };
 
   async function handleSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -591,11 +592,9 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 ? 'جواب بھیجنے کے لیے نیچے واٹس ایپ دبائیں'
                 : 'Tap Send on WhatsApp to share your reply'}
             </p>
-            <a
-              href={whatsAppHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-action="share/whatsapp/share"
+            <button
+              type="button"
+              onClick={() => sendToWhatsApp(submittedData)}
               style={{
                 width: '100%',
                 padding: '14px 20px',
@@ -611,14 +610,12 @@ _Zurain & Abeeha's Wedding Invitation_`;
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                textDecoration: 'none',
-                boxSizing: 'border-box',
                 WebkitTapHighlightColor: 'transparent',
               }}
             >
               <WhatsAppIcon />
               {isRtl ? 'واٹس ایپ پر بھیجیں' : 'Send on WhatsApp'}
-            </a>
+            </button>
             <button
               type="button"
               onClick={() => setSubmittedData(null)}
