@@ -633,9 +633,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
 
           <button
             type="button"
-            onMouseDown={(event) => {
-              // Prevent focus scroll-into-view before Instant Reveal pins the page.
-              event.preventDefault();
+            onPointerDown={() => {
+              // Pin early so focus/scroll-into-view cannot race the click.
+              if (!revealedRef.current) pinRevealInView(700);
             }}
             onClick={(event) => {
               event.preventDefault();
