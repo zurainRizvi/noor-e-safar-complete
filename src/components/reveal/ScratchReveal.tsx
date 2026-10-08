@@ -40,8 +40,33 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     if (hasTriggered.current) return;
     hasTriggered.current = true;
     revealedRef.current = true;
+
+    // Instant reveal unmounts the button + foil. Mandatory scroll-snap and iOS
+    // focus loss otherwise yank the invitation to the opening page (or glitch-zoom).
+    const main = document.querySelector('main');
+    const pinnedTop = main?.scrollTop ?? 0;
+    main?.classList.add('snap-paused');
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    const pinScroll = () => {
+      if (main && Math.abs(main.scrollTop - pinnedTop) > 1) {
+        main.scrollTop = pinnedTop;
+      }
+    };
+
     setShowHint(false);
     setIsRevealed(true);
+    pinScroll();
+    requestAnimationFrame(pinScroll);
+    const pinTimers = [16, 50, 120, 280, 500].map((ms) => window.setTimeout(pinScroll, ms));
+    window.setTimeout(() => {
+      pinTimers.forEach((id) => window.clearTimeout(id));
+      pinScroll();
+      main?.classList.remove('snap-paused');
+      pinScroll();
+    }, 700);
+
     try {
       const confetti = (await import('canvas-confetti')).default;
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
@@ -553,19 +578,22 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                 </p>
               </div>
 
-              {!isRevealed && (
-                <canvas
-                  ref={canvasRef}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    zIndex: 2,
-                    pointerEvents: 'none',
-                  }}
-                />
-              )}
+              {/* Keep foil mounted and fade it out — hard unmount looks like a zoom glitch. */}
+              <canvas
+                ref={canvasRef}
+                aria-hidden={isRevealed}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  zIndex: 2,
+                  pointerEvents: 'none',
+                  opacity: isRevealed ? 0 : 1,
+                  transition: 'opacity 0.35s ease',
+                  visibility: isRevealed ? 'hidden' : 'visible',
+                }}
+              />
 
               {showHint && !isRevealed && (
                 <>
@@ -590,33 +618,44 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             </div>
           </div>
 
-          {!isRevealed && (
-            <button
-              type="button"
-              onClick={() => celebrate()}
-              style={{
-                marginTop: 2,
-                marginBottom: 4,
-                padding: '11px 20px',
-                borderRadius: 999,
-                border: `1px solid ${pink.line}`,
-                background: 'rgba(255, 245, 246, 0.92)',
-                color: theme.colors.ink,
-                fontSize: isRtl ? 12 : 11,
-                fontWeight: 700,
-                letterSpacing: isRtl ? '0.04em' : '0.16em',
-                cursor: 'pointer',
-                minHeight: 42,
-                flexShrink: 0,
-                position: 'relative',
-                zIndex: 4,
-                touchAction: 'manipulation',
-                fontFamily: isRtl ? "'Amiri', serif" : undefined,
-              }}
-            >
-              {isRtl ? '✨ فوری طور پر ظاہر کریں' : '✨ Tap to reveal instantly'}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.currentTarget.blur();
+              void celebrate();
+            }}
+            disabled={isRevealed}
+            aria-hidden={isRevealed}
+            tabIndex={isRevealed ? -1 : 0}
+            style={{
+              marginTop: 2,
+              marginBottom: 4,
+              padding: '11px 20px',
+              borderRadius: 999,
+              border: `1px solid ${pink.line}`,
+              background: 'rgba(255, 245, 246, 0.92)',
+              color: theme.colors.ink,
+              fontSize: isRtl ? 12 : 11,
+              fontWeight: 700,
+              letterSpacing: isRtl ? '0.04em' : '0.16em',
+              cursor: isRevealed ? 'default' : 'pointer',
+              minHeight: 42,
+              flexShrink: 0,
+              position: 'relative',
+              zIndex: 4,
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              fontFamily: isRtl ? "'Amiri', serif" : undefined,
+              // Keep layout height stable so snap doesn't jump when revealing.
+              opacity: isRevealed ? 0 : 1,
+              visibility: isRevealed ? 'hidden' : 'visible',
+              pointerEvents: isRevealed ? 'none' : 'auto',
+              transition: 'opacity 0.25s ease',
+            }}
+          >
+            {isRtl ? '✨ فوری طور پر ظاہر کریں' : '✨ Tap to reveal instantly'}
+          </button>
           <ScrollDownHint
             locale={locale}
             placement="afterContent"
