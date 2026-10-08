@@ -26,17 +26,38 @@ Do not put real secrets in client code. The prototype is marked `noindex`, but a
 
 The language switch changes the document reading direction to RTL and uses the local Amiri font. Add complete Urdu values in `src/config/translations.ts`; presentation components do not contain translations.
 
-## RSVP and Supabase phase
+## RSVP with Supabase
 
-The prototype saves one response to the browser’s local storage through the `RSVPService` interface in `src/services/rsvp.ts`. It is device-local and is not a real guest database.
+Guest replies are saved through `RSVPService` in `src/services/rsvp.ts`. With Supabase configured, every Confirm RSVP writes to a shared `rsvps` table (WhatsApp is still optional). Without Supabase, responses stay in the browser’s local storage only.
 
-For production, create a Supabase `rsvps` table, enable Row Level Security, add an insert-only policy with rate limiting or CAPTCHA where appropriate, validate and sanitize fields server-side, and replace `LocalRSVPService` with a Supabase adapter. Use only `NEXT_PUBLIC_SUPABASE_URL` and the public anon key in the browser; never expose a service-role key. Keep private values in `.env.local`.
+### 1. Create the table
+
+In Supabase → SQL Editor, run [`supabase/rsvps.sql`](supabase/rsvps.sql). That creates `public.rsvps` and anon insert/select policies for the frontend admin panel.
+
+### 2. Environment variables
+
+Copy `.env.example` to `.env.local` and set:
+
+```bash
+NEXT_PUBLIC_RSVP_ADAPTER=supabase
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+NEXT_PUBLIC_ADMIN_PASSWORD=your_private_password
+```
+
+Use only the public anon key in the browser; never expose a service-role key.
+
+### 3. View responses
+
+On the RSVP card, tap the muted **admin** label in the bottom-right corner, enter `NEXT_PUBLIC_ADMIN_PASSWORD`, then review attending / declining lists and total guest headcount. Refresh reloads from Supabase.
+
+This is frontend-only: the password gate is the practical barrier. Anyone with the anon key can also query the table if they know how.
 
 ## Vercel deployment
 
 1. Push this folder to a Git repository.
 2. Import the repository in Vercel and select the Next.js preset.
-3. Add production environment variables only when the Supabase phase begins.
+3. Add the Supabase and admin password environment variables for production.
 4. Deploy, verify the preview URL on iPhone Safari, Android Chrome, and WhatsApp’s in-app browser.
 5. Confirm final map, calendar, music, RSVP, social preview, and noindex/access-control choices before sharing.
 

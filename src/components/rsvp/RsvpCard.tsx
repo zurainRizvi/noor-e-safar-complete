@@ -6,6 +6,7 @@ import { wedding } from '@/config/wedding';
 import { rsvpService } from '@/services/rsvp';
 import { type Locale } from '@/config/translations';
 import { Ornament } from '@/components/shared/Ornament';
+import RsvpAdmin from '@/components/rsvp/RsvpAdmin';
 import {
   buildWhatsAppChatUrl,
   formatWhatsAppDisplayNumber,
@@ -683,6 +684,8 @@ _Zurain & Abeeha's Wedding Invitation_`;
             </button>
           </div>
         )}
+
+        <RsvpAdmin />
       </div>
     </div>
   );
