@@ -43,9 +43,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     const card = cardRef.current;
     if (!main || !card) return;
     main.classList.add('snap-paused');
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
+    // Do NOT blur here — blur during pointerdown cancels the subsequent click.
     // offsetTop is relative to offsetParent (often an inner wrapper), not <main>.
     const mainTop = () =>
       main.scrollTop + card.getBoundingClientRect().top - main.getBoundingClientRect().top;
@@ -75,6 +73,9 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     // Instant reveal used to unmount foil/button under mandatory scroll-snap.
     // Pin to this card's offset (not live scrollTop) so focus/click scroll-into-view
     // cannot yank guests to the opening page or flash-zoom the viewport.
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     pinRevealInView(700);
 
     setShowHint(false);
