@@ -2,18 +2,26 @@ function digitsOnly(phoneDigits: string) {
   return phoneDigits.replace(/[^\d]/g, '');
 }
 
-function isAndroidUa() {
+export function isAndroidDevice() {
   return typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
 }
 
-/** HTTPS click-to-chat (iOS + desktop). */
+export function formatWhatsAppDisplayNumber(phoneDigits: string) {
+  const phone = digitsOnly(phoneDigits);
+  if (phone.startsWith('92') && phone.length >= 12) {
+    return `+${phone.slice(0, 2)} ${phone.slice(2, 5)} ${phone.slice(5)}`;
+  }
+  return `+${phone}`;
+}
+
+/** HTTPS click-to-chat (iOS App Links + desktop). */
 export function buildWhatsAppHttpsUrl(phoneDigits: string, message: string) {
   const phone = digitsOnly(phoneDigits);
   const text = encodeURIComponent(message);
   return `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
 }
 
-/** Native scheme — opens the WhatsApp app when the browser allows custom schemes. */
+/** Native app scheme. */
 export function buildWhatsAppAppUrl(phoneDigits: string, message: string) {
   const phone = digitsOnly(phoneDigits);
   const text = encodeURIComponent(message);
@@ -21,53 +29,56 @@ export function buildWhatsAppAppUrl(phoneDigits: string, message: string) {
 }
 
 /**
- * Chrome/MIUI Intent URI — launches WhatsApp without loading a Chrome tab.
- * No package= lock so personal WhatsApp, Business, or Dual Apps can resolve.
+ * Chrome Intent for a real <a href> tap (not JS timers / location.assign).
+ * Android 16 blocks intent:// started from script; a direct anchor click still works.
  */
 export function buildWhatsAppIntentUrl(phoneDigits: string, message: string) {
   const phone = digitsOnly(phoneDigits);
   const text = encodeURIComponent(message);
-  // Fallback only if no WhatsApp app can handle the intent.
   const fallback = encodeURIComponent(buildWhatsAppHttpsUrl(phone, message));
-  return `intent://send/?phone=${phone}&text=${text}#Intent;scheme=whatsapp;S.browser_fallback_url=${fallback};end`;
+  return `intent://send/?phone=${phone}&text=${text}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=${fallback};end`;
 }
 
-/** Platform-aware href if you need a plain <a>. */
+/** Href used on the RSVP button. */
 export function buildWhatsAppChatUrl(phoneDigits: string, message: string) {
-  if (isAndroidUa()) return buildWhatsAppIntentUrl(phoneDigits, message);
+  if (isAndroidDevice()) return buildWhatsAppIntentUrl(phoneDigits, message);
   return buildWhatsAppHttpsUrl(phoneDigits, message);
 }
 
-/**
- * Open WhatsApp with a prefilled message from a direct user tap.
- * Android opens the app via Intent / whatsapp:// — not a Chrome wa.me page.
- */
-export function openWhatsAppChat(phoneDigits: string, message: string) {
-  if (typeof window === 'undefined') return;
+export type WhatsAppOpenResult = 'shared' | 'opened' | 'cancelled' | 'fallback';
 
-  if (!isAndroidUa()) {
-    // Same-window HTTPS — iOS hands this to the WhatsApp app.
-    window.location.href = buildWhatsAppHttpsUrl(phoneDigits, message);
-    return;
+/**
+ * Android 16+: open the system share sheet (reliable into WhatsApp).
+ * iOS/desktop: navigate to HTTPS click-to-chat.
+ * Returns `fallback` when Android should use the real <a href> instead.
+ */
+export async function openWhatsAppChat(
+  phoneDigits: string,
+  message: string,
+): Promise<WhatsAppOpenResult> {
+  if (typeof window === 'undefined') return 'fallback';
+
+  const httpsUrl = buildWhatsAppHttpsUrl(phoneDigits, message);
+
+  if (isAndroidDevice()) {
+    if (typeof navigator.share === 'function') {
+      try {
+        const shareData: ShareData = { title: 'Wedding RSVP', text: message };
+        if (typeof navigator.canShare === 'function' && !navigator.canShare(shareData)) {
+          return 'fallback';
+        }
+        await navigator.share(shareData);
+        return 'shared';
+      } catch (err) {
+        const name = err instanceof Error ? err.name : '';
+        if (name === 'AbortError') return 'cancelled';
+        return 'fallback';
+      }
+    }
+    // No Web Share — caller should let the real <a href="intent://..."> navigate.
+    return 'fallback';
   }
 
-  const appUrl = buildWhatsAppAppUrl(phoneDigits, message);
-  const intentUrl = buildWhatsAppIntentUrl(phoneDigits, message);
-
-  let leftPage = false;
-  const onLeave = () => {
-    leftPage = true;
-  };
-  document.addEventListener('visibilitychange', onLeave, { once: true });
-  window.addEventListener('pagehide', onLeave, { once: true });
-  window.addEventListener('blur', onLeave, { once: true });
-
-  // location.href keeps the tap gesture; never target=_blank (Chrome tab bounce on Redmi).
-  window.location.href = intentUrl;
-
-  // If Intent was ignored, try the native scheme once more (still same window).
-  window.setTimeout(() => {
-    if (leftPage || document.visibilityState === 'hidden') return;
-    window.location.href = appUrl;
-  }, 400);
+  window.location.href = httpsUrl;
+  return 'opened';
 }
