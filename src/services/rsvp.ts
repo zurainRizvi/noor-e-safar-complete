@@ -13,6 +13,7 @@ export type RSVPSubmission = {
 export interface RSVPService {
   submit(data: RSVPSubmission): Promise<void>;
   getAll(): Promise<RSVPSubmission[]>;
+  clearAll(): Promise<void>;
   hasSubmitted(): boolean;
   getLast(): RSVPSubmission | null;
 }
@@ -54,6 +55,16 @@ class LocalRSVPService implements RSVPService {
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
+    }
+  }
+
+  async clearAll() {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.removeItem(this.listKey);
+      localStorage.removeItem(this.key);
+    } catch {
+      // fallback
     }
   }
 }
@@ -139,6 +150,28 @@ class SupabaseRSVPService implements RSVPService {
     }
 
     return (data as RsvpRow[] | null)?.map(rowToSubmission) ?? [];
+  }
+
+  async clearAll() {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error('Supabase is not configured');
+    }
+
+    // PostgREST requires a filter for deletes; this matches every row.
+    const { error } = await supabase.from('rsvps').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+    if (error) {
+      throw error;
+    }
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem(this.key);
+      } catch {
+        // ignore local cache failures
+      }
+    }
   }
 }
 

@@ -49,7 +49,7 @@ Use only the public anon key in the browser; never expose a service-role key.
 
 ### 3. View responses
 
-On the RSVP card, tap the muted **admin** label in the bottom-right corner, enter `NEXT_PUBLIC_ADMIN_PASSWORD`, then review attending / declining lists and total guest headcount. Refresh reloads from Supabase.
+On the RSVP card, tap the muted **admin** label in the bottom-right corner, enter the admin password, then review attending / declining lists and total guest headcount. **Refresh** reloads from Supabase; **Reset list** clears every saved response (confirm first). If the table already existed before reset support was added, also run [`supabase/rsvps_allow_delete.sql`](supabase/rsvps_allow_delete.sql).
 
 This is frontend-only: the password gate is the practical barrier. Anyone with the anon key can also query the table if they know how.
 

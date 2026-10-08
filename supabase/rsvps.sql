@@ -28,3 +28,11 @@ create policy "Allow anon select rsvps"
   for select
   to anon
   using (true);
+
+-- Needed for the RSVP admin "Reset list" action.
+drop policy if exists "Allow anon delete rsvps" on public.rsvps;
+create policy "Allow anon delete rsvps"
+  on public.rsvps
+  for delete
+  to anon
+  using (true);

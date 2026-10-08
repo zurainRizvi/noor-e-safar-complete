@@ -62,6 +62,7 @@ export default function RsvpAdmin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const [entries, setEntries] = useState<RSVPSubmission[]>([]);
 
   const expectedPassword =
@@ -78,6 +79,25 @@ export default function RsvpAdmin() {
       setError('Could not load responses. Check Supabase setup.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleResetList() {
+    if (entries.length === 0) return;
+    const confirmed = window.confirm(
+      `Clear all ${entries.length} RSVP response${entries.length === 1 ? '' : 's'}? This cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    setResetting(true);
+    setError('');
+    try {
+      await rsvpService.clearAll();
+      setEntries([]);
+    } catch {
+      setError('Could not reset the list. Check Supabase delete policy.');
+    } finally {
+      setResetting(false);
     }
   }
 
@@ -228,21 +248,36 @@ export default function RsvpAdmin() {
             <p style={{ margin: 0, fontSize: 11, letterSpacing: '0.16em', color: RSVP_ACCENT, fontWeight: 600 }}>
               RSVP ADMIN
             </p>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'flex-end' }}>
               <button
                 type="button"
                 onClick={() => loadEntries()}
-                disabled={loading}
+                disabled={loading || resetting}
                 style={{
                   background: 'transparent',
                   border: 'none',
                   color: RSVP_SOFT,
                   fontSize: 11,
-                  cursor: loading ? 'not-allowed' : 'pointer',
+                  cursor: loading || resetting ? 'not-allowed' : 'pointer',
                   textDecoration: 'underline',
                 }}
               >
                 Refresh
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleResetList()}
+                disabled={loading || resetting || entries.length === 0}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: entries.length === 0 ? RSVP_MUTED : '#9a4a4a',
+                  fontSize: 11,
+                  cursor: loading || resetting || entries.length === 0 ? 'not-allowed' : 'pointer',
+                  textDecoration: 'underline',
+                }}
+              >
+                {resetting ? 'Resetting…' : 'Reset list'}
               </button>
               <button
                 type="button"
