@@ -28,6 +28,7 @@ const dayKey = {
 export default function ScratchReveal({ locale }: { locale: Locale }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const surfaceRef = useRef<HTMLDivElement | null>(null);
+  const cardRef = useRef<HTMLElement | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [showHint, setShowHint] = useState(true);
   const isDrawing = useRef(false);
@@ -36,10 +37,47 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
   const isRtl = locale === 'ur';
 
+  /** Keep the Scratch Reveal page locked in view while foil/button state changes. */
+  const pinRevealInView = useCallback((ms = 700) => {
+    const main = document.querySelector('main');
+    const card = cardRef.current;
+    if (!main || !card) return;
+    main.classList.add('snap-paused');
+    // Do NOT blur here — blur during pointerdown cancels the subsequent click.
+    // offsetTop is relative to offsetParent (often an inner wrapper), not <main>.
+    const mainTop = () =>
+      main.scrollTop + card.getBoundingClientRect().top - main.getBoundingClientRect().top;
+    const pinnedTop = mainTop();
+    const pinScroll = () => {
+      const target = Number.isFinite(pinnedTop) ? pinnedTop : mainTop();
+      if (Math.abs(main.scrollTop - target) > 1) {
+        main.scrollTop = target;
+      }
+    };
+    pinScroll();
+    requestAnimationFrame(pinScroll);
+    const pinTimers = [16, 50, 120, 280, 500].map((delay) => window.setTimeout(pinScroll, delay));
+    window.setTimeout(() => {
+      pinTimers.forEach((id) => window.clearTimeout(id));
+      pinScroll();
+      main.classList.remove('snap-paused');
+      pinScroll();
+    }, ms);
+  }, []);
+
   const celebrate = useCallback(async () => {
     if (hasTriggered.current) return;
     hasTriggered.current = true;
     revealedRef.current = true;
+
+    // Instant reveal used to unmount foil/button under mandatory scroll-snap.
+    // Pin to this card's offset (not live scrollTop) so focus/click scroll-into-view
+    // cannot yank guests to the opening page or flash-zoom the viewport.
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    pinRevealInView(700);
+
     setShowHint(false);
     setIsRevealed(true);
     try {
@@ -70,7 +108,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
     } catch {
       // ignore
     }
-  }, []);
+  }, [pinRevealInView]);
 
   const paintFoil = useCallback(() => {
     const canvas = canvasRef.current;
@@ -250,6 +288,7 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
 
   return (
     <Card
+      ref={cardRef}
       className="reveal-date-card"
       style={{
         backgroundColor: backdrop,
@@ -553,19 +592,22 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
                 </p>
               </div>
 
-              {!isRevealed && (
-                <canvas
-                  ref={canvasRef}
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    zIndex: 2,
-                    pointerEvents: 'none',
-                  }}
-                />
-              )}
+              {/* Keep foil mounted and fade it out — hard unmount looks like a zoom glitch. */}
+              <canvas
+                ref={canvasRef}
+                aria-hidden={isRevealed}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  zIndex: 2,
+                  pointerEvents: 'none',
+                  opacity: isRevealed ? 0 : 1,
+                  transition: 'opacity 0.35s ease',
+                  visibility: isRevealed ? 'hidden' : 'visible',
+                }}
+              />
 
               {showHint && !isRevealed && (
                 <>
@@ -590,33 +632,48 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             </div>
           </div>
 
-          {!isRevealed && (
-            <button
-              type="button"
-              onClick={() => celebrate()}
-              style={{
-                marginTop: 2,
-                marginBottom: 4,
-                padding: '11px 20px',
-                borderRadius: 999,
-                border: `1px solid ${pink.line}`,
-                background: 'rgba(255, 245, 246, 0.92)',
-                color: theme.colors.ink,
-                fontSize: isRtl ? 12 : 11,
-                fontWeight: 700,
-                letterSpacing: isRtl ? '0.04em' : '0.16em',
-                cursor: 'pointer',
-                minHeight: 42,
-                flexShrink: 0,
-                position: 'relative',
-                zIndex: 4,
-                touchAction: 'manipulation',
-                fontFamily: isRtl ? "'Amiri', serif" : undefined,
-              }}
-            >
-              {isRtl ? '✨ فوری طور پر ظاہر کریں' : '✨ Tap to reveal instantly'}
-            </button>
-          )}
+          <button
+            type="button"
+            onPointerDown={() => {
+              // Pin early so focus/scroll-into-view cannot race the click.
+              if (!revealedRef.current) pinRevealInView(700);
+            }}
+            onClick={(event) => {
+              event.preventDefault();
+              event.currentTarget.blur();
+              void celebrate();
+            }}
+            disabled={isRevealed}
+            aria-hidden={isRevealed}
+            tabIndex={isRevealed ? -1 : 0}
+            style={{
+              marginTop: 2,
+              marginBottom: 4,
+              padding: '11px 20px',
+              borderRadius: 999,
+              border: `1px solid ${pink.line}`,
+              background: 'rgba(255, 245, 246, 0.92)',
+              color: theme.colors.ink,
+              fontSize: isRtl ? 12 : 11,
+              fontWeight: 700,
+              letterSpacing: isRtl ? '0.04em' : '0.16em',
+              cursor: isRevealed ? 'default' : 'pointer',
+              minHeight: 42,
+              flexShrink: 0,
+              position: 'relative',
+              zIndex: 4,
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              fontFamily: isRtl ? "'Amiri', serif" : undefined,
+              // Keep layout height stable so snap doesn't jump when revealing.
+              opacity: isRevealed ? 0 : 1,
+              visibility: isRevealed ? 'hidden' : 'visible',
+              pointerEvents: isRevealed ? 'none' : 'auto',
+              transition: 'opacity 0.25s ease',
+            }}
+          >
+            {isRtl ? '✨ فوری طور پر ظاہر کریں' : '✨ Tap to reveal instantly'}
+          </button>
           <ScrollDownHint
             locale={locale}
             placement="afterContent"

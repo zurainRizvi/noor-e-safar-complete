@@ -137,6 +137,13 @@ main {
   transform: none !important;
 }
 
+/* Instant reveal mutates foil/button — don't let the browser re-anchor scroll. */
+.card.page-snap.reveal-date-card {
+  overflow-anchor: none;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
 /* Urdu ayah page: taller type — grow so surah + scroll cue never collide */
 main[data-locale='ur'] .card.page-snap.blessing {
   height: auto;
