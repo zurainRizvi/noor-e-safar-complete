@@ -368,10 +368,6 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
       className="reveal-date-card"
       style={{
         backgroundColor: backdrop,
-        backgroundImage: 'url(/images/scratch-reveal-bg.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center top',
-        backgroundRepeat: 'no-repeat',
         borderTop: `1px solid ${pink.line}`,
         borderBottom: `1px solid ${pink.line}`,
         color: theme.colors.ink,
@@ -382,6 +378,26 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
         justifyContent: 'flex-start',
       }}
     >
+      {/*
+        Flower art lives on a fixed viewport-sized layer — never on the flowing
+        content box — so EN↔UR text reflow cannot resample/zoom the backdrop.
+      */}
+      <div
+        aria-hidden
+        className="reveal-date-backdrop"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          backgroundColor: backdrop,
+          backgroundImage: 'url(/images/scratch-reveal-bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+          pointerEvents: 'none',
+          transform: 'translateZ(0)',
+        }}
+      />
       <Petals tone="blush-mix" amount={20} />
 
       <svg width="0" height="0" aria-hidden style={{ position: 'absolute' }}>
@@ -484,7 +500,8 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             style={{
               position: 'relative',
               width: 'min(268px, 78vw)',
-              height: isRtl ? 'min(250px, 48vh)' : 'min(292px, 62vh)',
+              // Same footprint in EN/UR so locale swaps don't resize the foil stage.
+              height: 'min(280px, 54vh)',
               margin: '0 auto 10px',
               flexShrink: 0,
               zIndex: 3,
