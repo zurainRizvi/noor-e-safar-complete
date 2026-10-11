@@ -1,3 +1,5 @@
+import { media } from '@/config/media';
+
 export type EventId = 'mehndi' | 'baraat' | 'waleema';
 export type WeddingEvent = {
   id: EventId;
@@ -87,7 +89,7 @@ export const wedding = {
     /** Used by the RSVP corner admin panel (override with NEXT_PUBLIC_ADMIN_PASSWORD). */
     adminPassword: 'zurain007!!',
   },
-  musicPath: '/audio/islamic-calm.mp3',
+  musicPath: media.music,
   social: {
     title: 'Noor-e-Safar — Zurain & Abeeha',
     description: 'A journey illuminated by light. Lahore · January 2027.',
