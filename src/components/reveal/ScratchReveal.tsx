@@ -763,15 +763,19 @@ export default function ScratchReveal({ locale }: { locale: Locale }) {
             // Keep the same vertical space so snap doesn't jump to page 1 after reveal.
             <div aria-hidden style={{ height: 50, marginTop: 2, marginBottom: 4, flexShrink: 0 }} />
           )}
-          <ScrollDownHint
-            locale={locale}
-            placement="afterContent"
-            color={pink.main}
-            glow="rgba(201, 149, 158, 0.55)"
-            style={{ marginTop: isRevealed ? 14 : 10, paddingBottom: 12 }}
-          />
         </div>
       </div>
+
+      {/*
+        Pin to the page footer — afterContent was clipped by the locked reveal-date-card
+        height once tap-to-reveal swapped the button for a spacer.
+      */}
+      <ScrollDownHint
+        locale={locale}
+        placement="footer"
+        color={pink.main}
+        glow="rgba(201, 149, 158, 0.55)"
+      />
     </Card>
   );
 }
