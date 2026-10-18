@@ -1,0 +1,36 @@
+# Weekly ping so the free-tier Supabase project is not paused for inactivity.
+# Uses the same browser-safe anon credentials as src/config/supabasePublic.ts.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    # Every Monday at 12:00 UTC
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping rsvps table
+        env:
+          SUPABASE_URL: https://hwgjjnnbkxgazlrbrzql.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3Z2pqbm5ia3hnYXpscmJyenFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0ODExMDEsImV4cCI6MjEwNzA1NzEwMX0.kwktvzxR9Jn9rDeV-vMIAOufxMYn3rpEVMy4gHAlp3s
+        run: |
+          set -euo pipefail
+          response="$(curl -sS -w '\n%{http_code}' \
+            "${SUPABASE_URL}/rest/v1/rsvps?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -H "Accept: application/json")"
+          body="$(printf '%s\n' "$response" | sed '$d')"
+          code="$(printf '%s\n' "$response" | tail -n 1)"
+          echo "HTTP ${code}"
+          echo "${body}"
+          case "${code}" in
+            2*) echo "Supabase keep-alive OK" ;;
+            *)
+              echo "Supabase keep-alive failed"
+              exit 1
+              ;;
+          esac
