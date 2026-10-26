@@ -53,6 +53,10 @@ On the RSVP card, tap the muted **admin** label in the bottom-right corner, ente
 
 This is frontend-only: the password gate is the practical barrier. Anyone with the anon key can also query the table if they know how.
 
+### 4. Keep the free project awake
+
+Free Supabase projects pause after roughly a week of no activity. This repo includes [`.github/workflows/supabase-keepalive.yml`](.github/workflows/supabase-keepalive.yml), which runs every Monday and Thursday (and on demand) and performs a tiny read on `rsvps` so RSVPs stay online. After merging to the default branch, open **Actions → Supabase keep-alive → Run workflow** once to confirm it is green.
+
 ## Vercel deployment
 
 1. Push this folder to a Git repository.
